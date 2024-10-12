@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
 
+import { MOVE } from "../constants";
+
 export const ChessBoard = ({ socket }: { socket: WebSocket }) => {
     const [game, setGame] = useState(new Chess());
     const [fen, setFen] = useState(game.fen());
@@ -36,7 +38,7 @@ export const ChessBoard = ({ socket }: { socket: WebSocket }) => {
         if (move === null) return;
 
         setFen(game.fen());
-        socket.send(JSON.stringify({ type: "move", move }));
+        socket.send(JSON.stringify({ type: MOVE, payload: { move } }));
         return true;
     };
 

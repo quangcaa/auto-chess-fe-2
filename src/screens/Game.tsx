@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react"
-import { Button } from "../components/Button";
-import { ChessBoard } from "../components/ChessBoard";
-import { useSocket } from "../hooks/useSocket";
+import { useEffect, useState } from "react";
 import { Chess } from "chess.js";
 
-export const INIT_GAME = 'init_game'
-export const MOVE = 'move'
-export const GAME_OVER = 'game_over'
+import { Button } from "../components/Button";
+import { ChessBoard } from "../components/ChessBoard";
+
+import { useSocket } from "../hooks/useSocket";
+
+import { GAME_OVER, INIT_GAME, MOVE } from "../constants";
 
 export const Game = () => {
     const socket = useSocket()
@@ -22,7 +22,6 @@ export const Game = () => {
             const message = JSON.parse(event.data)
 
             if (message.type === INIT_GAME) {
-                setChess(new Chess())
                 console.log("Game initialized")
             } else if (message.type === MOVE) {
                 const move = message.payload
