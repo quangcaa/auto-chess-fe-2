@@ -16,7 +16,7 @@ const useChangePassword = () => {
             const response = await fetch('http://localhost:3333/account/change-password', {
                 method: 'PATCH',
                 headers: {
-                    'Authorization': `${token}`,
+                    'x_authorization': `${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import useChangePassword from '../hooks/useChangePassword';
 
-function ChangePassword() {
+export const ChangePassword = () => {
   const { changePassword, loading, error, success } = useChangePassword();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -65,4 +65,3 @@ function ChangePassword() {
   );
 }
 
-export default ChangePassword;

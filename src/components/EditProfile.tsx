@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useGetMyProfile from '../hooks/useGetMyProfile';
 import useEditProfile from '../hooks/useEditProfile';
 
-function EditProfile() {
+export const EditProfile = () => {
     const { profile, loading: loadingProfile, error: profileError } = useGetMyProfile();
     const { editProfile, loading: loadingEdit, error: editError, success } = useEditProfile();
     
@@ -30,7 +30,6 @@ function EditProfile() {
     };
 
     if (loadingProfile) return <p>Loading profile...</p>;
-    if (profileError) return <p style={{ color: 'red' }}>{profileError}</p>;
 
     return (
         <div className="flex flex-col bg-gray-100 p-8 w-full max-w-xl mx-auto">
@@ -44,7 +43,7 @@ function EditProfile() {
                     <textarea
                         name="bio"
                         className="bg-gray-300 border-none rounded-md h-16 p-2"
-                        value={profileData.bio}
+                        value={profileData.bio || ''}
                         onChange={handleChange}
                     />
                     <p className="mt-1">Talk about yourself, your interests, what you like in chess, your favorite openings, players, ...</p>
@@ -56,7 +55,7 @@ function EditProfile() {
                         name="username"
                         className="bg-gray-300 border-none rounded-md h-8 p-2"
                         onChange={handleChange}
-                        value={profileData.username || ''} // Assuming you have username in profileData
+                        value={profileData.username} // Assuming you have username in profileData
                     />
                 </div>
                 <div className="flex flex-col flex-basis-1/3">
@@ -76,7 +75,7 @@ function EditProfile() {
                         name="region"
                         className="bg-gray-300 border-none rounded-md h-8 p-2"
                         onChange={handleChange}
-                        value={profileData.region || ''}
+                        value={''}
                     />
                 </div>
                 <div className="flex flex-col flex-basis-1/3">
@@ -106,4 +105,3 @@ function EditProfile() {
     );
 }
 
-export default EditProfile;

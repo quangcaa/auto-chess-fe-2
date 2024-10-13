@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import warningImage from './../assets/images/warning.png';
 import useCloseAccount from '../hooks/useCloseAccount';
 
-function CloseAccount() {
+export const CloseAccount = () => {
   const navigate = useNavigate()
   const { closeAccount, loading, error, success } = useCloseAccount();
   const [password, setPassword] = useState('');
@@ -51,4 +51,3 @@ function CloseAccount() {
   );
 }
 
-export default CloseAccount;

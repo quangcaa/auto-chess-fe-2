@@ -15,7 +15,7 @@ const useGetMyProfile = () => {
             const response = await fetch('http://localhost:3333/account/my-profile', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `${token}`,
+                    'x_authorization': `${token}`,
                     'Content-Type': 'application/json',
                 },
             });

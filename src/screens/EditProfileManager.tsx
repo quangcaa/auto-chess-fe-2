@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import EditProfile from './../components/EditProfile';
-import ChangePassword from './../components/ChangePassword';
-import CloseAccount from './../components/CloseAccount';
+import React, { useState } from 'react'
+import { EditProfile } from '../components/EditProfile';
+import { ChangePassword } from '../components/ChangePassword';
+import { CloseAccount } from '../components/CloseAccount';
 
-function EditProfileManager() {
+export const EditProfileManager = () => {
   const [activePage, setActivePage] = useState('EditProfile');
   
   return (
@@ -16,7 +16,7 @@ function EditProfileManager() {
               onClick={() => setActivePage(page)}
               className={`cursor-pointer ${activePage === page ? 'text-red-500' : 'text-black'}`}
             >
-              {page.replace(/([A-Z])/g, ' $1').trim()} {/* Chuyển đổi tên thành dạng hiển thị */
+              {page.replace(/([A-Z])/g, ' $1').trim()} {
               }
             </p>
           ))}
@@ -30,5 +30,3 @@ function EditProfileManager() {
     </div>
   );
 }
-
-export default EditProfileManager;

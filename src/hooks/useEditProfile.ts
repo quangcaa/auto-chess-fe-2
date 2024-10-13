@@ -22,7 +22,7 @@ const useEditProfile = () => {
             const response = await fetch('http://localhost:3333/account/edit-profile', {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `${token}`,
+                    'x_authorization': `${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(profileData),

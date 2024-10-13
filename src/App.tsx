@@ -4,7 +4,7 @@ import { Landing } from './screens/Landing';
 import { Game } from './screens/Game';
 import { Login } from './components/Login';
 import Profile from './screens/Profile';
-import EditProfileManager from './screens/EditProfileManager';
+import { EditProfileManager } from './screens/EditProfileManager';
 
 function App() {
   return (
