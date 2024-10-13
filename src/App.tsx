@@ -8,7 +8,7 @@ function App() {
     <div className='h-screen bg-main-color'>
       <BrowserRouter>
         <Routes>
-          <Route path='/*' element={<Auth />}/>
+          <Route path='/*'  element={<Auth />}/>
           <Route path="/" element={<Landing />} />
           <Route path="/game" element={<Game />} />
         </Routes>
