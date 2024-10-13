@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 //   onRegister: (status: boolean) => void;
 // }
 
-export const Register = ({ }) => {
+export const Register = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [username, setUsername] = useState<string>("");
@@ -14,12 +14,14 @@ export const Register = ({ }) => {
   const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
+  //const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333'; // Giá trị mặc định
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("${process.env.REACT_APP_API_URL}/auth/signup", {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/signup`, {
         username,
         password,
         email
