@@ -33,8 +33,8 @@ export const ResetPassword = () => {
         <img src="autochess-logo.png" className="h-auto w-auto mix-blend-darken" />
       </div>
 
-      <div className="flex flex-col items-center justify-center min-h-screen p-8">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <div className="flex flex-col items-center justify-center min-h-screen p-8 -mt-20">
+        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full ">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Reset password</h2>
           <form onSubmit={handleSubmit} className="flex flex-col">
             <p className="mb-4 text-gray-600">
@@ -46,7 +46,7 @@ export const ResetPassword = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full p-3 mb-4 bg-green-100 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-3 mb-4 bg-[#F1F7EC] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <button
               type="submit"
