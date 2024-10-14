@@ -9,14 +9,15 @@ export const Login = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      const res = await axios.post("http://localhost:3333/auth/login", {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, {
         username,
         password,
       })
@@ -43,6 +44,7 @@ export const Login = () => {
   };
 
   return (
+    <div >
     <div className="flex flex-col items-center justify-center min-h-screen ">
       {/* header */}
       <div className="container mx-auto flex justify-center">
@@ -53,63 +55,51 @@ export const Login = () => {
       </div>
 
       {/* login form */}
-      <div className="flex-grow flex items-center mb-20">
-        <div className="w-full bg-white p-10 rounded-lg shadow-md">
-
-          <h2 className="mb-6 text-2xl text-black-700 font-semibold">Login</h2>
-
-          <form onSubmit={handleSubmit} className="w-full flex flex-col">
+      {/* <div className="flex items-center justify-center h-screen bg-[#EDEBE9] p-8"> */}
+      <div className="flex flex-col items-center justify-center bg-gray-100 p-8 rounded-lg shadow-md max-w-md mx-auto mt-20">
+        <h2 className="text-2xl font-bold mb-6 text-center text-[#333]">Login</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col w-full">
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            className="bg-[#F1F7EC] border border-[#ddd] rounded-lg w-full p-3 mb-3 transition duration-300 focus:border-[#007bff] focus:outline-none focus:ring focus:ring-[#007bff] focus:ring-opacity-30"
+          />
+          <div className="relative mb-3">
             <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
-              className="bg-green-100 w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
+              className="bg-[#F1F7EC] border border-[#ddd] rounded-lg w-full p-3 pr-12 transition duration-300 focus:border-[#007bff] focus:outline-none focus:ring focus:ring-[#007bff] focus:ring-opacity-30"
             />
-            <div className="relative flex items-center mb-4">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="bg-green-100 w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300 pr-10"
-              />
-              <span
-                className="absolute right-3 cursor-pointer text-gray-600 text-lg"
-                onClick={togglePasswordVisibility}
-              >
-                {showPassword ? "🙈" : "👁️"}
-              </span>
-            </div>
-
-            {error && (
-              <div className="mb-4 text-red-500">
-                {error}
-              </div>
-            )}
-            <button
-              type="submit"
-              className="w-full p-3 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300"
-              disabled={loading}
+            <span
+              className="absolute right-3 top-3 cursor-pointer text-lg text-[#555]"
+              onClick={togglePasswordVisibility}
             >
-              {loading ? "Logging in..." : "Login"}
-            </button>
-          </form>
-
-          <div className="flex justify-between mt-6">
-            <Link to="/register" className="mr-10 text-blue-500 hover:underline">
-              Register
-            </Link>
-            <Link to="/reset-password" className="text-blue-500 hover:underline">
-              Reset password
-            </Link>
+              {showPassword ? "🙈" : "👁️"}
+            </span>
           </div>
+          <button
+            type="submit"
+            className="bg-[#007bff] text-white font-bold py-3 rounded-lg w-full transition duration-300 hover:bg-[#0056b3]"
+          >
+            Login
+          </button>
+        </form>
+        <div className="mt-5 flex justify-between">
+          <Link to="/register" className="text-[#007bff] hover:underline mr-10">
+            Register
+          </Link>
+          <Link to="/reset-password" className="text-[#007bff] hover:underline">
+            Reset password
+          </Link>
         </div>
       </div>
+    {/* </div> */}
     </div>
   );
 };
-
-
