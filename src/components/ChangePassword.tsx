@@ -13,35 +13,35 @@ export const ChangePassword = () => {
   };
 
   return (
-    <div className="flex flex-col bg-gray-100 p-8 w-full max-w-xl mx-auto">
+    <div className="flex flex-col bg-white p-8 w-full mx-auto rounded shadow-lg">
       <p className="text-3xl text-red-500">Change Password</p>
       <form onSubmit={handleSubmit} className="mt-5 space-y-4">
         <ul>
           <li>
-            <p className="font-bold">Current Password</p>
+            <p className="font-bold text-sm">Current Password</p>
             <input
               type="password"
-              className="bg-gray-300 border-none rounded-md h-8 p-2 w-full"
+              className="bg-gray-200 border-none rounded-md h-8 p-2 w-full"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               required
             />
           </li>
           <li>
-            <p className="font-bold">New Password</p>
+            <p className="font-bold mt-2 text-sm">New Password</p>
             <input
               type="password"
-              className="bg-gray-300 border-none rounded-md h-8 p-2 w-full"
+              className="bg-gray-200 border-none rounded-md h-8 p-2 w-full"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
             />
           </li>
           <li>
-            <p className="font-bold">New Password (again)</p>
+            <p className="font-bold mt-2 text-sm">New Password (again)</p>
             <input
               type="password"
-              className="bg-gray-300 border-none rounded-md h-8 p-2 w-full"
+              className="bg-gray-200 border-none rounded-md h-8 p-2 w-full"
               value={retypeNewPassword}
               onChange={(e) => setRetypeNewPassword(e.target.value)}
               required
@@ -52,7 +52,7 @@ export const ChangePassword = () => {
           <hr className="my-2" />
           <button
             type="submit"
-            className="bg-blue-500 text-white rounded-md py-2 px-4 self-end"
+            className="bg-blue-500 text-white text-sm font-bold rounded-md py-2 px-4 self-end"
             disabled={loading} // Disable button while loading
           >
             {loading ? 'Changing...' : 'Submit'}

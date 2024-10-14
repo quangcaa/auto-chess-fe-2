@@ -1,4 +1,3 @@
-import React from "react";
 import bulletImage from "./../assets/images/bullet.png";
 import blitzImage from "./../assets/images/blitz.png";
 import rapidImage from "./../assets/images/rapid.png";

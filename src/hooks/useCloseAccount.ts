@@ -23,7 +23,7 @@ const useCloseAccount = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to close account');
+        throw new Error('Incorrect password');
       }
 
       const data = await response.json();
@@ -40,5 +40,5 @@ const useCloseAccount = () => {
 
   return { closeAccount, loading, error, success };
 };
-
+//  
 export default useCloseAccount;
