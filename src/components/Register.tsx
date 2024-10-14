@@ -35,7 +35,7 @@ export const Register = () => {
       if (response.data.success) {
         // onRegister(true);
         alert("Registered successfully!");
-        navigate('/login');
+        navigate('/verify-email');
       }
     } catch (error) {
       setError("Registration failed. Please try again.");
@@ -62,7 +62,7 @@ export const Register = () => {
       </div>
 
       <div className="flex flex-col items-center justify-center bg-gray-100 p-8 rounded-lg shadow-md max-w-md mx-auto mt-20">
-      <h2 className="mb-6 text-2xl text-gray-800">Register</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Register</h2>
       <form onSubmit={handleSubmit} className="w-full flex flex-col">
         <input
           type="text"

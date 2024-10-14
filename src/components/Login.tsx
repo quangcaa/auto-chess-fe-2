@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link,  useNavigate } from "react-router-dom";
 
 
 export const Login = () => {
@@ -18,9 +18,9 @@ export const Login = () => {
     setError(null);
 
     try {
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, {
+      const res = await axios.post(`http://localhost:3333/auth/login`, {
         username,
-        password,
+        password
       })
 
       if (res.data.success) {
@@ -46,7 +46,7 @@ export const Login = () => {
 
   return (
     <div >
-      {/* header */}
+ 
       <div className="container mx-auto flex justify-center">
         <img
           src="autochess-logo.png"
@@ -54,8 +54,7 @@ export const Login = () => {
         />
       </div>
 
-      {/* login form */}
-      {/* <div className="flex items-center justify-center h-screen bg-[#EDEBE9] p-8"> */}
+     
       <div className="flex flex-col items-center justify-center bg-gray-100 p-8 rounded-lg shadow-md max-w-md mx-auto mt-20">
         <h2 className="text-2xl font-bold mb-6 text-center text-[#333]">Login</h2>
         <form onSubmit={handleSubmit} className="flex flex-col w-full">
@@ -99,7 +98,7 @@ export const Login = () => {
           </Link>
         </div>
       </div>
-    {/* </div> */}
+    
     </div>
   );
 };
