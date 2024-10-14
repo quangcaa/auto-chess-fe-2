@@ -9,7 +9,7 @@ import profile_navImage from "./../assets/images/profile_nav.png";
 import barlineImage from "./../assets/images/barline.png";
 import battle_exampleImage from "./../assets/images/battle_example.png";
 
-function Profile() {
+export const Profile = () => {
     return (
         <div className="flex flex-row justify-center bg-gray-200 gap-2 h-screen">
             <div className="bg-white p-4 w-1/4">
@@ -133,5 +133,3 @@ function Profile() {
         </div>
     );
 }
-
-export default Profile;

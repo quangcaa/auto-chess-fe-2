@@ -22,7 +22,7 @@ export const ResetPassword = () => {
         navigate('/login');
       }
     } catch (error) {
-      setError("Failed to send email. Please check your network connection.");
+      setError("Failed to send email. Please check your email or connection.");
       console.error(error);
     }
   };
@@ -35,7 +35,7 @@ export const ResetPassword = () => {
 
       <div className="flex flex-col items-center justify-center min-h-screen p-8 -mt-20">
         <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full ">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Reset password</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Reset password</h2>
           <form onSubmit={handleSubmit} className="flex flex-col">
             <p className="mb-4 text-gray-600">
               Please enter your email to authenticate your account
@@ -56,7 +56,7 @@ export const ResetPassword = () => {
             </button>
           </form>
           {error && <p className="text-red-500 mt-4">{error}</p>}
-          <div className="mt-4">
+          <div className="mt-4 text-center">
             <Link to="/login" className="text-blue-500 hover:underline">
               Back to login
             </Link>
