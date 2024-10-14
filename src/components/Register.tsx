@@ -12,21 +12,27 @@ export const Register = () => {
   const [username, setUsername] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   //const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333'; // Giá trị mặc định
 
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    //console.log({ username, password, email }); 
 
     try {
       const response = await axios.post(`http://localhost:3333/auth/signup`, {
         username,
-        password,
-        email
+        email,
+        password
       });
-      if (response.status === 201) {
+      
+      if (response.data.success) {
         // onRegister(true);
         alert("Registered successfully!");
         navigate('/login');
@@ -34,6 +40,7 @@ export const Register = () => {
     } catch (error) {
       setError("Registration failed. Please try again.");
       console.error(error);
+      // console.error('Error details:', error.response?.data || error.message);
     }
   };
 
