@@ -2,7 +2,6 @@ import axios from "axios";
 import React, { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
-
 export const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -46,6 +45,7 @@ export const Login = () => {
 
   return (
     <div >
+    <div className="flex flex-col items-center justify-center min-h-screen ">
       {/* header */}
       <div className="container mx-auto flex justify-center">
         <img
