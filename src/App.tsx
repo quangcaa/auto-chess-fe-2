@@ -5,6 +5,7 @@ import { Game } from './screens/Game';
 import { Login } from './components/Login';
 import Profile from './screens/Profile';
 import { Setting } from './screens/Setting';
+import { Follow } from './screens/Follow';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path='/game' element={<Game />} />
           <Route path='/my-profile' element={<Profile />} />
           <Route path='/setting' element={<Setting />} />
+          <Route path='/follow' element={<Follow />} />
         </Routes>
       </BrowserRouter>
     </ div>

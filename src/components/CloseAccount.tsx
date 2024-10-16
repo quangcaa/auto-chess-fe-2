@@ -7,6 +7,7 @@ export const CloseAccount = () => {
   const navigate = useNavigate()
   const { closeAccount, loading, error, success } = useCloseAccount();
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,13 +30,21 @@ export const CloseAccount = () => {
       <p className='text-sm'>Are you sure you want to close your account?</p>
       <p className='text-sm'>Closing your account is a permanent decision. You will NEVER be able to log in EVER AGAIN.</p>
       <p className="font-bold mt-5 text-sm">Password</p>
-      <input
-        type="password"
-        className="bg-gray-200 border-none rounded-md h-8 w-full p-2"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
+      <div className="relative flex items-center mb-4">
+        <input
+          type={showPassword ? "text" : "password"}
+          className="bg-gray-300 border-none rounded-md h-8 w-full p-2"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <span
+          className="absolute right-3 cursor-pointer text-gray-600 text-lg"
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? "🙈" : "👁️"}
+        </span>
+      </div>
       {error && <p className="text-red-500 mt-2 text-xs">{error}</p>}
       <div className="flex flex-col mt-6">
         <hr className="my-2" />

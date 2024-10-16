@@ -8,8 +8,16 @@ import stateImage from "./../assets/images/state.png";
 import profile_navImage from "./../assets/images/profile_nav.png";
 import barlineImage from "./../assets/images/barline.png";
 import battle_exampleImage from "./../assets/images/battle_example.png";
+import challengeImage from "./../assets/images/challenge.png";
+import chatImage from "./../assets/images/chat.png"
+import followImage from "./../assets/images/follow.png"
+import reportImage from "./../assets/images/report.png"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Profile() {
+    const navigate = useNavigate()
+    const [showOptions, setShowOptions] = useState(false)
     return (
         <div className="flex flex-row justify-center bg-gray-200 gap-2 h-screen">
             <div className="bg-white p-4 w-1/4">
@@ -60,12 +68,40 @@ function Profile() {
                 </ul>
             </div>
             <div className="flex flex-col w-3/4 bg-white p-4">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-center mb-4 relative">
                     <div className="flex items-center">
                         <img src={stateImage} alt="state" className="w-5 h-4" />
                         <p className="pl-2">penguingim1</p>
                     </div>
-                    <img src={profile_navImage} alt="profile-nav" className="w-5 h-4" />
+                    <div>
+                        <button 
+                            className={showOptions ? "p-3 bg-custom" : "p-3" }
+                            onClick={() => setShowOptions(!showOptions)}>
+                        <img 
+                            src={profile_navImage} 
+                            alt="profile-nav"
+                            className="w-5 h-4" 
+                        />
+                        </button>
+                        {showOptions && <div className="bg-custom absolute right-0 top-8 flex flex-col justify-center px-3">
+                            <div className="flex items-center mb-2">
+                                <img src={challengeImage} alt="challenge" className="w-5 h-4" />
+                                <p className="mx-2">Challenge</p>
+                            </div>
+                            <div className="flex items-center mb-2">
+                                <img src={chatImage} alt="chat" className="w-5 h-4" />
+                                <p className="mx-2">Chat</p>
+                            </div>
+                            <div className="flex items-center mb-2" onClick={() => navigate("/follow")}>
+                                <img src={followImage} alt="follow" className="w-5 h-4" />
+                                <p className="mx-2">Follow</p>
+                            </div>
+                            <div className="flex items-center mb-2">
+                                <img src={reportImage} alt="report" className="w-5 h-4" />
+                                <p className="mx-2">Report</p>
+                            </div>
+                        </div>}
+                    </div>
                 </div>
                 <div className="flex flex-col">
                     <div className="flex justify-between items-center mb-4">

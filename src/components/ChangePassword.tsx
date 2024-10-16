@@ -6,6 +6,9 @@ export const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [retypeNewPassword, setRetypeNewPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showRetypeNewPassword, setShowRetypeNewPassword] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -19,33 +22,57 @@ export const ChangePassword = () => {
         <ul>
           <li>
             <p className="font-bold text-sm">Current Password</p>
-            <input
-              type="password"
-              className="bg-gray-200 border-none rounded-md h-8 p-2 w-full"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              required
-            />
+            <div className="relative flex items-center mb-4">
+              <input
+                type={showCurrentPassword ? "text" : "password"}
+                className="bg-gray-300 border-none rounded-md h-8 w-full p-2"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                required
+              />
+              <span
+                className="absolute right-3 cursor-pointer text-gray-600 text-lg"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                >
+                {showCurrentPassword ? "🙈" : "👁️"}
+              </span>
+            </div>
           </li>
           <li>
             <p className="font-bold mt-2 text-sm">New Password</p>
-            <input
-              type="password"
-              className="bg-gray-200 border-none rounded-md h-8 p-2 w-full"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-            />
+            <div className="relative flex items-center mb-4">
+              <input
+                type={showNewPassword ? "text" : "password"}
+                className="bg-gray-300 border-none rounded-md h-8 w-full p-2"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+              <span
+                className="absolute right-3 cursor-pointer text-gray-600 text-lg"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                >
+                {showNewPassword ? "🙈" : "👁️"}
+              </span>
+            </div>
           </li>
           <li>
             <p className="font-bold mt-2 text-sm">New Password (again)</p>
-            <input
-              type="password"
-              className="bg-gray-200 border-none rounded-md h-8 p-2 w-full"
-              value={retypeNewPassword}
-              onChange={(e) => setRetypeNewPassword(e.target.value)}
-              required
-            />
+            <div className="relative flex items-center mb-4">
+              <input
+                type={showRetypeNewPassword ? "text" : "password"}
+                className="bg-gray-300 border-none rounded-md h-8 w-full p-2"
+                value={retypeNewPassword}
+                onChange={(e) => setRetypeNewPassword(e.target.value)}
+                required
+              />
+              <span
+                className="absolute right-3 cursor-pointer text-gray-600 text-lg"
+                onClick={() => setShowRetypeNewPassword(!showRetypeNewPassword)}
+                >
+                {showRetypeNewPassword ? "🙈" : "👁️"}
+              </span>
+            </div>
           </li>
         </ul>
         <div className="flex flex-col mt-6">
