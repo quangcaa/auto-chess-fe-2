@@ -10,7 +10,7 @@ export const LogoutButton: React.FC = () => {
   const handleLogout = async () => {
     try {
       // Gửi yêu cầu đăng xuất đến server
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/logout`, {}, {
+      const res = await axios.post(`http://localhost:3333/auth/logout`, {}, {
         headers: {
           'x_authorization': localStorage.getItem('accessToken') || '' 
         }
@@ -29,7 +29,7 @@ export const LogoutButton: React.FC = () => {
   return (
     <button
       onClick={handleLogout}
-      className="bg-white text-black font-bold py-2 px-4 rounded border border-gray-300 hover:bg-gray-200 transition duration-200"
+     
     >
       Logout
     </button>
