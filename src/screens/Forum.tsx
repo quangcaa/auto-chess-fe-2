@@ -1,8 +1,11 @@
 import React from "react";
 
 import forumImage from "./../assets/images/forum.svg";
+import useGetAllCategory from "../hooks/useGetAllCategory";
+import { Link } from "react-router-dom";
 
 export const Forum = () => {
+  const { categories, loading, err } = useGetAllCategory();
   return (
     <div className="flex flex-col items-center">
       <div className="bg-white p-4 w-3/4">
@@ -24,76 +27,34 @@ export const Forum = () => {
             </td>
           </tr>
           <tbody>
-            <tr style={{ margin: "10px" }}>
-              <td className="flex flex-col items-start gap-1 justify-center mx-3 my-5">
-                <p className="text-3xl text-blue-500">
-                  General Chess Discussion
-                </p>
-                <p>The place to discuss general chess topics</p>
-              </td>
-              <td>
-                <p>69,191</p>
-              </td>
-              <td>
-                <p>620,334</p>
-              </td>
-              <td className="flex flex-col items-start gap-1 justify-center my-5">
-                <p className="text-blue-500">1 hour ago</p>
-                <p>by FunnyAnimatorJimTV</p>
-              </td>
-            </tr>
-            <tr className="bg-gray-300">
-              <td className="flex flex-col items-start gap-1 justify-center mx-3 my-5">
-                <p className="text-3xl text-blue-500">Lichess Feedback</p>
-                <p>Bug reports, feature requests, suggestions</p>
-              </td>
-              <td>
-                <p>69,191</p>
-              </td>
-              <td>
-                <p>620,334</p>
-              </td>
-              <td className="flex flex-col items-start gap-1 justify-center my-5">
-                <p className="text-blue-500">1 hour ago</p>
-                <p>by FunnyAnimatorJimTV</p>
-              </td>
-            </tr>
-            <tr>
-              <td className="flex flex-col items-start gap-1 justify-center mx-3 my-5">
-                <p className="text-3xl text-blue-500">Game analysis</p>
-                <p>Show your game and analyse it with the community</p>
-              </td>
-              <td>
-                <p>69,191</p>
-              </td>
-              <td>
-                <p>620,334</p>
-              </td>
-              <td className="flex flex-col items-start gap-1 justify-center my-5">
-                <p className="text-blue-500">1 hour ago</p>
-                <p>by FunnyAnimatorJimTV</p>
-              </td>
-            </tr>
-            <tr className="bg-gray-300">
-              <td className="flex flex-col items-start gap-1 justify-center mx-3 my-5">
-                <p className="text-3xl text-blue-500">Off-Topic Discussion</p>
-                <p>Everything that isn't related to chess</p>
-              </td>
-              <td>
-                <p>69,191</p>
-              </td>
-              <td>
-                <p>620,334</p>
-              </td>
-              <td className="flex flex-col items-start gap-1 justify-center my-5">
-                <p className="text-blue-500">1 hour ago</p>
-                <p>by FunnyAnimatorJimTV</p>
-              </td>
-            </tr>
+            {categories.map((category, index) => (
+              <tr
+                key={category.category_id}
+                className={index % 2 !== 0 ? "bg-gray-300" : "bg-white"}
+              >
+                <Link to={`/forum/category?id=${category.category_id}`}>
+                <td className="flex flex-col items-start gap-1 justify-center mx-3 my-5 cursor-pointer">
+                  <p className="text-3xl text-blue-500">
+                    {category.category_name}
+                  </p>
+                  <p>{category.category_description}</p>
+                </td>
+                </Link>
+                <td>
+                  <p>{category.topic_count}</p>
+                </td>
+                <td>
+                  <p>{category.post_count}</p>
+                </td>
+                <td className="flex flex-col items-start gap-1 justify-center my-5">
+                  <p className="text-blue-500">1 hour ago</p>
+                  <p>by FunnyAnimatorJimTV</p>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
     </div>
   );
 };
-

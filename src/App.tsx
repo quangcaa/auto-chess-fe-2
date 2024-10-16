@@ -8,6 +8,8 @@ import { Setting } from './screens/Setting';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/AuthContext';
 import { CreateTopic } from './components/CreateTopic';
+import { Forum } from './screens/Forum';
+import { TopicList } from './components/TopicList';
 
 function App() {
   return (
@@ -17,10 +19,13 @@ function App() {
           <Routes>
             <Route path='/*' element={<Auth />} />
             <Route element={<PrivateRoute />}>
-              <Route path='/' element={<CreateTopic />} />
+              <Route path='/' element={<Landing />} />
               <Route path='/game' element={<Game />} />
               <Route path='/my-profile' element={<Profile />} />
               <Route path='/setting' element={<Setting />} />
+              <Route path='/forum' element={<Forum />} />
+              <Route path='/forum/category' element={<TopicList />} />
+              <Route path='/forum/category/create-topic' element={<CreateTopic />} />
             </Route>
           </Routes>
         </BrowserRouter>
