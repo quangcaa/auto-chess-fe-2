@@ -1,7 +1,7 @@
 import React from "react";
 import backImage from "./../assets/images/back.png";
 
-export const Topic = () => {
+export const TopicList = () => {
   return (
     <div className="flex flex-col items-center">
       <div className="bg-white p-4 w-3/4 ">
