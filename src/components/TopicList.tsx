@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import backImage from "./../assets/images/back.png";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import useGetTopics from "../hooks/useGetTopics";
 
 export const TopicList = () => {
-  const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
-  const topicId = searchParams.get("id");
+  const topicId = searchParams.get("id")
+  const category_name = location.state
+  const navigate = useNavigate();
   const { topics, loading, err } = useGetTopics(topicId);
   const [timeStrings, setTimeStrings] = useState<string[]>([]);
 
@@ -60,9 +62,13 @@ export const TopicList = () => {
               className="h-8"
               onClick={() => navigate(-1)}
             />
-            <p className="text-3xl">General Chess Discussion</p>
+            <p className="text-3xl">{category_name}</p>
           </div>
-          <p className="text-green-500 font-bold">CREATE A NEW TOPIC</p>
+          <button>
+            <Link to={"/forum/category/create-topic"} state={{ category_name, topicId }}>
+            <p className="text-green-500 font-bold">CREATE A NEW TOPIC</p>
+            </Link>
+          </button>
         </div>
         <table className="w-full">
           <tr className="bg-gray-300">

@@ -29,7 +29,7 @@ export const Forum = () => {
                 key={category.category_id}
                 className={index % 2 !== 0 ? "bg-gray-300" : "bg-white"}
               >
-                <Link to={`/forum/category?id=${category.category_id}`}>
+                <Link to={`/forum/category?id=${category.category_id}`} state={category.category_name}>
                 <td className="flex flex-col items-start gap-1 justify-center mx-3 my-5 cursor-pointer">
                   <p className="text-3xl text-blue-500">
                     {category.category_name}
