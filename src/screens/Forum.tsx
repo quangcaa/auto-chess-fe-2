@@ -22,9 +22,6 @@ export const Forum = () => {
             <td>
               <p>Posts</p>
             </td>
-            <td>
-              <p>Last Post</p>
-            </td>
           </tr>
           <tbody>
             {categories.map((category, index) => (
@@ -45,10 +42,6 @@ export const Forum = () => {
                 </td>
                 <td>
                   <p>{category.post_count}</p>
-                </td>
-                <td className="flex flex-col items-start gap-1 justify-center my-5">
-                  <p className="text-blue-500">1 hour ago</p>
-                  <p>by FunnyAnimatorJimTV</p>
                 </td>
               </tr>
             ))}
