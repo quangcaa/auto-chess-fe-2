@@ -24,6 +24,7 @@ export const Login = () => {
 
       if (res.data.success) {
         // save access token in local storage 
+        console.log(res.data)
         localStorage.setItem("accessToken", res.data.accessToken)
 
         navigate("/")

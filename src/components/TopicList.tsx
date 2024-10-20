@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
 import backImage from "./../assets/images/back.png";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import useGetTopics from "../hooks/useGetTopics";
 
 export const TopicList = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const topicId = searchParams.get("id")
-  const category_name = location.state
+  const categoryId = searchParams.get("categoryId");
+  const category_name = location.state;
   const navigate = useNavigate();
-  const { topics, loading, err } = useGetTopics(topicId);
+  const { topics, loading, err } = useGetTopics(categoryId);
   const [timeStrings, setTimeStrings] = useState<string[]>([]);
 
   useEffect(() => {
@@ -65,8 +70,11 @@ export const TopicList = () => {
             <p className="text-3xl">{category_name}</p>
           </div>
           <button>
-            <Link to={"/forum/category/create-topic"} state={{ category_name, topicId }}>
-            <p className="text-green-500 font-bold">CREATE A NEW TOPIC</p>
+            <Link
+              to={`/forum/category/create-topic?categoryId=${categoryId}`}
+              state={{ category_name }}
+            >
+              <p className="text-green-500 font-bold">CREATE A NEW TOPIC</p>
             </Link>
           </button>
         </div>
@@ -94,9 +102,14 @@ export const TopicList = () => {
                 <td>
                   <p className="mr-5">{topic.replies}</p>
                 </td>
-                <td className="flex flex-col items-start gap-1 justify-center my-5">
-                  <p className="text-blue-500">{timeStrings[index]}</p>
-                  <p>by {topic.last_post_user}</p>
+                <td>
+                  <div className="flex flex-row justify-between items-center mr-4">
+                    <div className="flex flex-col items-start gap-1 justify-center my-5">
+                      <p className="text-blue-500">{timeStrings[index]}</p>
+                      <p>by {topic.last_post_user}</p>
+                    </div>
+                    {/* <button className="bg-red-500 p-2 rounded-lg text-white">Delete</button> */}
+                  </div>
                 </td>
               </tr>
             ))}

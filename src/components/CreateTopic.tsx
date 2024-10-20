@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import backImage from "./../assets/images/back.png";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import useCreateTopic from "../hooks/useCreateTopic";
 
 export const CreateTopic = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const category_name = location.state.category_name
-  const topicId = location.state.topicId
+  const [searchParams] = useSearchParams();
+  const categoryId = searchParams.get("categoryId")
 
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
@@ -17,20 +18,25 @@ export const CreateTopic = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await createTopic(topicId, subject, message);
+    await createTopic(categoryId, subject, message);
   };
   useEffect(() => {
     if (success) {
       const randomQuery = new Date().getTime();
-      navigate(`/forum/category?id=${topicId}&refresh=${randomQuery}`, { state: category_name });
+      navigate(`/forum/category?categoryId=${categoryId}&refresh=${randomQuery}`, { state: category_name });
     }
-  }, [success, navigate, topicId, category_name]);
+  }, [success, navigate, categoryId, category_name]);
 
   return (
     <div className="flex flex-col items-center h-screen">
       <div className="bg-white p-4 w-1/2 ">
         <div className="flex flex-row items-center gap-4 m-5">
-          <img src={backImage} alt="forum" className="h-8" />
+        <img
+              src={backImage}
+              alt="forum"
+              className="h-8"
+              onClick={() => navigate(-1)}
+            />
           <p className="text-3xl">{category_name}</p>
         </div>
         <form className="m-5 space-y-4" onSubmit={handleSubmit}>
