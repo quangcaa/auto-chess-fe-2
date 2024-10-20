@@ -26,6 +26,8 @@ export const Login = () => {
         // save access token in local storage 
         console.log(res.data)
         localStorage.setItem("accessToken", res.data.accessToken)
+        console.log("Username from response:", res.data.username);
+        localStorage.setItem("username", res.data.username);
 
         navigate("/")
       } else {
