@@ -20,17 +20,17 @@ function App() {
           <Routes>
           <Route path="/" element={<NavBar />}>
             <Route path='/*' element={<Auth />} />
-            <Route element={<PrivateRoute />}>
+           
               <Route path="/" element={<Landing />} />
               <Route path='/game' element={<Game />} />
               <Route path='/my-profile' element={<Profile />} />
               <Route path='/setting' element={<Setting />} />
               </Route>  
-          </Route>
+          
               <Route path='/forum' element={<Forum />} />
               <Route path='/forum/category' element={<TopicList />} />
               <Route path='/forum/category/create-topic' element={<CreateTopic />} />
-            </Route>
+            
           </Routes>
         </BrowserRouter>
       </AuthProvider>

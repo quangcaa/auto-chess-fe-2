@@ -18,6 +18,7 @@ export const LogoutButton: React.FC = () => {
 
       if (res.data.success) {
         localStorage.removeItem('accessToken');
+        localStorage.removeItem('username');
         navigate('/login');
       }
     } catch (error) {
