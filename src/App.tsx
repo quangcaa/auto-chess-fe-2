@@ -14,35 +14,45 @@ import { TopicList } from "./components/TopicList";
 import React from "react";
 
 function App() {
-  // const { isAuthenticated } = useAuth();
-
   return (
     <div className="h-screen bg-main-color">
       <AuthProvider>
         <BrowserRouter>
-          {/* {isAuthenticated && <NavBar />} */}
-          <NavBar />
-
-          <Routes>
-            <Route path="/*" element={<Auth />} />
-
-            <Route element={<PrivateRoute />}>
-              <Route path="/" element={<Landing />} />
-              <Route path="/game" element={<Game />} />
-              <Route path="/my-profile" element={<Profile />} />
-              <Route path="/setting" element={<Setting />} />
-              <Route path="/forum" element={<Forum />} />
-              <Route path="/forum/category" element={<TopicList />} />
-              <Route
-                path="/forum/category/create-topic"
-                element={<CreateTopic />}
-              />
-            </Route>
-          </Routes>
+          <AppContent />
         </BrowserRouter>
       </AuthProvider>
     </div>
   );
 }
+
+const AppContent = () => {
+  // Sử dụng hook useAuth để lấy trạng thái xác thực
+  const { isAuthenticated } = useAuth();
+
+  return (
+    <>
+      {/* Chỉ render NavBar khi đã đăng nhập */}
+      {isAuthenticated && <NavBar />}
+      <Routes>
+        {/* Các route không yêu cầu xác thực */}
+        <Route path="/*" element={<Auth />} />
+
+        {/* Các route yêu cầu xác thực được bọc trong `PrivateRoute` */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/" element={<Landing />} />
+          <Route path="/game" element={<Game />} />
+          <Route path="/my-profile" element={<Profile />} />
+          <Route path="/setting" element={<Setting />} />
+          <Route path="/forum" element={<Forum />} />
+          <Route path="/forum/category" element={<TopicList />} />
+          <Route
+            path="/forum/category/create-topic"
+            element={<CreateTopic />}
+          />
+        </Route>
+      </Routes>
+    </>
+  );
+};
 
 export default App;
