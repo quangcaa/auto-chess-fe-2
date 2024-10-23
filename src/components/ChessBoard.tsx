@@ -28,11 +28,11 @@ export const ChessBoard = ({ socket }: { socket: WebSocket }) => {
         };
     }, [socket, game]);
 
-    const onDrop = (sourceSquare: string, targetSquare: string) => {
+    const onDrop = (sourceSquare: string, targetSquare: string,piece: string) => {
         const move = game.move({
             from: sourceSquare,
             to: targetSquare,
-            promotion: "q", // always promote to a queen for simplicity
+            promotion: piece[1]?.toLowerCase() ?? "q", // promote to all pieces
         });
 
         if (move === null) return false;
