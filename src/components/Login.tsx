@@ -85,6 +85,11 @@ export const Login = () => {
               {showPassword ? "🙈" : "👁️"}
             </span>
           </div>
+          {error && (
+              <div className="mb-4 text-red-500">
+                {error}
+              </div>
+            )}
           <button
             type="submit"
             className="bg-[#007bff] text-white font-bold py-3 rounded-lg w-full transition duration-300 hover:bg-[#0056b3]"
