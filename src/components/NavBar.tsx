@@ -1,86 +1,92 @@
-import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
-import ProfileDropdown from "./ProfileDropdown";
-import { useState, useEffect } from "react";
-import UserSearch from "./UserSearch";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom"
+import { useState, useEffect } from "react"
+
+import ProfileDropdown from "./ProfileDropdown"
+import UserSearch from "./UserSearch"
+
+import { RiSwordFill } from "react-icons/ri"
+import { GoBellFill } from "react-icons/go"
 
 const NavBar = () => {
-  const location = useLocation();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const navigate = useNavigate();
+  const location = useLocation()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
-    
-    const accessToken = localStorage.getItem("accessToken");
-    const username = localStorage.getItem("username");
+    const accessToken = localStorage.getItem("accessToken")
+    const username = localStorage.getItem("username")
 
     // If both exist, the user is considered logged in
     if (accessToken && username) {
-      setIsLoggedIn(true);
+      setIsLoggedIn(true)
     } else {
-      setIsLoggedIn(false);
+      setIsLoggedIn(false)
     }
-  }, [location]);
+  }, [location])
 
   const handleLogin = () => {
-    navigate("/login"); 
-  };
+    navigate("/login")
+  }
 
   return (
     <>
-      <nav className="bg-gray-100 text-gray-600 font-sans text-lg flex justify-between items-center w-full h-16">
+      <nav className="bg-main-color text-gray-700 font-sans font-semibold text-sm text-lg flex justify-between items-center w-full h-14 user-select-none">
         <ul className="flex items-center h-full ">
-          <li className="flex items-center px-5 py-4 hover:bg-gray-300 h-full ">
+          <li className="flex items-center px-5 py-5 hover:bg-gray-300 h-full ">
             <Link to="/">
               <img
-                src={"/favicon.png"}
+                src={"/autochess-logo.png"}
                 alt="AutoChess"
-                className="h-10 w-auto "
+                className="h-12 w-auto mix-blend-darken hover:filter opacity-85"
               />
             </Link>
           </li>
+
           <li>
             <Link
               to="/"
-              className="hover:bg-gray-300 transition duration-300 px-5 py-5 rounded-md h-full"
+              className="hover:bg-gray-300 font-bold transition duration-300 px-5 py-5"
             >
-              Play
+              PLAY
             </Link>
           </li>
+
           <li>
             <Link
               to="/puzzles"
-              className="hover:bg-gray-300 transition duration-300 px-5 py-5 rounded-md"
+              className="hover:bg-gray-300 font-bold transition duration-300 px-5 py-5"
             >
-              Puzzles
+              PUZZLE
             </Link>
           </li>
+
           <li>
             <Link
-              to="/Inbox"
-              className="hover:bg-gray-300 transition duration-300 px-5 py-5 rounded-md"
+              to="/inbox"
+              className="hover:bg-gray-300 font-bold transition duration-300 px-5 py-5"
             >
-              Inbox
+              INBOX
             </Link>
           </li>
+
           <li>
             <Link
               to="/forum"
-              className="hover:bg-gray-300 transition duration-300 px-5 py-5 rounded-md"
+              className="hover:bg-gray-300 font-bold transition duration-300 px-5 py-5"
             >
-              Forum
+              FORUM
             </Link>
           </li>
         </ul>
 
         <div className="flex flex-row items-center">
           {isLoggedIn ? (
-            <div className="flex flex-row items-center space-x-4"> 
-            <UserSearch />
-            <img src="image 31.png" alt="Image 31" className="w-8 h-8" /> 
-            <img src="image 32.png" alt="Image 32" className="w-8 h-8" /> 
-            <ProfileDropdown />
-            
-          </div>
+            <div className="flex flex-row items-center space-x-4">
+              <UserSearch />
+              <RiSwordFill className="size-6"/>
+              <GoBellFill className="size-6"/>
+              <ProfileDropdown />
+            </div>
           ) : (
             <button
               onClick={handleLogin}
@@ -89,14 +95,11 @@ const NavBar = () => {
               Login
             </button>
           )}
-
-          
-          
         </div>
       </nav>
       <Outlet />
     </>
-  );
-};
+  )
+}
 
-export default NavBar;
+export default NavBar

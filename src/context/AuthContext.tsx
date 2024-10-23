@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 
 interface AuthContextType {
     isAuthenticated: boolean
-    login: (token: string) => void
+    login: (token: string, username: string) => void
     logout: () => void
 }
 
@@ -22,13 +22,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, [])
 
-    const login = (token: string) => {
+    const login = (token: string, username: string) => {
         localStorage.setItem('accessToken', token)
+        localStorage.setItem('username', username)
         setIsAuthenticated(true)
     }
 
     const logout = () => {
         localStorage.removeItem('accessToken')
+        localStorage.removeItem('username')
         setIsAuthenticated(false)
     }
 

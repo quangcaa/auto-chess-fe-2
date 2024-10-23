@@ -1,20 +1,21 @@
-import axios from "axios";
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import axios from "axios"
+import React, { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
 
 export const Login = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
+  const { login } = useAuth()
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+    e.preventDefault()
+    setLoading(true)
 
     try {
       const res = await axios.post(`http://localhost:3333/auth/login`, {
@@ -23,28 +24,25 @@ export const Login = () => {
       })
 
       if (res.data.success) {
-        // save access token in local storage 
-        console.log(res.data)
-        localStorage.setItem("accessToken", res.data.accessToken)
-        console.log("Username from response:", res.data.username);
-        localStorage.setItem("username", res.data.username);
-
+        login(res.data.accessToken, username)
         navigate("/")
-      } else {
-        setError("Login information is incorrect");
       }
 
     } catch (error) {
-      setError("Log in failed. Please check your credentials.");
-      console.error(error);
+      if (axios.isAxiosError(error) && error.response) {
+        setError(error.response.data.message || "An error occurred during login")
+      } else {
+        setError("An error occurred during login")
+      }
+
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+    setShowPassword(!showPassword)
+  }
 
   return (
     <div >
@@ -57,9 +55,16 @@ export const Login = () => {
       </div>
 
       {/* login form */}
-      {/* <div className="flex items-center justify-center h-screen bg-[#EDEBE9] p-8"> */}
-      <div className=" bg-white flex flex-col items-center justify-center bg-gray-100 p-8 rounded-lg shadow-md max-w-md mx-auto mt-20">
-        <h2 className="text-2xl font-bold mb-6 text-center text-[#333]">Login</h2>
+      <div className="bg-white flex flex-col items-center justify-center p-8 rounded-lg shadow-md max-w-md mx-auto mt-20">
+        <h2 className="text-3xl font-bold mb-6 text-center text-[#333]">Login</h2>
+
+        {/* show error */}
+        {error && (
+          <div className="mb-4 text-red-500">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="flex flex-col w-full">
           <input
             type="text"
@@ -85,16 +90,12 @@ export const Login = () => {
               {showPassword ? "🙈" : "👁️"}
             </span>
           </div>
-          {error && (
-              <div className="mb-4 text-red-500">
-                {error}
-              </div>
-            )}
+
           <button
             type="submit"
-            className="bg-[#007bff] text-white font-bold py-3 rounded-lg w-full transition duration-300 hover:bg-[#0056b3]"
+            className="bg-[#007bff] text-base text-white font-bold py-3 rounded-lg w-full transition duration-300 hover:bg-[#0056b3]"
           >
-            Login
+            LOGIN
           </button>
         </form>
         <div className="mt-5 flex justify-between">
@@ -106,7 +107,6 @@ export const Login = () => {
           </Link>
         </div>
       </div>
-      {/* </div> */}
     </div>
-  );
-};
+  )
+}

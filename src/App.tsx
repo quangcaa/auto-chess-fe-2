@@ -7,41 +7,32 @@ import { Profile } from "./screens/Profile";
 import { Setting } from "./screens/Setting";
 import PrivateRoute from "./components/PrivateRoute";
 import { AuthProvider, useAuth } from "./context/AuthContext";
-import NavBar from "./components/NavBar";
+import NavBar from "./components/Navbar";
 import { CreateTopic } from "./components/CreateTopic";
 import { Forum } from "./screens/Forum";
 import { TopicList } from "./components/TopicList";
-import React from "react";
+import Layout from './components/Layout';
 
 function App() {
-  // const { isAuthenticated } = useAuth();
-
   return (
     <div className="h-screen bg-main-color">
       <AuthProvider>
         <BrowserRouter>
-          {/* {isAuthenticated && <NavBar />} */}
-          <NavBar />
-
           <Routes>
             <Route path="/*" element={<Auth />} />
-
-            <Route element={<PrivateRoute />}>
-              <Route path="/" element={<Landing />} />
-              <Route path="/game" element={<Game />} />
-              <Route path="/my-profile" element={<Profile />} />
-              <Route path="/setting" element={<Setting />} />
-              <Route path="/forum" element={<Forum />} />
-              <Route path="/forum/category" element={<TopicList />} />
-              <Route
-                path="/forum/category/create-topic"
-                element={<CreateTopic />}
-              />
-            </Route>
+            <Route element={<Layout />}>
+                <Route path="/" element={<Landing />} />
+                <Route path="/game" element={<Game />} />
+                <Route path="/my-profile" element={<Profile />} />
+                <Route path="/setting" element={<Setting />} />
+                <Route path="/forum" element={<Forum />} />
+                <Route path="/forum/category" element={<TopicList />} />
+                <Route path="/forum/category/create-topic" element={<CreateTopic />} />
+              </Route>
           </Routes>
         </BrowserRouter>
       </AuthProvider>
-    </div>
+    </div >
   );
 }
 
