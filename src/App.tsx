@@ -7,7 +7,7 @@ import { Profile } from './screens/Profile';
 import { Setting } from './screens/Setting';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/AuthContext';
-import  NavBar from './components/NavBar';
+import NavBar from './components/NavBar';
 import { CreateTopic } from './components/CreateTopic';
 import { Forum } from './screens/Forum';
 import { TopicList } from './components/TopicList';
@@ -34,7 +34,7 @@ function App() {
           </Routes>
         </BrowserRouter>
       </AuthProvider>
-    </ div>
+    </ div >
   )
 }
 

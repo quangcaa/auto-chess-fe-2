@@ -35,10 +35,10 @@ export const ChessBoard = ({ socket }: { socket: WebSocket }) => {
             promotion: piece[1]?.toLowerCase() ?? "q", // promote to all pieces
         });
 
-        if (move === null) return;
+        if (move === null) return false;
 
         setFen(game.fen());
-        socket.send(JSON.stringify({ type: MOVE, payload: { move } }));
+        socket.send(JSON.stringify({ type: MOVE, move }));
         return true;
     };
 
