@@ -2,10 +2,13 @@ import React from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 export const LogoutButton: React.FC = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+
+  const {logout} = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -19,6 +22,8 @@ export const LogoutButton: React.FC = () => {
       if (res.data.success) {
         localStorage.removeItem('accessToken');
         navigate('/login');
+
+        logout();
       }
     } catch (error) {
         setError("Please check your internet");

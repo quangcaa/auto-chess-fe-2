@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from '../context/AuthContext';
 
 export const Login = () => {
   const [username, setUsername] = useState("");
@@ -9,6 +10,8 @@ export const Login = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const { login } = useAuth();
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -28,6 +31,8 @@ export const Login = () => {
         localStorage.setItem("accessToken", res.data.accessToken)
         console.log("Username from response:", res.data.username);
         localStorage.setItem("username", res.data.username);
+
+        login(res.data.accessToken);
 
         navigate("/")
       } else {
