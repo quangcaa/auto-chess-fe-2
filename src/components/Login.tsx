@@ -12,7 +12,6 @@ export const Login = () => {
   const navigate = useNavigate()
   const { login } = useAuth()
 
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
@@ -56,7 +55,7 @@ export const Login = () => {
 
       {/* login form */}
       <div className="bg-white flex flex-col items-center justify-center p-8 rounded-lg shadow-md max-w-md mx-auto mt-20">
-        <h2 className="text-3xl font-bold mb-6 text-center text-[#333]">Login</h2>
+        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Login</h2>
 
         {/* show error */}
         {error && (
@@ -93,7 +92,7 @@ export const Login = () => {
 
           <button
             type="submit"
-            className="bg-[#007bff] text-base text-white font-bold py-3 rounded-lg w-full transition duration-300 hover:bg-[#0056b3]"
+            className="w-full py-3 bg-blue-500 hover:bg-blue-700 text-base text-white font-bold rounded-lg transition duration-300"
           >
             LOGIN
           </button>
