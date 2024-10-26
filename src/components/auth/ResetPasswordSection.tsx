@@ -1,29 +1,29 @@
 import { useState, FormEvent } from "react"
-import axios from "axios"
 import { Link } from "react-router-dom"
-import { useNavigate } from 'react-router-dom'
+import axiosInstance from "../../lib/axios"
+import toast from "react-hot-toast"
+import { AxiosError } from "axios"
 
 export const ResetPassword = () => {
   const [email, setEmail] = useState<string>("")
-  const [error, setError] = useState<string | null>(null)
-
-  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setLoading(true)
 
     try {
-      const response = await axios.post(`http://localhost:3333/auth/forgot-password`, {
-        email
-      })
+      await axiosInstance.post('/auth/forgot-password', { email })
 
-      if (response.data.success) {
-        alert("An email has been sent to your email address.")
-        navigate('/login')
-      }
+      toast.success('Sent reset password link to your email successfully')
     } catch (error) {
-      setError("Failed to send email. Please check your email or connection.")
-      console.error(error)
+      if (error instanceof AxiosError && error.response) {
+        toast.error(error.response.data.message)
+      } else {
+        toast.error('Something went wrong')
+      }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -40,13 +40,6 @@ export const ResetPassword = () => {
       <div className="bg-white flex flex-col items-center justify-center p-8 rounded-lg shadow-md max-w-md mx-auto mt-20">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Reset password</h2>
 
-        {/* show error  */}
-        {error && (
-          <div className="text-red-500 mb-4">
-            {error}
-          </div>
-        )}
-
         <form onSubmit={handleSubmit} className="flex flex-col  w-full">
           <p className="mb-2 text-gray-700">
             Please enter your email to authenticate your account
@@ -61,9 +54,13 @@ export const ResetPassword = () => {
           />
           <button
             type="submit"
-            className="w-full py-3 bg-blue-500 hover:bg-blue-700 text-base text-white font-bold rounded-lg transition duration-300"
+            className={`w-full py-3 bg-blue-500 hover:bg-blue-700 text-base text-white font-bold rounded-lg transition duration-300 ${loading
+              ? "bg-blue-500 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              }`}
+            disabled={loading}
           >
-            EMAIL ME A LINK
+            {loading ? "SENDING..." : "SEND"}
           </button>
         </form>
 

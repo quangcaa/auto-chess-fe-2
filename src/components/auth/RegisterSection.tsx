@@ -1,20 +1,16 @@
 import React, { useState } from "react"
-import axios from "axios"
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from "../context/AuthContext"
-
-// interface RegisterProps {
-//   onRegister: (status: boolean) => void
-// }
+import { Link } from "react-router-dom"
+import { useAuth } from "../../context/AuthContext"
+import axiosInstance from "../../lib/axios"
+import toast from "react-hot-toast"
+import { AxiosError } from "axios"
 
 export const Register = () => {
+  const [username, setUsername] = useState<string>("")
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
-  const [username, setUsername] = useState<string>("")
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
   const { login } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -22,25 +18,22 @@ export const Register = () => {
     setLoading(true)
 
     try {
-      const response = await axios.post(`http://localhost:3333/auth/signup`, {
+      const res = await axiosInstance.post('/auth/register', {
         username,
         email,
-        password
+        password,
       })
+      const data = res.data
 
-      if (response.data.success) {
-        // onRegister(true)
-        login(response.data.accessToken, username)
-        navigate('/verify-email')
-      }
+      toast.success('Account created successfully')
 
+      login(data.accessToken, data.refreshToken, data.user.username)
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        setError(error.response.data.message || "An error occurred during login")
+      if (error instanceof AxiosError && error.response) {
+        toast.error(error.response.data.message)
       } else {
-        setError("An error occurred during login")
+        toast.error('Something went wrong')
       }
-
     } finally {
       setLoading(false)
     }
@@ -48,10 +41,6 @@ export const Register = () => {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
-  }
-
-  const handleLoginRedirect = () => {
-    navigate('/login')
   }
 
   return (
@@ -68,13 +57,7 @@ export const Register = () => {
       <div className="bg-white flex flex-col items-center justify-center bg-gray-100 p-8 rounded-lg shadow-md max-w-md mx-auto mt-20">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Register</h2>
 
-        {/* show error  */}
-        {error && (
-          <div className="text-red-500 text-sm mb-4">
-            {error}
-          </div>
-        )}
-
+        {/* USERNAME */}
         <form onSubmit={handleSubmit} className="flex flex-col w-full">
           <input
             type="text"
@@ -85,6 +68,7 @@ export const Register = () => {
             className="bg-[#F1F7EC] w-full p-3 border border-gray-300 rounded-md focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300"
           />
 
+          {/* PASSWORD */}
           <div className="relative flex items-center my-2">
             <input
               type={showPassword ? "text" : "password"}
@@ -102,6 +86,7 @@ export const Register = () => {
             </span>
           </div>
 
+          {/* EMAIL */}
           <input
             type="email"
             placeholder="Email"
@@ -113,15 +98,23 @@ export const Register = () => {
 
           <button
             type="submit"
-            className="mt-3 w-full py-3 bg-blue-500 hover:bg-blue-700 text-base text-white font-bold rounded-lg transition duration-300"
+            className={`mt-3 w-full py-3 bg-blue-500 hover:bg-blue-700 text-base text-white font-bold rounded-lg transition duration-300 ${loading
+              ? "bg-blue-500 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              }`}
+            disabled={loading}
           >
-            REGISTER
+            {loading ? "REGISTERING..." : "REGISTER"}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-gray-600 cursor-pointer" onClick={handleLoginRedirect}>
-          Already have an account? <span className="text-blue-500 hover:underline">Login</span>
-        </p>
+        <div className="mt-5 flex justify-betweeng gap-2">
+          Already have an account?
+          <Link to="/login" className="text-blue-500 hover:underline">
+            Login
+          </Link>
+        </div>
+
       </div>
     </div>
   )

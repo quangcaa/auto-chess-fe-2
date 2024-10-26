@@ -1,8 +1,8 @@
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom"
 import { useState, useEffect } from "react"
 
-import ProfileDropdown from "./ProfileDropdown"
-import UserSearch from "./UserSearch"
+import ProfileDropdown from "../ProfileDropdown"
+import UserSearch from "../UserSearch"
 
 import { RiSwordFill } from "react-icons/ri"
 import { GoBellFill } from "react-icons/go"

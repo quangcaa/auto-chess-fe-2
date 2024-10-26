@@ -1,15 +1,15 @@
-import axios from "axios"
 import React, { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { useAuth } from "../context/AuthContext"
+import { Link } from "react-router-dom"
+import axiosInstance from "../../lib/axios"
+import { AxiosError } from "axios"
+import toast from "react-hot-toast"
+import { useAuth } from "../../context/AuthContext"
 
 export const Login = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
   const { login } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -17,23 +17,21 @@ export const Login = () => {
     setLoading(true)
 
     try {
-      const res = await axios.post(`http://localhost:3333/auth/login`, {
+      const res = await axiosInstance.post('/auth/login', {
         username,
-        password,
+        password
       })
+      const data = res.data
 
-      if (res.data.success) {
-        login(res.data.accessToken, username)
-        navigate("/")
-      }
+      toast.success('Logged in successfully')
 
+      login(data.accessToken, data.refreshToken, data.user.username)
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        setError(error.response.data.message || "An error occurred during login")
+      if (error instanceof AxiosError && error.response) {
+        toast.error(error.response.data.message)
       } else {
-        setError("An error occurred during login")
+        toast.error('Something went wrong')
       }
-
     } finally {
       setLoading(false)
     }
@@ -57,13 +55,6 @@ export const Login = () => {
       <div className="bg-white flex flex-col items-center justify-center p-8 rounded-lg shadow-md max-w-md mx-auto mt-20">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Login</h2>
 
-        {/* show error */}
-        {error && (
-          <div className="mb-4 text-red-500">
-            {error}
-          </div>
-        )}
-
         <form onSubmit={handleSubmit} className="flex flex-col w-full">
           <input
             type="text"
@@ -73,6 +64,7 @@ export const Login = () => {
             required
             className="bg-[#F1F7EC] border border-[#ddd] rounded-lg w-full p-3 mb-3 transition duration-300 focus:border-[#007bff] focus:outline-none focus:ring focus:ring-[#007bff] focus:ring-opacity-30"
           />
+
           <div className="relative mb-3">
             <input
               type={showPassword ? "text" : "password"}
@@ -92,11 +84,17 @@ export const Login = () => {
 
           <button
             type="submit"
-            className="w-full py-3 bg-blue-500 hover:bg-blue-700 text-base text-white font-bold rounded-lg transition duration-300"
+            className={`mt-3 w-full py-3 bg-blue-500 hover:bg-blue-700 text-base text-white font-bold rounded-lg transition duration-300 ${loading
+              ? "bg-blue-500 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              }`}
+            disabled={loading}
           >
-            LOGIN
+            {loading ? "LOGGING IN..." : "LOG IN"}
           </button>
+
         </form>
+
         <div className="mt-5 flex justify-between">
           <Link to="/register" className="text-[#007bff] hover:underline mr-10">
             Register
@@ -105,6 +103,7 @@ export const Login = () => {
             Reset password
           </Link>
         </div>
+
       </div>
     </div>
   )

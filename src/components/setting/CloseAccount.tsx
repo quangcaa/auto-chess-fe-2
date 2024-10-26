@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import warningImage from './../assets/images/warning.png';
-import useCloseAccount from '../hooks/useCloseAccount';
+import useCloseAccount from '../../hooks/useCloseAccount';
 
 export const CloseAccount = () => {
   const navigate = useNavigate()
@@ -21,7 +20,7 @@ export const CloseAccount = () => {
 
       {/* header  */}
       <div className="flex items-center mb-6">
-        <img src={warningImage} alt="warning" className="w-12 pr-2" />
+        {/* <img src={warningImage} alt="warning" className="w-12 pr-2" /> */}
         <p className="text-3xl text-red-500">Close Account</p>
       </div>
 

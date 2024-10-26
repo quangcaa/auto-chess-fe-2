@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import backImage from "./../assets/images/back.png";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import useCreateTopic from "../hooks/useCreateTopic";
+import useCreateTopic from "../../hooks/useCreateTopic";
 
 export const CreateTopic = () => {
   const navigate = useNavigate()
@@ -32,7 +31,7 @@ export const CreateTopic = () => {
       <div className="bg-white p-4 w-1/2 ">
         <div className="flex flex-row items-center gap-4 m-5">
         <img
-              src={backImage}
+              // src={backImage}
               alt="forum"
               className="h-8"
               onClick={() => navigate(-1)}

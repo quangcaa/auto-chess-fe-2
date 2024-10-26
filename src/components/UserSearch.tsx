@@ -10,7 +10,7 @@ const UserSearch: React.FC = () => {
     setIsExpanded(true);
     setTimeout(() => {
       inputRef.current?.focus();
-    }, 100); // Delay to ensure smooth transition
+    }, 100);
   };
 
   const handleBlur = () => {

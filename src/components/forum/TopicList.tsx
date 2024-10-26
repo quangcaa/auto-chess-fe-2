@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import backImage from "./../assets/images/back.png";
 import {
   Link,
   useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
-import useGetTopics from "../hooks/useGetTopics";
+import useGetTopics from "../../hooks/useGetTopics";
 
 export const TopicList = () => {
   const location = useLocation();
@@ -62,7 +61,7 @@ export const TopicList = () => {
         <div className="flex flex-row justify-between items-center m-7">
           <div className="flex flex-row items-center gap-4">
             <img
-              src={backImage}
+              // src={backImage}
               alt="forum"
               className="h-8"
               onClick={() => navigate(-1)}
