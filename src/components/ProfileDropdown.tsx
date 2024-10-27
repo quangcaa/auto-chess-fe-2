@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 
-import { LogoutButton } from "./LogoutButton"
+import { LogoutButton } from "./auth/LogoutButton"
 
 import { IoMdSettings } from "react-icons/io"
 import { FaUserCircle } from "react-icons/fa"

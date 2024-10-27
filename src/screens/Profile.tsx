@@ -1,13 +1,3 @@
-import bulletImage from "./../assets/images/bullet.png";
-import blitzImage from "./../assets/images/blitz.png";
-import rapidImage from "./../assets/images/rapid.png";
-import classicalImage from "./../assets/images/classical.png";
-import dailyImage from "./../assets/images/daily.png";
-import puzzlesImage from "./../assets/images/puzzles.png";
-import stateImage from "./../assets/images/state.png";
-import profile_navImage from "./../assets/images/profile_nav.png";
-import barlineImage from "./../assets/images/barline.png";
-import battle_exampleImage from "./../assets/images/battle_example.png";
 
 export const Profile = () => {
     return (

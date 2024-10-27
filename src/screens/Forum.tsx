@@ -1,6 +1,5 @@
 import React from "react";
 
-import forumImage from "./../assets/images/forum.svg";
 import useGetAllCategory from "../hooks/useGetAllCategory";
 import { Link } from "react-router-dom";
 

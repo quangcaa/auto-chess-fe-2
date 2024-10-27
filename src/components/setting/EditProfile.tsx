@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import useGetMyProfile from '../hooks/useGetMyProfile';
-import useEditProfile from '../hooks/useEditProfile';
+import useGetMyProfile from '../../hooks/useGetMyProfile';
+import useEditProfile from '../../hooks/useEditProfile';
 
 export const EditProfile = () => {
     const { profile, loading: loadingProfile, error: profileError } = useGetMyProfile();
