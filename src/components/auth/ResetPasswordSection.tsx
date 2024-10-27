@@ -1,6 +1,6 @@
 import { useState, FormEvent } from "react"
 import { Link } from "react-router-dom"
-import axiosInstance from "../../lib/axios"
+import api from "../../lib/axios"
 import toast from "react-hot-toast"
 import { AxiosError } from "axios"
 
@@ -13,7 +13,7 @@ export const ResetPassword = () => {
     setLoading(true)
 
     try {
-      await axiosInstance.post('/auth/forgot-password', { email })
+      await api.post('/auth/forgot-password', { email })
 
       toast.success('Sent reset password link to your email successfully')
     } catch (error) {

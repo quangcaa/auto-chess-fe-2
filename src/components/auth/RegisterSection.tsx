@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
-import axiosInstance from "../../lib/axios"
+import api from "../../lib/axios"
 import toast from "react-hot-toast"
 import { AxiosError } from "axios"
 
@@ -18,7 +18,7 @@ export const Register = () => {
     setLoading(true)
 
     try {
-      const res = await axiosInstance.post('/auth/register', {
+      const res = await api.post('/auth/register', {
         username,
         email,
         password,

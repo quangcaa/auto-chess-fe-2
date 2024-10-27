@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { Link } from "react-router-dom"
-import axiosInstance from "../../lib/axios"
+import api from "../../lib/axios"
 import { AxiosError } from "axios"
 import toast from "react-hot-toast"
 import { useAuth } from "../../context/AuthContext"
@@ -17,7 +17,7 @@ export const Login = () => {
     setLoading(true)
 
     try {
-      const res = await axiosInstance.post('/auth/login', {
+      const res = await api.post('/auth/login', {
         username,
         password
       })

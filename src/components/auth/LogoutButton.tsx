@@ -1,6 +1,6 @@
 import React from "react"
 import { AxiosError } from "axios"
-import axiosInstance from "../../lib/axios"
+import api from "../../lib/axios"
 import toast from "react-hot-toast"
 import { useAuth } from "../../context/AuthContext"
 
@@ -9,7 +9,7 @@ export const LogoutButton: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      const res = await axiosInstance.post('/auth/logout')
+      const res = await api.post('/auth/logout')
 
       if (res.data.success) {
         logout()
