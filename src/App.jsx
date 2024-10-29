@@ -94,17 +94,18 @@ import { Homepage } from "./screens/Homepage";
 
 function App() {
   return (
-    <div className="h-screen bg-main-color">
+    <div className="h-screen bg-main-color flex flex-col">
       <Navbar />
 
-      <Routes>
-        <Route element={<PublicRoute />}>
-          <Route path="/*" element={<Auth />} />
-        </Route>
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Homepage />} />
-          <Route path="/setting" element={<Setting />} />
-          {/* 
+      <div className="flex-grow overflow-auto">
+        <Routes>
+          <Route element={<PublicRoute />}>
+            <Route path="/*" element={<Auth />} />
+          </Route>
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Homepage />} />
+            <Route path="/setting" element={<Setting />} />
+            {/* 
           <Route path="/game" element={<Game />} />
           <Route path="/puzzle" element={<Puzzle />} />
           <Route path="/inbox" element={<Chat />} />
@@ -114,9 +115,10 @@ function App() {
             <Route path="category" element={<TopicList />} />
             <Route path="category/create-topic" element={<CreateTopic />} />
           </Route> */}
-        </Route>
-      </Routes>
-
+          </Route>
+        </Routes>
+      </div>
+      
       <Toaster />
     </div>
   );

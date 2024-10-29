@@ -24,16 +24,27 @@ api.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config
+
         if (error.response && error.response.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true
-            try {
-                const refreshToken = localStorage.getItem('refreshToken')
-                const response = await axios.post(`/auth/refresh`, { refreshToken })
 
-                const newAccessToken = response.data
+            try {
+                const accessToken = localStorage.getItem('accessToken')
+                const refreshToken = localStorage.getItem('refreshToken')
+
+                const response = await axios.post(`http://localhost:3333/auth/refresh`,
+                    { refreshToken },
+                    {
+                        headers: {
+                            x_authorization: accessToken
+                        }
+                    }
+                )
+
+                const newAccessToken = response.data.accessToken
                 localStorage.setItem('accessToken', newAccessToken)
 
-                api.defaults.headers['x_authorization'] = newAccessToken
+                api.defaults.headers.common['x_authorization'] = newAccessToken
                 originalRequest.headers['x_authorization'] = newAccessToken
 
                 console.log('new access token')
