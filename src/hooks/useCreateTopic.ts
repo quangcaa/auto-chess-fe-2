@@ -1,4 +1,5 @@
 import { useState } from "react";
+import api from "../lib/axios";
 
 const useCreateTopic = () => {
   const [loading, setLoading] = useState(false);
@@ -11,23 +12,11 @@ const useCreateTopic = () => {
     setSuccess(false);
 
     try {
-      const response = await fetch(`http://localhost:3333/forum/${categoryId}/create`, {
-        method: "POST",
-        headers: {
-            "x_authorization": `${localStorage.getItem('accessToken')}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          subject,
+      const response = await api.post(`http://localhost:3333/forum/${categoryId}/create`, {
+        subject,
           message,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create topic");
-      }
-
-      const data = await response.json();
+      })
+      const data = await response.data;
       setSuccess(true);
       return data;
     } catch (err) {
