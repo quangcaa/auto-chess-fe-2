@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import api from '../lib/axios';
 
 const useEditProfile = () => {
     const [loading, setLoading] = useState(false);
@@ -9,33 +10,12 @@ const useEditProfile = () => {
         setLoading(true);
         setError("");
         setSuccess(false);
-
-        const token = localStorage.getItem('accessToken');
-
-        if (!token) {
-            setError('Access token not found');
-            setLoading(false);
-            return;
-        }
-
         try {
-            const response = await fetch('http://localhost:3333/account/edit-profile', {
-                method: 'PUT',
-                headers: {
-                    'x_authorization': `${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(profileData),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to edit profile');
-            }
-
+            // Send profileData as the request body
+            await api.put('http://localhost:3333/account/edit-profile', profileData);
             setSuccess(true);
         } catch (error) {
-            setError(error.message);
+            setError(error.response?.data?.message || error.message); // Improved error handling
         } finally {
             setLoading(false);
         }

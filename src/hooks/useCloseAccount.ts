@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import api from '../lib/axios';
+import { useAuth } from '../context/AuthContext';
 
 const useCloseAccount = () => {
+  const { logout } = useAuth()
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -10,24 +13,14 @@ const useCloseAccount = () => {
     setError(null);
     setSuccess(false);
 
-    const token = localStorage.getItem('accessToken');
-
     try {
-      const response = await fetch('http://localhost:3333/account/close-account', {
-        method: 'DELETE',
-        headers: {
-          'x_authorization': `${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ password }),
+      const response = await api.delete('http://localhost:3333/account/close-account', {
+        data: { password }
       });
 
-      if (!response.ok) {
-        throw new Error('Incorrect password');
-      }
-
-      const data = await response.json();
+      const data = await response.data;
       setSuccess(true);
+      logout()
       console.log(data.message);
       return true;
     } catch (error) {
