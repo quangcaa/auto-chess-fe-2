@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Router, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
@@ -9,9 +9,12 @@ import { useAuth } from "./contexts/AuthContext";
 import ProtectedRoute from "./guards/ProtectedRoute";
 import PublicRoute from "./guards/PublicRoute";
 import { Auth } from "./screens/Auth";
+import Navbar from "./components/layout/Navbar";
+import { Setting } from "./screens/Setting";
+import { Homepage } from "./screens/Homepage";
 
 // backend url
-const socket = io(`http://localhost:5000`);
+// const socket = io(`http://localhost:5000`);
 
 // function App() {
 //   const [game, setGame] = useState(new Chess());
@@ -90,23 +93,23 @@ const socket = io(`http://localhost:5000`);
 // }
 
 function App() {
-  const { isAuthenticated } = useAuth();
-
   return (
     <div className="h-screen bg-main-color">
-      {/* {isAuthenticated && <NavBar />} */}
+      <Navbar />
 
       <Routes>
         <Route element={<PublicRoute />}>
           <Route path="/*" element={<Auth />} />
         </Route>
         <Route element={<ProtectedRoute />}>
-          {/* <Route path="/homepage" element={<Homepage />} />
+          <Route path="/" element={<Homepage />} />
+          <Route path="/setting" element={<Setting />} />
+          {/* 
           <Route path="/game" element={<Game />} />
           <Route path="/puzzle" element={<Puzzle />} />
           <Route path="/inbox" element={<Chat />} />
           <Route path="/@" element={<Profile />} />
-          <Route path="/setting" element={<Setting />} />
+          
           <Route path="/forum/*" element={<Forum />}>
             <Route path="category" element={<TopicList />} />
             <Route path="category/create-topic" element={<CreateTopic />} />

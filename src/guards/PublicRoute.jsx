@@ -5,7 +5,7 @@ const PublicRoute = () => {
   const { isAuthenticated } = useAuth()
 
   // nếu chưa đăng nhập, điều hướng đến log in
-  return isAuthenticated ? <Navigate to="/homepage" /> : <Outlet />;
+  return isAuthenticated ? <Navigate to="/" /> : <Outlet />;
 }
 
 export default PublicRoute

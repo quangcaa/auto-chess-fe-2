@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'http://localhost:5000/',
+    baseURL: 'http://localhost:3333/',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -28,7 +28,7 @@ api.interceptors.response.use(
             originalRequest._retry = true
             try {
                 const refreshToken = localStorage.getItem('refreshToken')
-                const response = await axios.post(`http://localhost:5000/auth/refresh`, { refresh_token: refreshToken })
+                const response = await axios.post(`/auth/refresh`, { refreshToken })
 
                 const newAccessToken = response.data
                 localStorage.setItem('accessToken', newAccessToken)
@@ -40,6 +40,7 @@ api.interceptors.response.use(
 
                 return api(originalRequest) // thử gọi lại request với access token mới
             } catch (err) {
+                console.log('error in auto call refresh')
                 return Promise.reject(err)
             }
         }
