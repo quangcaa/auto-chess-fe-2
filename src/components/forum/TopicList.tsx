@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import useGetTopics from "../../hooks/useGetTopics";
 
+
 export const TopicList = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -38,13 +39,13 @@ export const TopicList = () => {
           formattedTime = `${hours} hours ago`;
         } else if (timeDifference < 2592000000) {
           // < 1 month
-          formattedTime = `${days} days ago`;
+          formattedTime =` ${days} days ago`;
         } else {
           // >1 month
           const day = apiDate.getUTCDate();
           const month = apiDate.getUTCMonth() + 1;
           const year = apiDate.getUTCFullYear();
-          formattedTime = `${year}/${month}/${day}`; // yyyy/mm/dd
+          formattedTime =` ${year}/${month}/${day}`; // yyyy/mm/dd
         }
 
         return formattedTime;
@@ -57,16 +58,16 @@ export const TopicList = () => {
   }, [topics]);
   return (
     <div className="flex flex-col items-center">
-      <div className="bg-white p-4 w-3/4 ">
-        <div className="flex flex-row justify-between items-center m-7">
+      <div className="border rounded-md bg-white w-7/8 m-4 shadow-md">
+        <div className="flex flex-row justify-between items-center m-7 py-4 min-h-[80px]">
           <div className="flex flex-row items-center gap-4">
             <img
-              // src={backImage}
+              src={backImage}
               alt="forum"
               className="h-8"
               onClick={() => navigate(-1)}
             />
-            <p className="text-3xl">{category_name}</p>
+            <p className="text-3xl font-sans text-[#4D4D4D]">{category_name}</p>
           </div>
           <button>
             <Link
@@ -78,37 +79,35 @@ export const TopicList = () => {
           </button>
         </div>
         <table className="w-full">
-          <tr className="bg-gray-300">
-            <td></td>
-            <td>
-              <p>Replies</p>
-            </td>
-            <td>
-              <p>Last Post</p>
-            </td>
-          </tr>
+          <thead>
+            <tr className="bg-[#EDEBE9] border-b border-gray-300 font-sans">
+              <td></td>
+              <td>
+                <p className="text-gray-500 text-lg">Replies</p>
+              </td>
+              <td>
+                <p className="text-gray-500 text-lg">Last Post</p>
+              </td>
+            </tr>
+          </thead>
           <tbody>
             {topics.map((topic, index) => (
               <tr
                 key={topic.topic_id}
-                className={index % 2 !== 0 ? "bg-gray-300" : "bg-white"}
+                className={
+                  "hover:bg-gray-100 transition-colors" +
+                  (index % 2 !== 0 ? " bg-[#EDEBE9]" : "")
+                }
               >
-                <td className="my-5">
-                  <p className=" mx-10 text-xl text-blue-500">
-                    {topic.subject}
-                  </p>
+                <td className="py-4">
+                  <p className="mx-10 text-lg text-blue-500">{topic.subject}</p>
                 </td>
-                <td>
+                <td className="py-4">
                   <p className="mr-5">{topic.replies}</p>
                 </td>
-                <td>
-                  <div className="flex flex-row justify-between items-center mr-4">
-                    <div className="flex flex-col items-start gap-1 justify-center my-5">
-                      <p className="text-blue-500">{timeStrings[index]}</p>
-                      <p>by {topic.last_post_user}</p>
-                    </div>
-                    {/* <button className="bg-red-500 p-2 rounded-lg text-white">Delete</button> */}
-                  </div>
+                <td className="flex flex-col items-start gap-1 justify-center py-4">
+                  <p className="text-blue-500">{timeStrings[index]}</p>
+                  <p>by {topic.last_post_user}</p>
                 </td>
               </tr>
             ))}
