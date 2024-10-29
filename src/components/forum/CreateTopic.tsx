@@ -23,8 +23,7 @@ export const CreateTopic = () => {
   };
   useEffect(() => {
     if (success) {
-      const randomQuery = new Date().getTime();
-      navigate(`/forum/category?categoryId=${categoryId}&refresh=${randomQuery}`, { state: category_name });
+      navigate(`/forum/category?categoryId=${categoryId}`, { state: category_name });
     }
   }, [success, navigate, categoryId, category_name]);
 

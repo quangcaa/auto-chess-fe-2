@@ -8,7 +8,6 @@ import {
 import useGetTopics from "../../hooks/useGetTopics";
 import backImage from "/back.jpg";
 
-
 export const TopicList = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -32,7 +31,9 @@ export const TopicList = () => {
 
         let formattedTime;
 
-        if (timeDifference < 3600000) {
+        if (timeDifference < 60) {
+          formattedTime = `now`;
+        } else if (timeDifference < 3600000) {
           // < 1 hours
           formattedTime = `${minutes} minutes ago`;
         } else if (timeDifference < 86400000) {
@@ -40,13 +41,13 @@ export const TopicList = () => {
           formattedTime = `${hours} hours ago`;
         } else if (timeDifference < 2592000000) {
           // < 1 month
-          formattedTime =` ${days} days ago`;
+          formattedTime = ` ${days} days ago`;
         } else {
           // >1 month
           const day = apiDate.getUTCDate();
           const month = apiDate.getUTCMonth() + 1;
           const year = apiDate.getUTCFullYear();
-          formattedTime =` ${year}/${month}/${day}`; // yyyy/mm/dd
+          formattedTime = ` ${year}/${month}/${day}`; // yyyy/mm/dd
         }
 
         return formattedTime;
@@ -66,7 +67,7 @@ export const TopicList = () => {
               src={backImage}
               alt="forum"
               className="h-8"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate(`/forum`)}
             />
             <p className="text-3xl font-sans text-[#4D4D4D]">{category_name}</p>
           </div>
@@ -100,9 +101,14 @@ export const TopicList = () => {
                   (index % 2 !== 0 ? " bg-[#EDEBE9]" : "")
                 }
               >
-                <td className="py-4">
+                <Link
+                  to={`/forum/category/topic?categoryId=${categoryId}&topicId=${topic.topic_id}`}
+                  state={topic.subject}
+                >
+                  <td className="py-4">
                   <p className="mx-10 text-lg text-blue-500">{topic.subject}</p>
                 </td>
+                </Link>
                 <td className="py-4">
                   <p className="mr-5">{topic.replies}</p>
                 </td>
