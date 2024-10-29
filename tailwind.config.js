@@ -8,7 +8,10 @@ export default {
     extend: {
       colors: {
         'main-color': '#EDEBE9',
-        'nav-color': '#'
+        'nav-color': '#',
+      },
+      width: {
+        '7/8' : '87.5%'
       },
     },
   },

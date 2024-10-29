@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import useCreateTopic from "../../hooks/useCreateTopic";
-import backImage from "/back.png";
+import backImage from "/back.jpg";
 
 export const CreateTopic = () => {
   const navigate = useNavigate()

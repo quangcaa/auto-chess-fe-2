@@ -28,10 +28,7 @@ function App() {
           <Route path="/game" element={<Game />} />
           <Route path="/my-profile" element={<Profile />} />
           <Route path="/setting" element={<Setting />} />
-          <Route path="/forum/*" element={<Forum />}>
-            <Route path="category" element={<TopicList />} />
-            <Route path="category/create-topic" element={<CreateTopic />} />
-          </Route>
+          <Route path="/forum/*" element={<Forum />} />
         </Route>
       </Routes>
       <Toaster />

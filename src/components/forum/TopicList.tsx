@@ -6,6 +6,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import useGetTopics from "../../hooks/useGetTopics";
+import backImage from "/back.jpg";
 
 
 export const TopicList = () => {
