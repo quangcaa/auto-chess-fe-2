@@ -4,6 +4,7 @@ import api from "../../utils/axios";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../contexts/AuthContext";
+import { initSocket } from "../../socket/socket.fe";
 
 export const Login = () => {
   const [username, setUsername] = useState("");
@@ -25,7 +26,9 @@ export const Login = () => {
 
       toast.success("Logged in successfully");
 
-      login(data.accessToken, data.refreshToken, data.user.username);
+      login(data.accessToken, data.refreshToken, data.user.username, data.user.user_id);
+
+      initSocket(data.user.user_id)
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         toast.error(error.response.data.message);

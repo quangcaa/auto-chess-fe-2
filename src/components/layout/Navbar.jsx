@@ -38,7 +38,7 @@ export const Navbar = () => {
           {/* PUZZLE */}
           <li>
             <Link
-              to="/puzzles"
+              to="/puzzle"
               className="hover:bg-gray-300 font-bold transition duration-300 px-5 py-5"
             >
               PUZZLE

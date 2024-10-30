@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
-
-const socket = io("http://localhost:3334");
+import { useAuth } from "../contexts/AuthContext";
 
 const Game = () => {
   const [game, setGame] = useState(new Chess());
@@ -11,7 +10,12 @@ const Game = () => {
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [players, setPlayers] = useState({ white: null, black: null });
 
+  const { socket } = useAuth();
+  console.log(`[GAME] : ${socket}`);
+
   useEffect(() => {
+    if (!socket) return;
+
     socket.on("move", (move) => {
       game.move(move);
       setGame(new Chess(game.fen()));
@@ -27,11 +31,13 @@ const Game = () => {
       socket.off("move");
       socket.off("startGame");
     };
-  }, [game]);
+  }, [socket, game]);
 
   const createRoom = () => {
+    console.log(`[createRoom] : ${socket}`);
+
     socket.emit("create_room", (roomId) => {
-        setRoomId(roomId)
+      setRoomId(roomId);
     }); // Yêu cầu tạo phòng mới
   };
 
@@ -46,7 +52,7 @@ const Game = () => {
     if (move === null) return false;
 
     setGame(new Chess(game.fen()));
-    socket.emit('move', { room_id: roomId, move }); // send move to server
+    socket.emit("move", { room_id: roomId, move }); // send move to server
     return true;
   };
 
