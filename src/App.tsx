@@ -12,6 +12,7 @@ import { useAuth } from './context/AuthContext'
 import NavBar from './components/layout/Navbar'
 import AuthGuard from './guard/AuthGuard'
 import GuestGuard from './guard/GuestGuard'
+import { PostList } from './components/forum/PostList'
 import Inbox from './screens/Inbox'
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
     <div className="h-screen bg-main-color">
       {isAuthenticated && <NavBar />}
       <Routes>
+        <Route path='/postlist' element={<PostList />} />
         <Route element={<GuestGuard />}>
           <Route path="/*" element={<Auth />} />
         </Route>

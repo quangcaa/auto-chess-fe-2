@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Post } from './Post';
 // import backImage from "."
 import usePost from '../../hooks/usePost';
+
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { create } from 'domain';
 

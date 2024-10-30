@@ -1,10 +1,12 @@
 import { useState } from "react";
+import axios from "axios";
 import api from "../lib/axios";
 
 type Post = {
     post_id: number;
     username: string;
     content: string;
+    timestamp: string;
     created_at: string;
 };
 
@@ -14,6 +16,7 @@ const usePost = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   // Get Postlist
+
   const getPosts = async (category_id: string, topic_id: string) => {
     setLoading(true);
     try {
