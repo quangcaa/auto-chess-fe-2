@@ -1,11 +1,13 @@
 import { useState } from "react";
 import axios from "axios";
+import api from "../lib/axios";
 
 type Post = {
     post_id: number;
     username: string;
     content: string;
     timestamp: string;
+    created_at: string;
 };
 
 const usePost = () => {
@@ -14,11 +16,12 @@ const usePost = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   // Get Postlist
-  const getPosts = async (category_id: number, topic_id: number) => {
+
+  const getPosts = async (category_id: string, topic_id: string) => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:3333/forum/${category_id}/${topic_id}`);
-      setPosts(response.data);
+      const response = await api.get(`http://localhost:3333/forum/${category_id}/${topic_id}`);
+      setPosts(response.data.posts);
     } catch (err) {
       setError(err as Error);
     } finally {
@@ -27,16 +30,16 @@ const usePost = () => {
   };
 
   // Create post
-  const createPost = async (category_id: number, topic_id: number, message: string) => {
+  const createPost = async (category_id: string, topic_id: string, message: string) => {
     setLoading(true);
     try {
-      const response = await axios.post(
+      const response = await api.post(
         `http://localhost:3333/forum/${category_id}/${topic_id}/create`,
         { message }
       );
 
       if (response.data.success) {
-        setPosts((prevPosts) => [...prevPosts, response.data.post]);
+        setPosts((prevPosts) => [...prevPosts, {...response.data.post, username: localStorage.getItem('username') as string}]);
       } else {
         setError(new Error(response.data.message));
       }
@@ -51,7 +54,7 @@ const usePost = () => {
   const deletePost = async (post_id: number) => {
     setLoading(true);
     try {
-      const response = await axios.delete(`http://localhost:3333/forum/p/${post_id}`);
+      const response = await api.delete(`http://localhost:3333/forum/p/${post_id}`);
 
       if (response.data.success) {
         setPosts((prevPosts) => prevPosts.filter((post) => post.post_id !== post_id));

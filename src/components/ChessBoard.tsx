@@ -1,50 +1,147 @@
-import { useEffect, useState } from "react";
-import { Chessboard } from "react-chessboard";
-import { Chess } from "chess.js";
+import { useEffect, useState } from "react"
+import { Chessboard } from "react-chessboard"
+import { Chess } from "chess.js"
 
-import { MOVE } from "../constants";
+import { GAME_OVER, INIT_GAME, MOVE } from "../constants"
 
 export const ChessBoard = ({ socket }: { socket: WebSocket }) => {
-    const [game, setGame] = useState(new Chess());
-    const [fen, setFen] = useState(game.fen());
+    const [game, setGame] = useState(new Chess())
+    const [fen, setFen] = useState(game.fen())
 
-    useEffect(() => {
-        if (!socket) return;
+    console.log(`[CHESSBOARD] : ${socket}`)
 
-        socket.onmessage = (event) => {
-            const message = JSON.parse(event.data);
+    // useEffect(() => {
+    //     if (!socket) return
 
-            if (message.type === "init_game") {
-                const newGame = new Chess();
-                setGame(newGame);
-                setFen(newGame.fen());
-            } else if (message.type === "move") {
-                const move = message.payload;
-                game.move(move);
-                setFen(game.fen());
-            } else if (message.type === "game_over") {
-                console.log("Game over");
-            }
-        };
-    }, [socket, game]);
+    //     socket.onmessage = (event) => {
+    //         const message = JSON.parse(event.data)
 
-    const onDrop = (sourceSquare: string, targetSquare: string,piece: string) => {
+    //         if (message.type === INIT_GAME) {
+    //             const newGame = new Chess()
+    //             setGame(newGame)
+    //             setFen(newGame.fen())
+    //         } else if (message.type === MOVE) {
+    //             console.log('MOVE IN CHESSBOARD')
+    //             const move = message.payload
+    //             game.move(move)
+    //             setFen(game.fen())
+    //         } else if (message.type === GAME_OVER) {
+    //             console.log("Game over")
+    //         }
+    //     }
+    // }, [socket, game])
+
+    const onDrop = (sourceSquare: string, targetSquare: string, piece: string) => {
         const move = game.move({
             from: sourceSquare,
             to: targetSquare,
-            promotion: piece[1]?.toLowerCase() ?? "q", // promote to all pieces
-        });
+            promotion: piece[1]?.toLowerCase() ?? "q", 
+        })
 
-        if (move === null) return false;
+        if (move === null) return false
 
-        setFen(game.fen());
-        socket.send(JSON.stringify({ type: MOVE, move }));
-        return true;
-    };
+        setFen(game.fen())
+        // socket.send(JSON.stringify({
+        //     type: MOVE, 
+        //     payload: {
+        //         move
+        //     }
+        // }))
+
+        const message = { type: MOVE, payload: move }
+        socket.send(JSON.stringify(message))
+
+        console.log('SENT FROM ON DROP ?')
+        return true
+    }
 
     return (
         <div>
             <Chessboard position={fen} onPieceDrop={onDrop} />
         </div>
-    );
-};
+    )
+}
+
+// import { Chess, Square, Color, PieceSymbol } from 'chess.js'
+// import { Chessboard } from "react-chessboard"
+// import React, { MouseEvent, memo, useEffect, useState } from 'react'
+// import { useRecoilState } from 'recoil'
+
+// // phong tot
+// export function isPromoting(chess: Chess, from: Square, to: Square) {
+//     if (!from) {
+//         return false
+//     }
+
+//     const piece = chess.get(from)
+
+//     if (piece?.type !== 'p') {
+//         return false
+//     }
+
+//     if (piece.color !== chess.turn()) {
+//         return false
+//     }
+
+//     if (!['1', '8'].some((it) => to.endsWith(it))) {
+//         return false
+//     }
+
+//     return chess
+//         .history({ verbose: true })
+//         .map((it) => it.to)
+//         .includes(to)
+// }
+
+
+// export const ChessBoard = memo(
+//     ({
+//         game_id,
+//         started,
+//         myColor,
+//         chess,
+//         board,
+//         socket,
+//         setBoard,
+//     }: {
+//         myColor: Color
+//         game_id: string
+//         started: boolean,
+//         chess: Chess,
+//         setBoard: React.Dispatch<
+//             React.SetStateAction<
+//                 ({
+//                     square: Square
+//                     type: PieceSymbol,
+//                     color: Color
+//                 } | null)[][]
+//             >
+//         >
+//         board: ({
+//             square: Square
+//             type: PieceSymbol
+//             color: Color
+//         } | null)[][]
+//         socket: WebSocket
+//     }) => {
+//         console.log('chessboard reloaded')
+
+//         const isMyTurn = myColor === chess.turn()
+
+//         const handleMouseDown = (e: MouseEvent<HTMLDivElement>, squareRep: string) => {
+//             e.preventDefault()
+//             if (e.button === 2) {
+               
+//             }
+//         };
+
+//         useEffect(() => {
+//         }, [game_id, started, myColor, chess, board, socket, setBoard])
+
+//         return (
+//             <div>
+//                 <Chessboard position={chess.fen()} />
+//             </div>
+//         )
+//     }
+// )

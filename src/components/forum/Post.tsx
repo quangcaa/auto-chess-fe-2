@@ -7,6 +7,7 @@ interface PostProps {
     username: string;
     text: string;
     timestamp: string;
+    created_at: string;
   };
   onDelete: (id: number) => void;
 }
