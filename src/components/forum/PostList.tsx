@@ -36,7 +36,7 @@ export const PostList: React.FC = () => {
 
         let formattedTime;
 
-        if (timeDifference < 60) {
+        if (timeDifference < 60000) {
           formattedTime = `now`;
         } else if (timeDifference < 3600000) {
           // < 1 hours
@@ -84,7 +84,7 @@ export const PostList: React.FC = () => {
       {posts.map((post, index) => (
         <Post
           key={post.post_id}
-          post={{ id: post.post_id, username: 'User', text: post.content, created_at: timeStrings[index] }}
+          post={{ id: post.post_id, username: post.username, text: post.content, created_at: timeStrings[index] }}
           onDelete={() => deletePost(post.post_id)}
         />
       ))}

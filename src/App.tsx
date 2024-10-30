@@ -12,6 +12,7 @@ import { useAuth } from './context/AuthContext'
 import NavBar from './components/layout/Navbar'
 import AuthGuard from './guard/AuthGuard'
 import GuestGuard from './guard/GuestGuard'
+import Inbox from './screens/Inbox'
 
 function App() {
   const { isAuthenticated } = useAuth()
@@ -29,6 +30,7 @@ function App() {
           <Route path="/my-profile" element={<Profile />} />
           <Route path="/setting" element={<Setting />} />
           <Route path="/forum/*" element={<Forum />} />
+          <Route path='/inbox' element={<Inbox />} />
         </Route>
       </Routes>
       <Toaster />

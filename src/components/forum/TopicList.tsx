@@ -31,7 +31,7 @@ export const TopicList = () => {
 
         let formattedTime;
 
-        if (timeDifference < 60) {
+        if (timeDifference < 60000) {
           formattedTime = `now`;
         } else if (timeDifference < 3600000) {
           // < 1 hours

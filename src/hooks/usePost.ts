@@ -18,7 +18,6 @@ const usePost = () => {
     setLoading(true);
     try {
       const response = await api.get(`http://localhost:3333/forum/${category_id}/${topic_id}`);
-      console.log(response.data)
       setPosts(response.data.posts);
     } catch (err) {
       setError(err as Error);
@@ -37,7 +36,7 @@ const usePost = () => {
       );
 
       if (response.data.success) {
-        setPosts((prevPosts) => [...prevPosts, response.data.post]);
+        setPosts((prevPosts) => [...prevPosts, {...response.data.post, username: localStorage.getItem('username') as string}]);
       } else {
         setError(new Error(response.data.message));
       }
