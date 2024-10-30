@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import axios from 'axios';
+import api from '../lib/axios';
 
 const useChangePassword = () => {
     const [loading, setLoading] = useState(false);
@@ -10,30 +12,16 @@ const useChangePassword = () => {
         setError(null);
         setSuccess(false);
 
-        const token = localStorage.getItem('accessToken')
-
         try {
-            const response = await fetch('http://localhost:3333/account/change-password', {
-                method: 'PATCH',
-                headers: {
-                    'x_authorization': `${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    current_password: currentPassword,
-                    new_password: newPassword,
-                    retype_new_password: retypeNewPassword,
-                }),
+            const response = await api.patch('http://localhost:3333/account/change-password', {
+                current_password: currentPassword,
+                new_password: newPassword,
+                retype_new_password: retypeNewPassword,
             });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to change password');
-            }
-
+            console.log(response.data)
             setSuccess(true);
         } catch (error) {
-            setError(error.message);
+            setError(error.response?.data?.message || error.message);
         } finally {
             setLoading(false);
         }

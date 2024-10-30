@@ -1,6 +1,8 @@
+
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import useCreateTopic from "../../hooks/useCreateTopic";
+import backImage from "/back.jpg";
 
 export const CreateTopic = () => {
   const navigate = useNavigate()
@@ -21,8 +23,7 @@ export const CreateTopic = () => {
   };
   useEffect(() => {
     if (success) {
-      const randomQuery = new Date().getTime();
-      navigate(`/forum/category?categoryId=${categoryId}&refresh=${randomQuery}`, { state: category_name });
+      navigate(`/forum/category?categoryId=${categoryId}`, { state: category_name });
     }
   }, [success, navigate, categoryId, category_name]);
 
@@ -31,7 +32,7 @@ export const CreateTopic = () => {
       <div className="bg-white p-4 w-1/2 ">
         <div className="flex flex-row items-center gap-4 m-5">
         <img
-              // src={backImage}
+              src={backImage}
               alt="forum"
               className="h-8"
               onClick={() => navigate(-1)}

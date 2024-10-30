@@ -12,6 +12,7 @@ import { useAuth } from './context/AuthContext'
 import NavBar from './components/layout/Navbar'
 import AuthGuard from './guard/AuthGuard'
 import GuestGuard from './guard/GuestGuard'
+import Inbox from './screens/Inbox'
 
 function App() {
   const { isAuthenticated } = useAuth()
@@ -28,10 +29,8 @@ function App() {
           <Route path="/game" element={<Game />} />
           <Route path="/my-profile" element={<Profile />} />
           <Route path="/setting" element={<Setting />} />
-          <Route path="/forum/*" element={<Forum />}>
-            <Route path="category" element={<TopicList />} />
-            <Route path="category/create-topic" element={<CreateTopic />} />
-          </Route>
+          <Route path="/forum/*" element={<Forum />} />
+          <Route path='/inbox' element={<Inbox />} />
         </Route>
       </Routes>
       <Toaster />

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import api from "../lib/axios";
 
 const useGetTopics = (categoryId) => {
     const [topics, setTopics] = useState([]);
@@ -9,17 +10,8 @@ const useGetTopics = (categoryId) => {
         const fetchTopics = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`http://localhost:3333/forum/${categoryId}`, {
-                    method: 'GET',
-                    headers: {
-                        'x_authorization': `${localStorage.getItem('accessToken')}`,
-                        'Content-Type': 'application/json',
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.statusText}`);
-                }
-                const data = await response.json();
+                const response = await api.get(`http://localhost:3333/forum/${categoryId}`);
+                const data = await response.data;
                 console.log(data)
                 setTopics(data.topics);
             } catch (err) {
