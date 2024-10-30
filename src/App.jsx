@@ -12,6 +12,7 @@ import { Auth } from "./screens/Auth";
 import Navbar from "./components/layout/Navbar";
 import { Setting } from "./screens/Setting";
 import { Homepage } from "./screens/Homepage";
+import Game from "./screens/Game";
 
 // backend url
 // const socket = io(`http://localhost:5000`);
@@ -105,8 +106,9 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Homepage />} />
             <Route path="/setting" element={<Setting />} />
+            <Route path="/game" element={<Game />} />
+
             {/* 
-          <Route path="/game" element={<Game />} />
           <Route path="/puzzle" element={<Puzzle />} />
           <Route path="/inbox" element={<Chat />} />
           <Route path="/@" element={<Profile />} />
@@ -118,7 +120,7 @@ function App() {
           </Route>
         </Routes>
       </div>
-      
+
       <Toaster />
     </div>
   );
