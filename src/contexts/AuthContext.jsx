@@ -15,9 +15,11 @@ export function AuthProvider({ children }) {
     if (token) {
       setIsAuthenticated(true);
       const user_id = localStorage.getItem("user_id");
-      const newSocket = initSocket(user_id);
-      console.log(`[NEWSOCKET] : ${newSocket}`)
-      setSocket(newSocket);
+      if (!socket) {
+        const newSocket = initSocket(user_id);
+        console.log(`[NEWSOCKET] : ${newSocket}`);
+        setSocket(newSocket);
+      }
     }
     setLoading(false);
   }, []);
@@ -44,7 +46,9 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loading, login, logout, socket }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, loading, login, logout, socket }}
+    >
       {!loading && children}
     </AuthContext.Provider>
   );

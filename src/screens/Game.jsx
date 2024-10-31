@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import { useAuth } from "../contexts/AuthContext";
+import toast from "react-hot-toast";
 
-const Game = () => {
+export const Game = () => {
   const [game, setGame] = useState(new Chess());
   const [roomId, setRoomId] = useState("");
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [players, setPlayers] = useState({ white: null, black: null });
 
   const { socket } = useAuth();
-  console.log(`[GAME] : ${socket}`);
 
   useEffect(() => {
     if (!socket) return;
@@ -21,29 +20,34 @@ const Game = () => {
       setGame(new Chess(game.fen()));
     });
 
-    socket.on("start_game", (players) => {
+    socket.on("start_game", ({ players }) => {
       setGame(new Chess());
       setPlayers(players);
       setIsGameStarted(true);
     });
 
+    socket.on("error", (message) => {
+      game.undo();
+      setGame(new Chess(game.fen()));
+      toast.error(message);
+    });
+
     return () => {
       socket.off("move");
-      socket.off("startGame");
+      socket.off("start_game");
+      socket.off("error");
     };
   }, [socket, game]);
 
   const createRoom = () => {
-    console.log(`[createRoom] : ${socket}`);
-
     socket.emit("create_room", (roomId) => {
       setRoomId(roomId);
-    }); // Yêu cầu tạo phòng mới
+    });
   };
 
   const joinRoom = () => {
     if (roomId) {
-      socket.emit("join_room", roomId); // Tham gia phòng với roomId đã nhập
+      socket.emit("join_room", roomId);
     }
   };
 
@@ -52,7 +56,7 @@ const Game = () => {
     if (move === null) return false;
 
     setGame(new Chess(game.fen()));
-    socket.emit("move", { room_id: roomId, move }); // send move to server
+    socket.emit("move", { room_id: roomId, move });
     return true;
   };
 
@@ -84,5 +88,3 @@ const Game = () => {
     </div>
   );
 };
-
-export default Game;

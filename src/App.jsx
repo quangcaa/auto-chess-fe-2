@@ -1,14 +1,14 @@
-import { Route, Router, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./guards/ProtectedRoute";
 import PublicRoute from "./guards/PublicRoute";
-import { Auth } from "./screens/Auth";
 import Navbar from "./components/layout/Navbar";
+import { Auth } from "./screens/Auth";
 import { Setting } from "./screens/Setting";
 import { Homepage } from "./screens/Homepage";
 import { Puzzle } from "./screens/Puzzle";
-import Game from "./screens/Game";
-import { Chat } from "./screens/Chat";
+import { Game } from "./screens/Game";
+import { Inbox } from "./screens/Inbox";
 import { Forum } from "./screens/Forum";
 import { Profile } from "./screens/Profile";
 
@@ -26,15 +26,10 @@ function App() {
             <Route path="/" element={<Homepage />} />
             <Route path="/setting" element={<Setting />} />
             <Route path="/game" element={<Game />} />
-
             <Route path="/puzzle" element={<Puzzle />} />
-            <Route path="/inbox" element={<Chat />} />
+            <Route path="/inbox" element={<Inbox />} />
             <Route path="/@" element={<Profile />} />
-
-            <Route path="/forum/*" element={<Forum />}>
-              {/* <Route path="category" element={<TopicList />} />
-              <Route path="category/create-topic" element={<CreateTopic />} /> */}
-            </Route>
+            <Route path="/forum/*" element={<Forum />} />
           </Route>
         </Routes>
       </div>
