@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import { Post } from './Post';
 import backImage from "/back.jpg";
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import api from "../../utils/axios";
-
+import { calculateTimeDifferences } from "../../utils/timeUtils";
 
 export const PostList = () => {
 
@@ -18,6 +18,7 @@ export const PostList = () => {
     try {
       const response = await api.get(`http://localhost:3333/forum/${category_id}/${topic_id}`);
       setPosts(response.data.posts);
+      console.log(response.data.posts)
     } catch (err) {
       setError(err);
     } finally {
@@ -66,10 +67,8 @@ export const PostList = () => {
   
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchParams] = useSearchParams();
   const [newPost, setNewPost] = useState('');
-  const category_id = searchParams.get('categoryId') || "" // Gán giá trị cụ thể
-  const topic_id = searchParams.get('topicId') || ""; // Gán giá trị cụ thể
+  const { category_id, topic_id } = useParams()
   const subjectTopic = location.state;
   const [timeStrings, setTimeStrings] = useState([]);
 
@@ -78,46 +77,9 @@ export const PostList = () => {
   }, [category_id, topic_id]);
 
   useEffect(() => {
-    const calculateTimeDifferences = () => {
-      const currentTime = new Date();
-      const formattedTimes = posts.map(({ created_at }) => {
-        const apiDate = new Date(created_at);
-        const timeDifference = currentTime.getTime() - apiDate.getTime();
-        const seconds = Math.floor(timeDifference / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const hours = Math.floor(minutes / 60);
-        const days = Math.floor(hours / 24);
-        const months = Math.floor(days / 30);
-
-        let formattedTime;
-
-        if (timeDifference < 60000) {
-          formattedTime = `now`;
-        } else if (timeDifference < 3600000) {
-          // < 1 hours
-          formattedTime = `${minutes} minutes ago`;
-        } else if (timeDifference < 86400000) {
-          // < 1 day
-          formattedTime = `${hours} hours ago`;
-        } else if (timeDifference < 2592000000) {
-          // < 1 month
-          formattedTime = ` ${days} days ago`;
-        } else {
-          // >1 month
-          const day = apiDate.getUTCDate();
-          const month = apiDate.getUTCMonth() + 1;
-          const year = apiDate.getUTCFullYear();
-          formattedTime = ` ${year}/${month}/${day}`; // yyyy/mm/dd
-        }
-
-        return formattedTime;
-      });
-
-      setTimeStrings(formattedTimes);
-    };
-
-    calculateTimeDifferences();
-  }, [posts]);
+    const formattedTimes = calculateTimeDifferences(posts, 'created_at');
+    setTimeStrings(formattedTimes);
+  }, [posts])
 
   const handleAddPost = () => {
     if (newPost.trim()) {

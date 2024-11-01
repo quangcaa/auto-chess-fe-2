@@ -61,7 +61,7 @@ export const CategoryList = () => {
                 }
               >
                 <Link
-                  to={`/forum/category?categoryId=${category.category_id}`}
+                  to={`/forum/${category.category_id}`}
                   state={category.category_name}
                 >
                   <td className="flex flex-col items-start gap-1 justify-center mx-10 my-5">

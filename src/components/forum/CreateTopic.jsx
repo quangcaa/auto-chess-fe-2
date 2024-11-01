@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import backImage from "/back.jpg";
 import api from "../../utils/axios";
 
@@ -9,8 +9,7 @@ export const CreateTopic = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const category_name = location.state.category_name
-  const [searchParams] = useSearchParams();
-  const categoryId = searchParams.get("categoryId")
+  const { category_id } = useParams();
 
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
@@ -19,13 +18,13 @@ export const CreateTopic = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  const createTopic = async (categoryId, subject, message) => {
+  const createTopic = async (category_id, subject, message) => {
     setLoading(true);
     setError(null);
     setSuccess(false);
 
     try {
-      const response = await api.post(`http://localhost:3333/forum/${categoryId}/create`, {
+      const response = await api.post(`http://localhost:3333/forum/${category_id}/create`, {
         subject,
           message,
       })
@@ -42,13 +41,13 @@ export const CreateTopic = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await createTopic(categoryId, subject, message);
+    await createTopic(category_id, subject, message);
   };
   useEffect(() => {
     if (success) {
-      navigate(`/forum/category?categoryId=${categoryId}`, { state: category_name });
+      navigate(`/forum/${category_id}`, { state: category_name });
     }
-  }, [success, navigate, categoryId, category_name]);
+  }, [success, navigate, category_id, category_name]);
 
   return (
     <div className="flex flex-col items-center h-screen">
