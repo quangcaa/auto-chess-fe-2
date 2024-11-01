@@ -10,7 +10,11 @@ export default {
         'main-color': '#EDEBE9',
         'nav-color': '#'
       },
+      width: {
+        '7/8' : '87.5%',
+      },
     },
+
   },
   plugins: [],
 }
