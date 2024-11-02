@@ -13,7 +13,11 @@ export default {
       width: {
         '7/8' : '87.5%'
       },
+      width: {
+        '7/8' : '87.5%',
+      },
     },
+
   },
   plugins: [],
 }
