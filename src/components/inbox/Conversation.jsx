@@ -6,6 +6,8 @@ export const Conversation = ({ userId, username }) => {
   const [errorSend, setErrorSend] = useState(null);
   const [successSend, setSuccessSend] = useState(false);
 
+  const avatarUrl = `https://ui-avatars.com/api/?name=${username}&size=128&background=4CAF50&color=ffffff`;
+
   const sendMessage = async (userId, message) => {
     setLoadingSend(true);
     setErrorSend(null);
@@ -27,6 +29,7 @@ export const Conversation = ({ userId, username }) => {
       setLoadingSend(false);
     }
   };
+
   const [loadingInbox, setLoadingInbox] = useState(true);
   const [errorInbox, setErrorInbox] = useState(null);
 
@@ -37,9 +40,7 @@ export const Conversation = ({ userId, username }) => {
       const { data } = await api.get(`/inbox/${userId}`);
       return data.data;
     } catch (err) {
-      setErrorInbox(
-        err instanceof Error ? err.message : "An unexpected error occurred"
-      );
+      setErrorInbox(err instanceof Error ? err.message : "An unexpected error occurred");
     } finally {
       setLoadingInbox(false);
     }
@@ -48,22 +49,6 @@ export const Conversation = ({ userId, username }) => {
   const [inbox, setInbox] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef(null);
-
-  useEffect(() => {
-    const loadInbox = async () => {
-      try {
-        const data = await fetchInbox(userId);
-        setInbox(data);
-      } catch (error) {
-        console.error("Error fetching inbox:", error);
-      }
-    };
-
-    loadInbox();
-    return () => {
-      setInbox([]);
-    };
-  }, [userId, fetchInbox]);
 
   useEffect(() => {
     const loadInbox = async () => {
@@ -104,11 +89,11 @@ export const Conversation = ({ userId, username }) => {
   };
 
   return (
-    <div className="w-[900px] flex flex-col border-gray-100 border-r-2">
+    <div className="w-full flex flex-col border-gray-100 border-r-2 justify-center items-center">
       {/* Header */}
-      <div className="flex flex-row px-5 justify-between py-[14px] items-center w-full bg-[#edebe8] border-b-2 border-gray-100">
-        <div className="flex flex-row gap-3">
-          <img src="/after.png" className="h-7 w-7" />
+      <div className="sticky top-0 flex flex-row px-5 justify-between items-center w-full bg-[#ffffff] py-3 border border-gray-200 z-10">
+        <div className="flex flex-row gap-3 items-center">
+          <img src={avatarUrl} className="h-10 w-10 rounded-full" />
           <p className="text-lg">{username}</p>
         </div>
         <div className="flex flex-row gap-3">
@@ -128,41 +113,80 @@ export const Conversation = ({ userId, username }) => {
           <img src="/after.png" className="h-7 w-7" />
         </div>
       </div>
+
       {/* Message List */}
-      <div className="bg-white flex-grow flex flex-col w-full px-10 gap-3 py-5 overflow-auto">
-        {loadingInbox ? (
-          <p>Loading messages...</p>
-        ) : (
-          inbox.map((item) => (
-            <div
-              key={item.time}
-              className={`w-fit p-2 rounded-xl bg-[#e9f0e0] ${
-                item.sender_id === userId ? "" : "self-end"
-              }`}
-            >
-              <p className="max-w-[360px] break-words">{item.message}</p>
-            </div>
-          ))
-        )}
-        <div ref={messagesEndRef} />
+      <div className="flex w-full overflow-auto justify-center items-center py-3">
+        {/* This div takes 3/5 of the width and is centered */}
+        <div className="flex flex-col w-3/5 px-10 gap-1 overflow-auto">
+          {loadingInbox ? (
+            <p className="text-center text-gray-500">Loading messages...</p>
+          ) : (
+            inbox.map((item, index) => {
+              const isLastFromSender =
+                item.sender_id === userId &&
+                (index === inbox.length - 1 || inbox[index + 1].sender_id !== item.sender_id);
+
+              return (
+                <div
+                  key={item.time}
+                  className={`flex items-start gap-3 ${item.sender_id === userId ? "justify-start" : "justify-end"}`}
+                >
+                  {/* Avatar for the last message from the sender (userId) */}
+                  {item.sender_id === userId && isLastFromSender ? (
+                    <img
+                      src={avatarUrl}
+                      alt={`${item.user_name}'s avatar`}
+                      className="w-10 h-10 rounded-full"
+                    />
+                  ) : (
+                    // Placeholder for alignment when no avatar is shown
+                    <div className="w-10 h-10"></div>
+                  )}
+
+                  {/* Message Bubble */}
+                  <div
+                    className={`w-fit max-w-[80%] p-3 rounded-xl shadow-md ${
+                      item.sender_id === userId ? "bg-blue-100 text-right" : "bg-green-100 text-left"
+                    }`}
+                  >
+                    <p className="break-words">{item.message}</p>
+                  </div>
+                </div>
+              );
+            })
+          )}
+          <div ref={messagesEndRef} />
+        </div>
       </div>
+
       {/* Send */}
       <form
         onSubmit={handleSendMessage}
-        className="flex flex-row justify-center items-center gap-4 w-full h-[55px] bg-[#edebe8] border-t-2 border-gray-100"
+        className="flex items-center justify-between w-3/5 h-[56px] px-4 py-2 bg-[#edebe8] border-t-2 border-gray-100 mt-auto"
       >
+        {/* Message input field */}
         <input
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          className="w-3/4 h-[40px] px-[16px] py-[8px] border-none rounded-3xl my-[8px] mx-[28px]"
+          className="flex-grow h-[40px] px-4 py-2 text-sm bg-white rounded-3xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+          placeholder="Type a message..."
           disabled={loadingSend}
         />
-        <button type="submit" disabled={loadingSend || !newMessage.trim()}>
+
+        {/* Send button */}
+        <button
+          type="submit"
+          disabled={loadingSend || !newMessage.trim()}
+          className="ml-2 px-4 py-2 text-sm text-white bg-blue-500 rounded-full hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+        >
           Send
         </button>
-        {errorSend && <p className="text-red-500">{errorSend}</p>}
-        {errorInbox && <p className="text-red-500">{errorInbox}</p>}
+
+        {/* Error messages */}
+        {(errorSend || errorInbox) && (
+          <p className="text-red-500 text-sm ml-2">{errorSend || errorInbox}</p>
+        )}
       </form>
     </div>
   );
