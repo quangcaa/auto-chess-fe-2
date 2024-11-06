@@ -89,7 +89,7 @@ export const Conversation = ({ userId, username }) => {
   };
 
   return (
-    <div className="w-full flex flex-col border-gray-100 border-r-2">
+    <div className="w-full flex flex-col border-gray-100 border-r-2 justify-center items-center">
       {/* Header */}
       <div className="sticky top-0 flex flex-row px-5 justify-between items-center w-full bg-[#ffffff] py-3 border border-gray-200 z-10">
         <div className="flex flex-row gap-3 items-center">
@@ -116,8 +116,8 @@ export const Conversation = ({ userId, username }) => {
 
       {/* Message List */}
       <div className="flex w-full overflow-auto justify-center items-center py-3">
-        {/* This div takes 50% of the width and is centered */}
-        <div className="flex flex-col w-4/5 px-10 gap-3 overflow-auto">
+        {/* This div takes 3/5 of the width and is centered */}
+        <div className="flex flex-col w-3/5 px-10 gap-1 overflow-auto">
           {loadingInbox ? (
             <p className="text-center text-gray-500">Loading messages...</p>
           ) : (
@@ -162,7 +162,7 @@ export const Conversation = ({ userId, username }) => {
       {/* Send */}
       <form
         onSubmit={handleSendMessage}
-        className="flex items-center justify-between w-full h-[56px] px-4 py-2 bg-[#edebe8] border-t-2 border-gray-100 mt-auto"
+        className="flex items-center justify-between w-3/5 h-[56px] px-4 py-2 bg-[#edebe8] border-t-2 border-gray-100 mt-auto"
       >
         {/* Message input field */}
         <input
