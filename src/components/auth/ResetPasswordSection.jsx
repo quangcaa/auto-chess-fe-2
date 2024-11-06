@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
-import { AxiosError } from "axios";
 
 export const ResetPassword = () => {
   const [email, setEmail] = useState("");
@@ -17,11 +16,7 @@ export const ResetPassword = () => {
 
       toast.success("Sent reset password link to your email successfully");
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("Something went wrong");
-      }
+      toast.error(error.response.data.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

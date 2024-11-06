@@ -1,26 +1,24 @@
-// src/components/PostList.tsx
-import React, { useEffect, useState } from 'react';
-import { Post } from './Post';
+import { useEffect, useState } from "react";
+import { Post } from "./Post";
 import backImage from "/back.jpg";
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import api from "../../utils/axios";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { calculateTimeDifferences } from "../../utils/timeUtils";
+import api from "../../utils/axios";
+import toast from "react-hot-toast";
 
 export const PostList = () => {
-
   const [posts, setPosts] = useState([]);
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   // Get Postlist
   const getPosts = async (category_id, topic_id) => {
     setLoading(true);
     try {
-      const response = await api.get(`http://localhost:3333/forum/${category_id}/${topic_id}`);
-      setPosts(response.data.posts);
-      console.log(response.data.posts)
-    } catch (err) {
-      setError(err);
+      const response = await api.get(`forum/${category_id}/${topic_id}`);
+      const data = await response.data;
+      setPosts(data.posts);
+    } catch (error) {
+      toast.error(error.response.data.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -29,19 +27,24 @@ export const PostList = () => {
   // Create post
   const createPost = async (category_id, topic_id, message) => {
     setLoading(true);
+    const toast_id = toast.loading("Creating post...");
     try {
       const response = await api.post(
-        `http://localhost:3333/forum/${category_id}/${topic_id}/create`,
+        `/forum/${category_id}/${topic_id}/create`,
         { message }
       );
 
       if (response.data.success) {
-        setPosts((prevPosts) => [...prevPosts, {...response.data.post, username: localStorage.getItem('username')}]);
+        setPosts((prevPosts) => [
+          ...prevPosts,
+          { ...response.data.post, username: localStorage.getItem("username") },
+        ]);
+        toast.success("Post created successfully", { id: toast_id });
       } else {
-        setError(new Error(response.data.message));
+        toast.error(new Error(response.data.message), { id: toast_id });
       }
-    } catch (err) {
-      setError(err);
+    } catch (error) {
+      toast.error(error.response.data.message || "Something went wrong", { id: toast_id });
     } finally {
       setLoading(false);
     }
@@ -51,24 +54,28 @@ export const PostList = () => {
   const deletePost = async (post_id) => {
     setLoading(true);
     try {
-      const response = await api.delete(`http://localhost:3333/forum/p/${post_id}`);
+      const response = await api.delete(
+        `http://localhost:3333/forum/p/${post_id}`
+      );
 
       if (response.data.success) {
-        setPosts((prevPosts) => prevPosts.filter((post) => post.post_id !== post_id));
+        setPosts((prevPosts) =>
+          prevPosts.filter((post) => post.post_id !== post_id)
+        );
       } else {
-        setError(new Error(response.data.message));
+        toast.error(new Error(response.data.message));
       }
-    } catch (err) {
-      setError(err );
+    } catch (error) {
+      toast.error(error.response.data.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
-  
+
   const navigate = useNavigate();
   const location = useLocation();
-  const [newPost, setNewPost] = useState('');
-  const { category_id, topic_id } = useParams()
+  const [newPost, setNewPost] = useState("");
+  const { category_id, topic_id } = useParams();
   const subjectTopic = location.state;
   const [timeStrings, setTimeStrings] = useState([]);
 
@@ -77,31 +84,40 @@ export const PostList = () => {
   }, [category_id, topic_id]);
 
   useEffect(() => {
-    const formattedTimes = calculateTimeDifferences(posts, 'created_at');
+    const formattedTimes = calculateTimeDifferences(posts, "created_at");
     setTimeStrings(formattedTimes);
-  }, [posts])
+  }, [posts]);
 
   const handleAddPost = () => {
     if (newPost.trim()) {
       createPost(category_id, topic_id, newPost);
-      setNewPost('');
+      setNewPost("");
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto p-4 bg-white rounded-lg shadow-md">
       <div className="flex flex-row items-center gap-4">
-        <img src= {backImage} alt="forum" className="h-8" onClick={() => navigate(-1)} />
+        <img
+          src={backImage}
+          alt="forum"
+          className="h-8"
+          onClick={() => navigate(-1)}
+        />
         <p className="text-3xl">{subjectTopic}</p>
       </div>
 
       {loading && <p>Loading...</p>}
-      {error && <p className="text-red-500">{error.message}</p>}
 
       {posts.map((post, index) => (
         <Post
           key={post.post_id}
-          post={{ id: post.post_id, username: post.username, text: post.content, created_at: timeStrings[index] }}
+          post={{
+            id: post.post_id,
+            username: post.username,
+            text: post.content,
+            created_at: timeStrings[index],
+          }}
           onDelete={() => deletePost(post.post_id)}
         />
       ))}

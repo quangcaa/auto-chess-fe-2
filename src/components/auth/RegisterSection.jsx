@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
-import { AxiosError } from "axios";
 
 export const Register = () => {
   const [username, setUsername] = useState("");
@@ -29,11 +28,7 @@ export const Register = () => {
 
       login(data.accessToken, data.refreshToken, data.user.username);
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("Something went wrong");
-      }
+      toast.error(error.response.data.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

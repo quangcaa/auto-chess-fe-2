@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../utils/axios";
-import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../contexts/AuthContext";
 import { initSocket } from "../../socket/socket.fe";
@@ -26,15 +25,16 @@ export const Login = () => {
 
       toast.success("Logged in successfully");
 
-      login(data.accessToken, data.refreshToken, data.user.username, data.user.user_id);
+      login(
+        data.accessToken,
+        data.refreshToken,
+        data.user.username,
+        data.user.user_id
+      );
 
-      initSocket(data.user.user_id)
+      initSocket(data.user.user_id);
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("Something went wrong");
-      }
+      toast.error(error.response.data.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
