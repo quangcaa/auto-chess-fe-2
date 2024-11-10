@@ -5,7 +5,8 @@ import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
 
 export const Game = () => {
-  const [game, setGame] = useState(new Chess());
+  const [game] = useState(new Chess());
+  const [position, setPosition] = useState('start')
   const [roomId, setRoomId] = useState("");
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [players, setPlayers] = useState({ white: null, black: null });
@@ -17,18 +18,17 @@ export const Game = () => {
 
     socket.on("move", (move) => {
       game.move(move);
-      setGame(new Chess(game.fen()));
+      setPosition(game.fen())
     });
 
     socket.on("start_game", ({ players }) => {
-      setGame(new Chess());
       setPlayers(players);
       setIsGameStarted(true);
     });
 
     socket.on("error", (message) => {
       game.undo();
-      setGame(new Chess(game.fen()));
+      setPosition(game.fen())
       toast.error(message);
     });
 
@@ -52,12 +52,20 @@ export const Game = () => {
   };
 
   const onDrop = (source, target) => {
-    const move = game.move({ from: source, to: target });
-    if (move === null) return false;
+    const move =  { from: source, to: target, promotion: 'q' };
 
-    setGame(new Chess(game.fen()));
-    socket.emit("move", { room_id: roomId, move });
-    return true;
+    const result = game.move(move)
+
+    if (result) {
+      setPosition(game.fen())
+      socket.emit("move", { room_id: roomId, move });
+    } else {
+      game.undo()
+    }
+
+    // setGame(new Chess(game.fen()));
+    // socket.emit("move", { room_id: roomId, move });
+    // return true;
   };
 
   return (
@@ -80,7 +88,7 @@ export const Game = () => {
               <p>Room ID: {roomId}</p>
             </div>
             <div>
-              <Chessboard position={game.fen()} onPieceDrop={onDrop} />
+              <Chessboard position={position} onPieceDrop={onDrop} />
             </div>
           </div>
         </div>

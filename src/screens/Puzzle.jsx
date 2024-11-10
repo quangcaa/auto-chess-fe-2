@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button"
+
 export const Puzzle = () => {
-  return <h1>PUZZLE PAGE</h1>;
+  return <Button>Hello</Button>
 };

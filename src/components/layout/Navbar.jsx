@@ -28,7 +28,7 @@ export const Navbar = () => {
           {/* PLAY */}
           <li>
             <Link
-              to="/"
+              to="/game"
               className="hover:bg-gray-300 font-bold transition duration-300 px-5 py-5"
             >
               PLAY

@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../contexts/AuthContext";
-import { initSocket } from "../../socket/socket.fe";
 
 export const Login = () => {
   const [username, setUsername] = useState("");
@@ -31,8 +30,6 @@ export const Login = () => {
         data.user.username,
         data.user.user_id
       );
-
-      initSocket(data.user.user_id);
     } catch (error) {
       toast.error(error.response.data.message || "Something went wrong");
     } finally {

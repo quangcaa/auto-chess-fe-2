@@ -1,28 +1,26 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { disconnectSocket, initSocket } from "../socket/socket.fe";
+import useSocketStore from "../store/socketStore";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [socket, setSocket] = useState(null);
   const navigate = useNavigate();
+  const { connect, disconnect, socket } = useSocketStore();
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
       setIsAuthenticated(true);
-      const user_id = localStorage.getItem("user_id");
-      if (!socket) {
-        const newSocket = initSocket(user_id);
-        console.log(`[NEWSOCKET] : ${newSocket}`);
-        setSocket(newSocket);
+      const user_id = parseInt(localStorage.getItem("user_id"), 10);
+      if(!socket) {
+        connect(user_id);
       }
     }
     setLoading(false);
-  }, []);
+  }, [connect]);
 
   const login = (accessToken, refreshToken, username, user_id) => {
     localStorage.setItem("accessToken", accessToken);
@@ -30,8 +28,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem("username", username);
     localStorage.setItem("user_id", user_id);
     setIsAuthenticated(true);
-    const newSocket = initSocket(user_id);
-    setSocket(newSocket);
+    connect(user_id);
   };
 
   const logout = () => {
@@ -40,8 +37,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("username");
     localStorage.removeItem("user_id");
     setIsAuthenticated(false);
-    disconnectSocket();
-    setSocket(null);
+    disconnect();
     navigate("/login");
   };
 
