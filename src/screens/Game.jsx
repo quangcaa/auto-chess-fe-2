@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import { useAuth } from "../contexts/AuthContext";
@@ -12,13 +12,18 @@ import {
   START_GAME,
 } from "@/constants/game";
 import { Button } from "@/components/ui/button";
+import { GameInfo } from "@/components/game/GameInfo";
+import ChatRoom from "@/components/game/ChatRoom";
 
 export const Game = () => {
   const [game, setGame] = useState(new Chess());
   const [roomId, setRoomId] = useState("");
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
-  const [players, setPlayers] = useState({ white: null, black: null });
+  const [players, setPlayers] = useState({
+    whitePlayer: "",
+    blackPlayer: "",
+  });
   const [gameResult, setGameResult] = useState(null);
 
   const { socket } = useAuth();
@@ -27,7 +32,9 @@ export const Game = () => {
     if (!socket) return;
 
     socket.on(START_GAME, (data) => {
-      setPlayers(data.players);
+      console.log(data);
+      setPlayers({ whitePlayer: data.white, blackPlayer: data.black });
+
       setIsGameStarted(true);
       setIsGameOver(false);
       setGame(new Chess());
@@ -52,7 +59,13 @@ export const Game = () => {
       socket.off("game_over");
       socket.off("start_game");
     };
-  }, [socket, game]);
+  }, [socket, game, players]);
+
+  useEffect(() => {
+    console.log(
+      `Updated players: ${players.whitePlayer}, ${players.blackPlayer}`
+    );
+  }, [players]);
 
   const createRoom = () => {
     socket.emit(CREATE_GAME, (game_id) => {
@@ -94,7 +107,6 @@ export const Game = () => {
     },
     [socket, roomId, game, isGameOver]
   );
-
 
   const gameFen = game.fen();
 
@@ -145,23 +157,43 @@ export const Game = () => {
           </div>
         </div>
       ) : (
-        <div className="flex flex-row justify-center items-center gap-4">
-          <div> {chessboardMemo} </div>
-          {gameResult && (
-            <div className="mt-4 text-xl">
-              {isGameOver ? `Kết thúc: ${gameResult}` : ""}
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="w-full max-w-screen-xl h-full">
+            <div className="grid grid-rows-[90%,10%] grid-cols-5 h-full gap-4">
+              {/* Hàng 1 */}
+              <div className="col-span-1 h-full flex flex-col">
+                <GameInfo
+                  white={players.whitePlayer}
+                  black={players.blackPlayer}
+                  gameType="Standard Rated"
+                />
+                <ChatRoom className="flex-grow" />
+              </div>
+              <div className="col-span-3 bg-green-500 h-full flex items-center justify-center w-full">
+                <div> {chessboardMemo} </div>
+              </div>
+              <div className="col-span-1 bg-red-500 h-full">
+                {gameResult && (
+                  <div className="mt-4 text-xl">
+                    {isGameOver ? `Kết thúc: ${gameResult}` : ""}
+                  </div>
+                )}
+                {!isGameOver && (
+                  <div>
+                    <button
+                      onClick={leaveGame}
+                      className="bg-red-500 text-white px-4 py-2 rounded mt-4"
+                    >
+                      LEAVE GAME
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Hàng 2 */}
+              <div className="col-span-5 bg-yellow-500 h-full">Bottom</div>
             </div>
-          )}
-          {!isGameOver && (
-            <div>
-              <button
-                onClick={leaveGame}
-                className="bg-red-500 text-white px-4 py-2 rounded mt-4"
-              >
-                LEAVE GAME
-              </button>
-            </div>
-          )}
+          </div>
         </div>
       )}
     </div>
