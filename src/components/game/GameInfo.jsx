@@ -35,7 +35,7 @@ export const GameInfo = ({ white, black, type }) => {
   }, [black, white]);
 
   return (
-    <Card className="w-full max-w-md mx-auto shadow-lg">
+    <Card className="w-full shadow-lg">
       <CardHeader className="flex flex-row gap-4 p-[21px] pb-2">
         <div>
           <GiRabbit className="size-12 text-gray-800" />

@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 
-const ChatRoom = () => {
+export const ChatRoom = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
@@ -33,7 +33,7 @@ const ChatRoom = () => {
   }, [messages]);
 
   return (
-    <Card className="w-full h-full max-w-xs md:max-w-sm mx-auto shadow-lg flex flex-col">
+    <Card className="w-full h-full shadow-lg flex flex-col">
       <CardHeader className="flex flex-col p-4 pb-2 mb-2 text-gray-700">
         <CardTitle>Chat room</CardTitle>
       </CardHeader>
@@ -60,5 +60,3 @@ const ChatRoom = () => {
     </Card>
   );
 };
-
-export default ChatRoom;

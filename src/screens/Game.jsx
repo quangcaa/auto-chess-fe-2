@@ -13,7 +13,9 @@ import {
 } from "@/constants/game";
 import { Button } from "@/components/ui/button";
 import { GameInfo } from "@/components/game/GameInfo";
-import ChatRoom from "@/components/game/ChatRoom";
+import { ChatRoom } from "@/components/game/ChatRoom";
+import { MoveList } from "@/components/game/MoveList";
+import movesStore from "@/store/movesStore";
 
 export const Game = () => {
   const [game, setGame] = useState(new Chess());
@@ -25,6 +27,9 @@ export const Game = () => {
     blackPlayer: "",
   });
   const [gameResult, setGameResult] = useState(null);
+  const setMoves = movesStore((state) => state.setMoves);
+  const addMove = movesStore((state) => state.addMove);
+  const resetMoves = movesStore((state) => state.resetMoves);
 
   const { socket } = useAuth();
 
@@ -38,12 +43,20 @@ export const Game = () => {
       setIsGameStarted(true);
       setIsGameOver(false);
       setGame(new Chess());
+
+      resetMoves();
       toast.success("Game started!");
     });
 
     socket.on(MOVE, (move) => {
       game.move(move);
       setGame(new Chess(game.fen()));
+
+      // Get the last move and add it to the store
+      const lastMove = game.history({ verbose: true }).slice(-1)[0];
+      addMove(lastMove);
+
+      console.log("New move added:", lastMove);
     });
 
     // Lắng nghe sự kiện kết thúc game
@@ -59,7 +72,7 @@ export const Game = () => {
       socket.off("game_over");
       socket.off("start_game");
     };
-  }, [socket, game, players]);
+  }, [socket, game, players, addMove, resetMoves]);
 
   useEffect(() => {
     console.log(
@@ -98,6 +111,11 @@ export const Game = () => {
         if (response.success) {
           game.move(move);
           setGame(new Chess(game.fen()));
+
+          // Get the last move and add it to the store
+          const lastMove = game.history({ verbose: true }).slice(-1)[0];
+          addMove(lastMove);
+          console.log("New move added:", lastMove);
         } else {
           toast.error(response.message || "Nước đi không hợp lệ.");
         }
@@ -105,7 +123,7 @@ export const Game = () => {
 
       return true;
     },
-    [socket, roomId, game, isGameOver]
+    [socket, roomId, game, isGameOver, addMove]
   );
 
   const gameFen = game.fen();
@@ -115,7 +133,7 @@ export const Game = () => {
       <Chessboard
         position={gameFen}
         onPieceDrop={onDrop}
-        boardWidth={600}
+        boardWidth={550}
         customBoardStyle={{
           borderRadius: "8px",
           boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.4)",
@@ -131,7 +149,7 @@ export const Game = () => {
   );
 
   return (
-    <div className="App">
+    <div className="flex-grow flex flex-col">
       {!isGameStarted && !isGameOver ? (
         <div className="flex flex-col items-center justify-center h-full">
           <button
@@ -157,22 +175,27 @@ export const Game = () => {
           </div>
         </div>
       ) : (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="w-full max-w-screen-xl h-full">
-            <div className="grid grid-rows-[90%,10%] grid-cols-5 h-full gap-4">
+        <div className="flex-grow flex items-center justify-center">
+          <div className="w-full max-w-screen-xl w-[80%] h-full">
+            <div className="flex-grow flex flex-row justify-center h-full gap-4">
               {/* Hàng 1 */}
-              <div className="col-span-1 h-full flex flex-col">
-                <GameInfo
-                  white={players.whitePlayer}
-                  black={players.blackPlayer}
-                  gameType="Standard Rated"
-                />
-                <ChatRoom className="flex-grow" />
+              <div className="w-1/4 flex flex-col gap-4 flex-shink-0">
+                <div>
+                  <GameInfo
+                    white={players.whitePlayer}
+                    black={players.blackPlayer}
+                    gameType="Standard Rated"
+                  />
+                </div>
+                <div className="flex-grow">
+                  <ChatRoom />
+                </div>
               </div>
-              <div className="col-span-3 bg-green-500 h-full flex items-center justify-center w-full">
+              <div className="w-2/4 h-full flex items-center justify-center flex-shrink-0 w-auto max-w-fit">
                 <div> {chessboardMemo} </div>
               </div>
-              <div className="col-span-1 bg-red-500 h-full">
+              <div className="w-1/4 h-full flex flex-col p-4 flex-shink-0">
+                <MoveList />
                 {gameResult && (
                   <div className="mt-4 text-xl">
                     {isGameOver ? `Kết thúc: ${gameResult}` : ""}
@@ -189,9 +212,7 @@ export const Game = () => {
                   </div>
                 )}
               </div>
-
               {/* Hàng 2 */}
-              <div className="col-span-5 bg-yellow-500 h-full">Bottom</div>
             </div>
           </div>
         </div>
