@@ -1,3 +1,10 @@
+import { Button } from "@/components/ui/button";
+import UserMenu from "@/components/profile/UserMenu";
+
 export const Profile = () => {
-  return <h1>PROFILE PAGE</h1>;
-};
+  return (
+    <div>
+      <UserMenu username={"lucian123"}/>
+    </div>
+  )
+}
