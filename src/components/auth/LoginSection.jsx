@@ -3,16 +3,23 @@ import { Link } from "react-router-dom";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../contexts/AuthContext";
+import { Button } from "../ui/button"
+import { Label } from "../ui/label"
+import { FaUser, FaLock, FaSignInAlt } from "react-icons/fa";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "../ui/tooltip";
 
 export const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!username || !password) {
+      toast.error("Username and password are required.");
+      return;
+    }
     setLoading(true);
 
     try {
@@ -37,12 +44,8 @@ export const Login = () => {
     }
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
   return (
-    <div>
+    <div className="bg-cover bg-center h-screen" style={{ backgroundImage: "url('public/background.jpeg')" }}>
       {/* header */}
       <div className="container mx-auto flex justify-center">
         <img
@@ -52,61 +55,106 @@ export const Login = () => {
       </div>
 
       {/* login form */}
-      <div className="bg-white flex flex-col items-center justify-center p-8 rounded-lg shadow-md max-w-md mx-auto mt-20">
-        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
-          Login
-        </h2>
+      <div className="bg-white bg-opacity-20 backdrop-blur-sm flex flex-col items-center justify-center p-3 rounded-lg shadow-md max-w-md mx-auto mt-20 border border-gray-300">
+        <div className="text-center mb-4">
+          <h2 className="text-3xl font-bold mb-2 text-gray-800">
+            Login
+          </h2>
+          <div className="mt-2">
+            <Label htmlFor="login-email" className="text-[14px] font-normal text-gray-800">
+              Enter your registered username below to login.
+            </Label>
+          </div>
+        </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col w-full">
+        <form onSubmit={handleSubmit} noValidate className="flex flex-col w-full">
           {/* USERNAME */}
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            className="bg-[#F1F7EC] border border-[#ddd] rounded-lg w-full p-3 mb-3 transition duration-300 focus:border-[#007bff] focus:outline-none focus:ring focus:ring-[#007bff] focus:ring-opacity-30"
-          />
+          <div className="relative mb-3">
+            <Label htmlFor="username" className="text-base font-semibold mb-5 mt-2">
+              Username
+            </Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="relative flex items-center">
+                    <FaUser className="absolute left-3 top-6 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
+                    <input
+                      type="text"
+                      placeholder="Username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      required
+                      className="bg-[#F1F7EC] border border-[#ddd] rounded-lg w-full p-3 pl-10 pr-3 transition duration-300 focus:border-[#007bff] focus:outline-none focus:ring focus:ring-[#007bff] focus:ring-opacity-30"
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="bg-blue-600 text-white text-sm p-2 rounded-lg shadow-lg" side="top" sideOffset={5}>
+                  <p>Enter your username</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
 
           {/* PASSWORD */}
           <div className="relative mb-3">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="bg-[#F1F7EC] border border-[#ddd] rounded-lg w-full p-3 pr-12 transition duration-300 focus:border-[#007bff] focus:outline-none focus:ring focus:ring-[#007bff] focus:ring-opacity-30"
-            />
-            <span
-              className="absolute right-3 top-3 cursor-pointer text-lg text-[#555]"
-              onClick={togglePasswordVisibility}
-            >
-              {showPassword ? "🙈" : "👁️"}
-            </span>
+            <Label htmlFor="password" className="mb-5 mt-2 text-base font-semibold">
+              Password
+            </Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="relative flex items-center">
+                    <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="bg-[#F1F7EC] border border-[#ddd] rounded-lg w-full p-3 pl-10 pr-3 transition duration-300 focus:border-[#007bff] focus:outline-none focus:ring focus:ring-[#007bff] focus:ring-opacity-30"
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="bg-blue-600 text-white text-sm p-2 rounded-lg shadow-lg" side="top" sideOffset={5}>
+                  <p>Enter your password</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
-          <button
+          <div className="mt-2 text-right">
+            <Link
+              to="/reset-password"
+              className="text-gray-600 text-sm hover:text-[#007bff] underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
+
+          {/* Login button*/}
+          <Button
             type="submit"
-            className={`mt-3 w-full py-3 bg-blue-500 hover:bg-blue-700 text-base text-white font-bold rounded-lg transition duration-300 ${
-              loading
-                ? "bg-blue-500 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            }`}
+            variant={loading ? "default" : "blue"}
+            size="lg"
+            className={`mt-3 w-full py-3 bg-black text-white text-[15px] ${loading ? "cursor-not-allowed" : "hover:bg-gray-700 focus:ring-gray-500"}`}
             disabled={loading}
           >
-            {loading ? "LOGGING IN..." : "LOG IN"}
-          </button>
+            {loading ? "LOGGING IN..." : "LOGIN"}
+            <FaSignInAlt className="mr-2" />
+          </Button>
         </form>
 
         {/* FOOTER */}
-        <div className="mt-5 flex justify-between">
-          <Link to="/register" className="text-[#007bff] hover:underline mr-10">
-            Register
-          </Link>
-          <Link to="/reset-password" className="text-[#007bff] hover:underline">
-            Reset password
-          </Link>
+        <div className="mt-5 text-center">
+          <p className="text-gray-600">
+            Don't have an account?{" "}
+            <Link
+              to="/register"
+              className="text-gray-800 underline hover:text-[#007bff]"
+            >
+              Sign up
+            </Link>
+          </p>
         </div>
       </div>
     </div>

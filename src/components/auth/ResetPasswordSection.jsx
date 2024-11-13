@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
+import { FaEnvelope } from "react-icons/fa";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "../ui/tooltip";
 
 export const ResetPassword = () => {
   const [email, setEmail] = useState("");
@@ -9,6 +11,11 @@ export const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (email.trim() == "") {
+      toast.error("Email is required!");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -23,7 +30,8 @@ export const ResetPassword = () => {
   };
 
   return (
-    <div>
+    <div className="bg-cover bg-center h-screen"
+        style={{ backgroundImage: "url('public/background.jpeg')" }}>
       {/* header */}
       <div className="container mx-auto flex justify-center">
         <img
@@ -33,29 +41,42 @@ export const ResetPassword = () => {
       </div>
 
       {/* reset password form  */}
-      <div className="bg-white flex flex-col items-center justify-center p-8 rounded-lg shadow-md max-w-md mx-auto mt-20">
+      <div className="bg-white mt-20 bg-opacity-30 backdrop-blur-md p-8 rounded-lg shadow-md max-w-md w-full mx-auto border border-gray-300">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
           Reset password
         </h2>
 
-        <form onSubmit={handleSubmit} className="flex flex-col  w-full">
+        <form noValidate onSubmit={handleSubmit} className="flex flex-col  w-full ">
           <p className="mb-2 text-gray-700">
             Please enter your email to authenticate your account
           </p>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full p-3 mb-4 bg-[#F1F7EC] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+          
+          <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="relative w-full mb-4">
+                    <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="w-full p-3 pl-10 bg-[#F1F7EC] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="bg-blue-600 text-white text-sm p-2 rounded-lg shadow-lg" side="top" sideOffset={5}>
+                  <p>Enter your email address</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           <button
             type="submit"
-            className={`w-full py-3 bg-blue-500 hover:bg-blue-700 text-base text-white font-bold rounded-lg transition duration-300 ${
+            className={`w-full py-3 bg-black hover:bg-gray-600 text-base text-white font-bold rounded-lg transition duration-300 ${
               loading
-                ? "bg-blue-500 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                ? "bg-black cursor-not-allowed"
+                : "bg-black-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
             }`}
             disabled={loading}
           >
