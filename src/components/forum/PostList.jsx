@@ -96,12 +96,12 @@ export const PostList = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 bg-white rounded-lg shadow-md">
-      <div className="flex flex-row items-center gap-4">
+    <div className="w-[60%] mx-auto px-4 bg-white rounded-lg shadow-md">
+      <div className="flex flex-row items-center justify-start gap-7 py-10 mx-5 border-b-2 sticky Roboto text-[#4D4D4D]">
         <img
           src={backImage}
           alt="forum"
-          className="h-8"
+          className="h-8 hover:cursor-pointer"
           onClick={() => navigate(-1)}
         />
         <p className="text-3xl">{subjectTopic}</p>
@@ -117,14 +117,15 @@ export const PostList = () => {
             username: post.username,
             text: post.content,
             created_at: timeStrings[index],
+            index: index + 1,
           }}
           onDelete={() => deletePost(post.post_id)}
         />
       ))}
 
-      <div className="mt-4">
+<div className="mt-6 p-4">
         <textarea
-          className="w-full p-2 border rounded mb-2"
+          className="w-full h-[200px] p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
           value={newPost}
           onChange={(e) => setNewPost(e.target.value)}
           placeholder="Add a new Post"
