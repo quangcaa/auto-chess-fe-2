@@ -10,6 +10,7 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "../ui/
 
 export const Login = () => {
   const [username, setUsername] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -44,8 +45,12 @@ export const Login = () => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
-    <div className="bg-cover bg-center h-screen" style={{ backgroundImage: "url('public/background.jpeg')" }}>
+    <div className="bg-cover bg-center h-screen" style={{ backgroundImage: "url('public/background.png')" }}>
       {/* header */}
       <div className="container mx-auto flex justify-center">
         <img
@@ -55,7 +60,7 @@ export const Login = () => {
       </div>
 
       {/* login form */}
-      <div className="bg-white bg-opacity-20 backdrop-blur-sm flex flex-col items-center justify-center p-3 rounded-lg shadow-md max-w-md mx-auto mt-20 border border-gray-300">
+      <div className="bg-white backdrop-blur-sm flex flex-col items-center justify-center p-3 rounded-lg shadow-md max-w-md mx-auto mt-20 border border-gray-300">
         <div className="text-center mb-4">
           <h2 className="text-3xl font-bold mb-2 text-gray-800">
             Login
@@ -106,13 +111,19 @@ export const Login = () => {
                   <div className="relative flex items-center">
                     <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       className="bg-[#F1F7EC] border border-[#ddd] rounded-lg w-full p-3 pl-10 pr-3 transition duration-300 focus:border-[#007bff] focus:outline-none focus:ring focus:ring-[#007bff] focus:ring-opacity-30"
                     />
+                    <span
+                      className="absolute right-3.5 top-3 cursor-pointer text-lg text-[#555]"
+                      onClick={togglePasswordVisibility}
+                    >
+                      {showPassword ? "🙈" : "👁️"}
+                    </span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="bg-blue-600 text-white text-sm p-2 rounded-lg shadow-lg" side="top" sideOffset={5}>
@@ -125,7 +136,7 @@ export const Login = () => {
           <div className="mt-2 text-right">
             <Link
               to="/reset-password"
-              className="text-gray-600 text-sm hover:text-[#007bff] underline"
+              className="text-gray-800 text-sm hover:text-[#007bff] underline"
             >
               Forgot password?
             </Link>

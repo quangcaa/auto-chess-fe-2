@@ -31,7 +31,7 @@ export const ResetPassword = () => {
 
   return (
     <div className="bg-cover bg-center h-screen"
-        style={{ backgroundImage: "url('public/background.jpeg')" }}>
+        style={{ backgroundImage: "url('public/background.png')" }}>
       {/* header */}
       <div className="container mx-auto flex justify-center">
         <img
@@ -41,7 +41,7 @@ export const ResetPassword = () => {
       </div>
 
       {/* reset password form  */}
-      <div className="bg-white mt-20 bg-opacity-30 backdrop-blur-md p-8 rounded-lg shadow-md max-w-md w-full mx-auto border border-gray-300">
+      <div className="bg-white mt-20 backdrop-blur-md p-8 rounded-lg shadow-md max-w-md w-full mx-auto border border-gray-300">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
           Reset password
         </h2>

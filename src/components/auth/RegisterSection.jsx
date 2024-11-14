@@ -11,7 +11,9 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "../ui/
 export const Register = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -48,8 +50,16 @@ export const Register = () => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   return (
-    <div className="bg-cover bg-center h-screen" style={{ backgroundImage: "url('public/background.jpeg')" }}>
+    <div className="bg-cover bg-center h-screen" style={{ backgroundImage: "url('public/background.png')" }}>
       {/* header */}
       <div className="container mx-auto flex justify-center">
         <img
@@ -59,7 +69,7 @@ export const Register = () => {
       </div>
 
       {/* register form */}
-      <div className="bg-white bg-opacity-50 backdrop-blur-md flex flex-col items-center justify-center p-8 rounded-lg shadow-md max-w-md mx-auto mt-10">
+      <div className="bg-white backdrop-blur-md flex flex-col items-center justify-center p-8 rounded-lg shadow-md max-w-md mx-auto mt-10">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
           Register
         </h2>
@@ -133,13 +143,19 @@ export const Register = () => {
                     <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
                     <input
                       id="password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       className="bg-[#F1F7EC] w-full p-3 pl-10 border border-gray-300 rounded-md focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 pr-3"
                     />
+                    <span
+                      className="absolute right-3.5 cursor-pointer text-gray-600 text-lg"
+                      onClick={togglePasswordVisibility}
+                    >
+                    {showPassword ? "🙈" : "👁️"}
+                    </span>
                   </div>
                   </TooltipTrigger>
                 <TooltipContent className="bg-blue-600 text-white text-sm p-2 rounded-lg shadow-lg" side="top" sideOffset={5}>
@@ -161,13 +177,19 @@ export const Register = () => {
                     <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
                     <input
                       id="confirmPassword"
-                      type="password"
+                      type={showConfirmPassword ? "text" : "password"}
                       placeholder="Confirm Password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
                       className="bg-[#F1F7EC] w-full p-3 pl-10 border border-gray-300 rounded-md focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 pr-3"
                     />
+                    <span
+                      className="absolute right-3.5 cursor-pointer text-gray-600 text-lg"
+                      onClick={toggleConfirmPasswordVisibility}
+                    >
+                    {showConfirmPassword ? "🙈" : "👁️"}
+                    </span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="bg-blue-600 text-white text-sm p-2 rounded-lg shadow-lg" side="top" sideOffset={5}>
