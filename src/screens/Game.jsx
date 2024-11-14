@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
-import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
+
+import { useAuth } from "../contexts/AuthContext";
+
 import {
   CREATE_GAME,
   GAME_OVER,
@@ -11,10 +13,11 @@ import {
   MOVE,
   START_GAME,
 } from "@/constants/game";
-import { Button } from "@/components/ui/button";
+
 import { GameInfo } from "@/components/game/GameInfo";
 import { ChatRoom } from "@/components/game/ChatRoom";
 import { MoveList } from "@/components/game/MoveList";
+
 import movesStore from "@/store/movesStore";
 
 export const Game = () => {
@@ -33,6 +36,10 @@ export const Game = () => {
 
   const { socket } = useAuth();
 
+  const [whiteTime, setWhiteTime] = useState(10 * 60 * 1000); // 10 minutes in milliseconds
+  const [blackTime, setBlackTime] = useState(10 * 60 * 1000); // 10 minutes in milliseconds
+  const [activePlayer, setActivePlayer] = useState("w"); // 'w' for white, 'b' for black
+
   useEffect(() => {
     if (!socket) return;
 
@@ -45,6 +52,9 @@ export const Game = () => {
       setGame(new Chess());
 
       resetMoves();
+      setWhiteTime(10 * 60 * 1000); // Reset to 10 minutes
+      setBlackTime(10 * 60 * 1000); // Reset to 10 minutes
+      setActivePlayer("w"); // White starts
       toast.success("Game started!");
     });
 
@@ -57,9 +67,11 @@ export const Game = () => {
       addMove(lastMove);
 
       console.log("New move added:", lastMove);
+
+      // Switch active player
+      setActivePlayer((prev) => (prev === "w" ? "b" : "w"));
     });
 
-    // Lắng nghe sự kiện kết thúc game
     socket.on(GAME_OVER, (result) => {
       setGameResult(result);
       setIsGameStarted(false);
@@ -68,17 +80,30 @@ export const Game = () => {
     });
 
     return () => {
+      socket.off(START_GAME);
       socket.off(MOVE);
-      socket.off("game_over");
-      socket.off("start_game");
+      socket.off(GAME_OVER);
     };
-  }, [socket, game, players, addMove, resetMoves]);
+  }, [socket, game, addMove, resetMoves]);
 
   useEffect(() => {
-    console.log(
-      `Updated players: ${players.whitePlayer}, ${players.blackPlayer}`
-    );
-  }, [players]);
+    let timer;
+    if (isGameStarted && !isGameOver) {
+      timer = setInterval(() => {
+        setWhiteTime((prev) => (activePlayer === "w" ? prev - 1000 : prev));
+        setBlackTime((prev) => (activePlayer === "b" ? prev - 1000 : prev));
+      }, 1000);
+    }
+
+    return () => clearInterval(timer);
+  }, [isGameStarted, isGameOver, activePlayer]);
+
+  const formatTime = (milliseconds) => {
+    const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+    const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+    const seconds = String(totalSeconds % 60).padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  };
 
   const createRoom = () => {
     socket.emit(CREATE_GAME, (game_id) => {
@@ -116,6 +141,9 @@ export const Game = () => {
           const lastMove = game.history({ verbose: true }).slice(-1)[0];
           addMove(lastMove);
           console.log("New move added:", lastMove);
+
+          // Switch active player
+          setActivePlayer((prev) => (prev === "w" ? "b" : "w"));
         } else {
           toast.error(response.message || "Nước đi không hợp lệ.");
         }
@@ -178,8 +206,8 @@ export const Game = () => {
         <div className="flex-grow flex items-center justify-center">
           <div className="w-full max-w-screen-xl w-[80%] h-full">
             <div className="flex-grow flex flex-row justify-center h-full gap-4">
-              {/* Hàng 1 */}
-              <div className="w-1/4 flex flex-col gap-4 flex-shink-0">
+              {/* Left Sidebar */}
+              <div className="w-1/4 flex flex-col gap-4 flex-shrink-0">
                 <div>
                   <GameInfo
                     white={players.whitePlayer}
@@ -187,15 +215,31 @@ export const Game = () => {
                     gameType="Standard Rated"
                   />
                 </div>
-                <div className="flex-grow">
+                <div className="flex-grow h-64">
                   <ChatRoom />
                 </div>
               </div>
+              {/* Middle Section (Chessboard) */}
               <div className="w-2/4 h-full flex items-center justify-center flex-shrink-0 w-auto max-w-fit">
-                <div> {chessboardMemo} </div>
+                <div>{chessboardMemo}</div>
               </div>
-              <div className="w-1/4 h-full flex flex-col p-4 flex-shink-0">
-                <MoveList />
+              {/* Right Sidebar */}
+              <div className="w-1/4 h-full flex flex-col flex-shrink-0">
+                <div className="flex justify-between mb-4">
+                  <div
+                    className={`timer ${activePlayer === "w" ? "active" : ""}`}
+                  >
+                    White: {formatTime(whiteTime)}
+                  </div>
+                  <div
+                    className={`timer ${activePlayer === "b" ? "active" : ""}`}
+                  >
+                    Black: {formatTime(blackTime)}
+                  </div>
+                </div>
+                <div className="flex-grow">
+                  <MoveList />
+                </div>
                 {gameResult && (
                   <div className="mt-4 text-xl">
                     {isGameOver ? `Kết thúc: ${gameResult}` : ""}
@@ -212,7 +256,6 @@ export const Game = () => {
                   </div>
                 )}
               </div>
-              {/* Hàng 2 */}
             </div>
           </div>
         </div>
@@ -220,3 +263,5 @@ export const Game = () => {
     </div>
   );
 };
+
+export default Game;

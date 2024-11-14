@@ -34,12 +34,12 @@ export const ChatRoom = () => {
 
   return (
     <Card className="w-full h-full shadow-lg flex flex-col">
-      <CardHeader className="flex flex-col p-4 pb-2 mb-2 text-gray-700">
+      <CardHeader className="flex flex-col p-4 text-gray-700">
         <CardTitle>Chat room</CardTitle>
       </CardHeader>
       <Separator />
-      <CardContent className="flex flex-col overflow-y-auto flex-grow">
-        <div className="p-4 flex-grow">
+      <CardContent className="flex-grow overflow-y-auto h-full no-scrollbar text-sm">
+        <div className="flex flex-col space-y-2 p-2">
           {messages.map((message, index) => (
             <div key={index} className="mb-2">
               {message}
