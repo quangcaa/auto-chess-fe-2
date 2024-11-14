@@ -9,15 +9,27 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/contexts/AuthContext";
+import { RECEIVE_MESSAGE, SEND_MESSAGE } from "@/constants/game";
 
-export const ChatRoom = () => {
+export const ChatRoom = ({ game_id }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
+  const { socket } = useAuth();
+
+  const sender = localStorage.getItem('username')
+
   const handleSend = () => {
     if (input.trim()) {
-      setMessages([...messages, input]);
+      const message = {
+        content: input,
+        sender: sender,
+        timestamp: new Date(),
+      };
+      socket.emit(SEND_MESSAGE, {game_id, message});
+      // setMessages([...messages, input]);
       setInput("");
     }
   };
@@ -27,6 +39,16 @@ export const ChatRoom = () => {
       handleSend();
     }
   };
+
+  useEffect(() => {
+    socket.on(RECEIVE_MESSAGE, (message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+
+    return () => {
+      socket.off(RECEIVE_MESSAGE);
+    };
+  }, [socket]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -42,7 +64,7 @@ export const ChatRoom = () => {
         <div className="flex flex-col space-y-2 p-2">
           {messages.map((message, index) => (
             <div key={index} className="mb-2">
-              {message}
+              <span>{message.sender}:  {message.content}</span>
             </div>
           ))}
           <div ref={messagesEndRef} />

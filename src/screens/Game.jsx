@@ -216,7 +216,7 @@ export const Game = () => {
                   />
                 </div>
                 <div className="flex-grow h-64">
-                  <ChatRoom />
+                  <ChatRoom game_id={roomId}/>
                 </div>
               </div>
               {/* Middle Section (Chessboard) */}
