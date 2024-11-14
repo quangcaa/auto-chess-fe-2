@@ -52,7 +52,6 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
       try {
         const data = await fetchInbox(userId);
         setInbox(data.map(formatMessageTime));
-        console.log(data.map(formatMessageTime));
       } catch (error) {
         console.error("Error fetching inbox:", error);
       }
@@ -78,7 +77,7 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
     const messageData = await sendMessage(userId, newMessage);
 
     if (messageData) {
-      onUpdateLastMessage(userId, newMessage);
+      onUpdateLastMessage(userId, username, newMessage);
       setInbox((prevInbox) => [
         ...prevInbox,
         formatMessageTime({ sender_id: null, message: newMessage, time: Date.now() }),

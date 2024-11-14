@@ -23,7 +23,9 @@ export const Inbox = () => {
         const response = await api.get("/inbox");
         const data = await response.data;
         console.log('inbox',data);
-        setInboxList(data.data);
+        setInboxList(
+          data.data.sort((a, b) => new Date(b.last_message_time) - new Date(a.last_message_time))
+        );
       } catch (err) {
         setError(err.message);
       } finally {
@@ -88,7 +90,7 @@ export const Inbox = () => {
                 className={`flex h-[80px] gap-3 flex-row items-center w-full px-5 py-3 overflow-hidden transition-transform transform ${
                   selectedInbox !== null && selectedInbox.user_id === item.user_id
                     && "bg-[#D0E0BD]"
-                } ${selectedInbox !== null && selectedInbox.user_id !== item.user_id ? "hover:bg-[#e9f0e0]" : ""}`}
+                } ${(selectedInbox === null || selectedInbox.user_id !== item.user_id) ? "hover:bg-[#e9f0e0]" : ""}`}
               >
                 {/* <img
                   
@@ -144,18 +146,22 @@ export const Inbox = () => {
               const username = item.username;
               return (
                 <div
-                  key={item.user_id}
+                  key={item.user_id + item.username}
+                  onClick={() => handleInboxSelect({
+                    user_id: item.user_id,
+                    user_name: item.username
+                  })}
                   className={`w-full`}
                 >
                   {/* Conservation UserList */}
                   <div
-                    className={`flex h-[80px] gap-4 flex-row items-center w-full px-5 py-3 rounded-xl transition-transform transform text-gray-800 hover:bg-[#e9f0e0]`}
+                    className={`flex h-[50px] gap-4 flex-row items-center w-full px-5 py-3 rounded-xl transition-transform transform text-gray-800 hover:bg-[#e9f0e0]`}
                   >
                     {/* <img
                       className="h-14 w-14 rounded-full"
                       alt="User Avatar"
                     /> */}
-                    { item.online === null ?
+                    { item.online !== null ?
                      <div className="w-6 h-6 rounded-full bg-[#629924] opacity-90"></div> :
                      <div className="w-6 h-6 border-t-4 border-b-4 border-l-4 border-r-4 rounded-full border-[#4d4d4d] opacity-50"></div>}
                     <p className="text-lg" dangerouslySetInnerHTML={{ __html: username.replace(new RegExp(query, 'g'), `<b>${query}</b>`) }} />
@@ -170,19 +176,44 @@ export const Inbox = () => {
   };
 
   const handleInboxSelect = (item) => {
-    setSelectedInbox(item); // Cập nhật chỉ số của chat được chọn
+    setSelectedInbox(item);
+    console.log(item);
     setIsSearching(false)
   };
 
-  const updateLastMessage = (userId, message) => {
+  const updateLastMessage = (userId, username, message) => {
     setInboxList((prevInboxList) => {
-      return prevInboxList.map((inbox) =>
-        inbox.user_id === userId
-          ? { ...inbox, last_message: message, last_message_time: Date.now() } // Cập nhật last_message và last_message_time
-          : inbox
-      );
+      const userExists = prevInboxList.some((inbox) => inbox.user_id === userId);
+  
+      let updatedInboxList;
+  
+      if (userExists) {
+        updatedInboxList = prevInboxList.map((inbox) => {
+          if (inbox.user_id === userId) {
+            return { 
+              ...inbox, 
+              last_message: message, 
+              last_message_time: new Date().toISOString()
+            };
+          }
+          return inbox;
+        });
+      } else {
+        const newInbox = {
+          user_id: userId,
+          user_name: username,
+          last_message: message,
+          last_message_time: new Date().toISOString(),
+        };
+        updatedInboxList = [newInbox, ...prevInboxList];
+      }
+  
+      return updatedInboxList.sort((a, b) => new Date(b.last_message_time) - new Date(a.last_message_time)); // So sánh thời gian
     });
+  
+    setIsFocus(false);
   };
+  
 
   return (
     <div className="w-full h-[calc(100vh-60px)] py-2 flex justify-center items-center">
