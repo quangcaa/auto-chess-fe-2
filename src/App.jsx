@@ -29,7 +29,7 @@ function App() {
             <Route path="/game" element={<Game />} />
             <Route path="/puzzle" element={<Puzzle />} />
             <Route path="/inbox" element={<Inbox />} />
-            <Route path="/@/*" element={<Profile />} />
+            <Route path="/@/:username" element={<Profile />} />
             <Route path="/forum/*" element={<Forum />} />
             
           </Route>
