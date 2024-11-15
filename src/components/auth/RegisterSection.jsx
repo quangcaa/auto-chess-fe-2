@@ -4,16 +4,37 @@ import { useAuth } from "../../contexts/AuthContext";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
 
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+
 export const Register = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!username || !email || !password || !confirmPassword) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match!");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -38,80 +59,191 @@ export const Register = () => {
     setShowPassword(!showPassword);
   };
 
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   return (
-    <div>
+    <div
+      className="bg-cover bg-center h-screen  flex flex-col justify-center items-center"
+      style={{ backgroundImage: "url('public/background.png')" }}
+    >
       {/* header */}
-      <div className="container mx-auto flex justify-center">
-        <img
-          src="autochess-logo.png"
-          className="h-auto w-auto mix-blend-darken"
-        />
+      <div className="absolute top-0 left-0 m-9 text-white text-5xl font-bold">
+        AUTOCHESS
       </div>
 
       {/* register form */}
-      <div className="bg-white flex flex-col items-center justify-center bg-gray-100 p-8 rounded-lg shadow-md max-w-md mx-auto mt-20">
-        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
-          Register
-        </h2>
+      <div className="bg-white flex flex-col justify-center p-6 rounded-lg shadow-md max-w-sm w-full">
+        <div className="text-left mb-7">
+          <h2 className="text-4xl font-bold">Register</h2>
+        </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col w-full">
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          className="flex flex-col w-full"
+        >
           {/* USERNAME */}
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            className="bg-[#F1F7EC] w-full p-3 border border-gray-300 rounded-md focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300"
-          />
-
-          {/* PASSWORD */}
-          <div className="relative flex items-center my-2">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="bg-[#F1F7EC] w-full my-1 p-3 border border-gray-300 rounded-md focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 pr-10"
-            />
-            <span
-              className="absolute right-3 cursor-pointer text-gray-600 text-lg"
-              onClick={togglePasswordVisibility}
-            >
-              {showPassword ? "🙈" : "👁️"}
-            </span>
+          <div className="relative mb-2">
+            <Label htmlFor="username" className="text-base font-medium">
+              Username
+            </Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="relative">
+                    <input
+                      id="username"
+                      type="text"
+                      placeholder="Username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      required
+                      className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none focus:ring focus:ring-emerald-600 focus:ring-opacity-30"
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent
+                  className="bg-emerald-600 text-white text-sm p-2 rounded-lg shadow-lg"
+                  side="top"
+                  sideOffset={5}
+                >
+                  <p>Enter a unique username</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
           {/* EMAIL */}
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="bg-[#F1F7EC] w-full p-3 border border-gray-300 rounded-md focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300"
-          />
+          <div className="relative mb-2">
+            <Label htmlFor="email" className="text-base font-meidum">
+              Email
+            </Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="relative">
+                    <input
+                      type="email"
+                      id="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none focus:ring focus:ring-emerald-600 focus:ring-opacity-30"
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent
+                  className="bg-emerald-600 text-white text-sm p-2 rounded-lg shadow-lg"
+                  side="top"
+                  sideOffset={5}
+                >
+                  <p>Enter your email address</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
 
-          <button
+          {/* PASSWORD */}
+          <div className="relative mb-2">
+            <Label htmlFor="password" className="text-base font-medium">
+              Password
+            </Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="relative flex items-center">
+                    <input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none focus:ring focus:ring-emerald-600 focus:ring-opacity-30"
+                    />
+                    <span
+                      className="absolute right-3.5 cursor-pointer text-lg"
+                      onClick={togglePasswordVisibility}
+                    >
+                      {showPassword ? "🙈" : "👁️"}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent
+                  className="bg-emerald-600 text-white text-sm p-2 rounded-lg shadow-lg"
+                  side="top"
+                  sideOffset={5}
+                >
+                  <p>Enter your password</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+
+          {/* CONFIRM PASSWORD */}
+          <div className="relative mb-7">
+            <Label htmlFor="confirmPassword" className="text-base font-medium">
+              Confirm Password
+            </Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="relative flex items-center">
+                    <input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Confirm Password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none focus:ring focus:ring-emerald-600 focus:ring-opacity-30"
+                    />
+                    <span
+                      className="absolute right-3.5 cursor-pointer text-lg"
+                      onClick={toggleConfirmPasswordVisibility}
+                    >
+                      {showConfirmPassword ? "🙈" : "👁️"}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent
+                  className="bg-emerald-600 text-white text-sm p-2 rounded-lg shadow-lg"
+                  side="top"
+                  sideOffset={5}
+                >
+                  <p>Confirm your password</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+
+          {/* REGISTER BUTTON */}
+          <Button
             type="submit"
-            className={`mt-3 w-full py-3 bg-blue-500 hover:bg-blue-700 text-base text-white font-bold rounded-lg transition duration-300 ${
+            variant={loading ? "default" : "blue"}
+            size="lg"
+            className={`mb-3 w-full bg-black text-white text-[15px] ${
               loading
-                ? "bg-blue-500 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                ? "cursor-not-allowed"
+                : "hover:bg-emerald-700 focus:ring-emerald-500"
             }`}
             disabled={loading}
           >
             {loading ? "REGISTERING..." : "REGISTER"}
-          </button>
+          </Button>
         </form>
 
         {/* FOOTER */}
-        <div className="mt-5 flex justify-betweeng gap-2">
-          Already have an account?
-          <Link to="/login" className="text-blue-500 hover:underline">
-            Login
-          </Link>
+        <div className="text-center">
+          <p>
+            Already have an account?{" "}
+            <Link to="/login" className="underline hover:text-emerald-600">
+              Login
+            </Link>
+          </p>
         </div>
       </div>
     </div>
