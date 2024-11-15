@@ -2,8 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* unable to select  */
 * {
     user-select: none;
+}
+
+/* hide scrollbar for Chrome, Safari, and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* hide scrollbar for IE, Edge, and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 @layer base {
