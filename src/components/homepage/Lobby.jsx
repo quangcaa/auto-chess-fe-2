@@ -1,4 +1,4 @@
-export const renderLobbyContent = () => {
+export const Lobby = () => {
     // Danh sách các phòng lobby
     const lobbies = [
       { id: 1, name: "Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", players: 5, maxPlayers: 10, status: "Đang mở", rating: 1500, time: "5+0", mode: "Blitz" },

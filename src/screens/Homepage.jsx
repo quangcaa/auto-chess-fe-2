@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { renderLobbyContent } from "../components/homepage/renderLobbyContent";
-import { renderCorrespondenceContent } from "../components/homepage/renderCorrespondenceContent";
+import { Lobby } from "../components/homepage/Lobby";
+
 import CreateGameModal from "../components/homepage/CreateGameModal";
 
 export const Homepage = () => {
@@ -61,10 +61,8 @@ export const Homepage = () => {
         </div>
       );
     } else if (activeTab === "lobby") {
-      return renderLobbyContent();
-    } else if (activeTab === "correspondence") {
-      return renderCorrespondenceContent();
-    }
+      return Lobby();
+    } 
   };
 
   return (
@@ -75,10 +73,10 @@ export const Homepage = () => {
       {/* Cột 2: Điều hướng tab và nội dung */}
       <div className="w-1/2 flex flex-col items-center text-white">
         {/* Điều hướng tab */}
-        <div className="flex space-x-6 mb-8">
+        <div className="flex space-x-6 mb-3 w-full justify-center">
           <button
             onClick={() => handleTabClick("quick-pairing")}
-            className={`text-lg px-4 py-2 ${
+            className={`text-lg w-1/2 py-2 ${
               activeTab === "quick-pairing"
                 ? "border-b-2 border-orange-500 text-orange-500"
                 : "text-gray-700"
@@ -88,23 +86,13 @@ export const Homepage = () => {
           </button>
           <button
             onClick={() => handleTabClick("lobby")}
-            className={`text-lg px-4 py-2 ${
+            className={`text-lg w-1/2 py-2 ${
               activeTab === "lobby"
                 ? "border-b-2 border-orange-500 text-orange-500"
                 : "text-gray-700"
             }`}
           >
             Lobby
-          </button>
-          <button
-            onClick={() => handleTabClick("correspondence")}
-            className={`text-lg px-4 py-2 ${
-              activeTab === "correspondence"
-                ? "border-b-2 border-orange-500 text-orange-500"
-                : "text-gray-700"
-            }`}
-          >
-            Correspondence
           </button>
         </div>
 
