@@ -69,7 +69,7 @@ export const Login = () => {
       {/* login form */}
       <div className="bg-white flex flex-col justify-center p-6 rounded-lg shadow-md max-w-sm w-full">
         <div className="text-left mb-7">
-          <h2 className="text-4xl font-bold text-gray-800">Login</h2>
+          <h2 className="text-4xl font-bold">Login</h2>
         </div>
 
         <form
@@ -85,19 +85,19 @@ export const Login = () => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="relative flex items-center">
+                  <div className="relative">
                     <input
                       type="text"
                       placeholder="Username"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       required
-                      className="border border-[#ddd] rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none focus:ring focus:ring-emerald-600 focus:ring-opacity-30"
+                      className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none focus:ring focus:ring-emerald-600 focus:ring-opacity-30"
                     />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent
-                  className="bg-blue-600 text-white text-sm p-2 rounded-lg shadow-lg"
+                  className="bg-emerald-600 text-white text-sm p-2 rounded-lg shadow-lg"
                   side="top"
                   sideOffset={5}
                 >
@@ -117,7 +117,7 @@ export const Login = () => {
               </div>
               <div className="text-right">
                 <Link
-                  to="/reset-password"
+                  to="/forgot-password"
                   className="text-base hover:text-emerald-600 underline"
                 >
                   Forgot password?
@@ -135,10 +135,10 @@ export const Login = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        className="border border-[#ddd] rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none focus:ring focus:ring-emerald-600 focus:ring-opacity-30"
+                        className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none focus:ring focus:ring-emerald-600 focus:ring-opacity-30"
                       />
                       <span
-                        className="absolute right-3.5 top-3 cursor-pointer text-lg text-[#555]"
+                        className="absolute right-3.5 cursor-pointer text-lg"
                         onClick={togglePasswordVisibility}
                       >
                         {showPassword ? "🙈" : "👁️"}
@@ -146,7 +146,7 @@ export const Login = () => {
                     </div>
                   </TooltipTrigger>
                   <TooltipContent
-                    className="bg-blue-600 text-white text-sm p-2 rounded-lg shadow-lg"
+                    className="bg-emerald-600 text-white text-sm p-2 rounded-lg shadow-lg"
                     side="top"
                     sideOffset={5}
                   >
@@ -165,7 +165,7 @@ export const Login = () => {
             className={`mb-3 w-full bg-black text-white text-[15px] ${
               loading
                 ? "cursor-not-allowed"
-                : "hover:bg-gray-700 focus:ring-gray-500"
+                : "hover:bg-emerald-700 focus:ring-emerald-500"
             }`}
             disabled={loading}
           >
@@ -175,12 +175,9 @@ export const Login = () => {
 
         {/* FOOTER */}
         <div className="text-center">
-          <p className="">
+          <p>
             Don&apos;t have an account?{" "}
-            <Link
-              to="/register"
-              className="text-gray-800 underline hover:text-emerald-600"
-            >
+            <Link to="/register" className="underline hover:text-emerald-600">
               Sign up
             </Link>
           </p>

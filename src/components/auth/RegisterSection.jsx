@@ -3,10 +3,15 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
-import { Button } from "../ui/button"
-import { Label } from "../ui/label"
-import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "../ui/tooltip";
+
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 
 export const Register = () => {
   const [username, setUsername] = useState("");
@@ -24,7 +29,7 @@ export const Register = () => {
       toast.error("Please fill in all fields.");
       return;
     }
-    
+
     if (password !== confirmPassword) {
       toast.error("Passwords do not match!");
       return;
@@ -59,32 +64,35 @@ export const Register = () => {
   };
 
   return (
-    <div className="bg-cover bg-center h-screen" style={{ backgroundImage: "url('public/background.png')" }}>
+    <div
+      className="bg-cover bg-center h-screen  flex flex-col justify-center items-center"
+      style={{ backgroundImage: "url('public/background.png')" }}
+    >
       {/* header */}
-      <div className="container mx-auto flex justify-center">
-        <img
-          src="autochess-logo.png"
-          className="h-auto w-auto mix-blend-darken"
-        />
+      <div className="absolute top-0 left-0 m-9 text-white text-5xl font-bold">
+        AUTOCHESS
       </div>
 
       {/* register form */}
-      <div className="bg-white backdrop-blur-md flex flex-col items-center justify-center p-8 rounded-lg shadow-md max-w-md mx-auto mt-10">
-        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
-          Register
-        </h2>
+      <div className="bg-white flex flex-col justify-center p-6 rounded-lg shadow-md max-w-sm w-full">
+        <div className="text-left mb-7">
+          <h2 className="text-4xl font-bold">Register</h2>
+        </div>
 
-        <form noValidate onSubmit={handleSubmit} className="flex flex-col w-full">
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          className="flex flex-col w-full"
+        >
           {/* USERNAME */}
-          <div className="mb-4 relative">
-            <Label htmlFor="username" className="text-base font-semibold mb-2">
+          <div className="relative mb-2">
+            <Label htmlFor="username" className="text-base font-medium">
               Username
             </Label>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="relative">
-                    <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
                     <input
                       id="username"
                       type="text"
@@ -92,11 +100,15 @@ export const Register = () => {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       required
-                      className="bg-[#F1F7EC] w-full p-3 pl-10 border border-gray-300 rounded-md focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                      className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none focus:ring focus:ring-emerald-600 focus:ring-opacity-30"
                     />
                   </div>
-                  </TooltipTrigger>
-                <TooltipContent className="bg-blue-600 text-white text-sm p-2 rounded-lg shadow-lg" side="top" sideOffset={5}>
+                </TooltipTrigger>
+                <TooltipContent
+                  className="bg-emerald-600 text-white text-sm p-2 rounded-lg shadow-lg"
+                  side="top"
+                  sideOffset={5}
+                >
                   <p>Enter a unique username</p>
                 </TooltipContent>
               </Tooltip>
@@ -104,15 +116,14 @@ export const Register = () => {
           </div>
 
           {/* EMAIL */}
-          <div className="mb-4 relative">
-            <Label htmlFor="email" className="text-base font-semibold mb-2">
+          <div className="relative mb-2">
+            <Label htmlFor="email" className="text-base font-meidum">
               Email
             </Label>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="relative">
-                    <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
                     <input
                       type="email"
                       id="email"
@@ -120,11 +131,15 @@ export const Register = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="bg-[#F1F7EC] w-full p-3 pl-10 border border-gray-300 rounded-md focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                      className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none focus:ring focus:ring-emerald-600 focus:ring-opacity-30"
                     />
                   </div>
                 </TooltipTrigger>
-                <TooltipContent className="bg-blue-600 text-white text-sm p-2 rounded-lg shadow-lg" side="top" sideOffset={5}>
+                <TooltipContent
+                  className="bg-emerald-600 text-white text-sm p-2 rounded-lg shadow-lg"
+                  side="top"
+                  sideOffset={5}
+                >
                   <p>Enter your email address</p>
                 </TooltipContent>
               </Tooltip>
@@ -132,15 +147,14 @@ export const Register = () => {
           </div>
 
           {/* PASSWORD */}
-          <div className="mb-4 relative">
-            <Label htmlFor="password" className="text-base font-semibold mb-2">
+          <div className="relative mb-2">
+            <Label htmlFor="password" className="text-base font-medium">
               Password
             </Label>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="relative flex items-center">
-                    <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
                     <input
                       id="password"
                       type={showPassword ? "text" : "password"}
@@ -148,17 +162,21 @@ export const Register = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="bg-[#F1F7EC] w-full p-3 pl-10 border border-gray-300 rounded-md focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 pr-3"
+                      className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none focus:ring focus:ring-emerald-600 focus:ring-opacity-30"
                     />
                     <span
-                      className="absolute right-3.5 cursor-pointer text-gray-600 text-lg"
+                      className="absolute right-3.5 cursor-pointer text-lg"
                       onClick={togglePasswordVisibility}
                     >
-                    {showPassword ? "🙈" : "👁️"}
+                      {showPassword ? "🙈" : "👁️"}
                     </span>
                   </div>
-                  </TooltipTrigger>
-                <TooltipContent className="bg-blue-600 text-white text-sm p-2 rounded-lg shadow-lg" side="top" sideOffset={5}>
+                </TooltipTrigger>
+                <TooltipContent
+                  className="bg-emerald-600 text-white text-sm p-2 rounded-lg shadow-lg"
+                  side="top"
+                  sideOffset={5}
+                >
                   <p>Enter your password</p>
                 </TooltipContent>
               </Tooltip>
@@ -166,15 +184,14 @@ export const Register = () => {
           </div>
 
           {/* CONFIRM PASSWORD */}
-          <div className="mb-4 relative">
-            <Label htmlFor="confirmPassword" className="text-base font-semibold mb-2">
+          <div className="relative mb-7">
+            <Label htmlFor="confirmPassword" className="text-base font-medium">
               Confirm Password
             </Label>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="relative flex items-center">
-                    <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
                     <input
                       id="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
@@ -182,30 +199,36 @@ export const Register = () => {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
-                      className="bg-[#F1F7EC] w-full p-3 pl-10 border border-gray-300 rounded-md focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 pr-3"
+                      className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none focus:ring focus:ring-emerald-600 focus:ring-opacity-30"
                     />
                     <span
-                      className="absolute right-3.5 cursor-pointer text-gray-600 text-lg"
+                      className="absolute right-3.5 cursor-pointer text-lg"
                       onClick={toggleConfirmPasswordVisibility}
                     >
-                    {showConfirmPassword ? "🙈" : "👁️"}
+                      {showConfirmPassword ? "🙈" : "👁️"}
                     </span>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent className="bg-blue-600 text-white text-sm p-2 rounded-lg shadow-lg" side="top" sideOffset={5}>
+                <TooltipContent
+                  className="bg-emerald-600 text-white text-sm p-2 rounded-lg shadow-lg"
+                  side="top"
+                  sideOffset={5}
+                >
                   <p>Confirm your password</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
 
+          {/* REGISTER BUTTON */}
           <Button
             type="submit"
             variant={loading ? "default" : "blue"}
-            className={`mt-3 w-full py-3 bg-black hover:bg-gray-600 text-base text-white font-bold rounded-lg transition duration-300 ${
+            size="lg"
+            className={`mb-3 w-full bg-black text-white text-[15px] ${
               loading
-                ? "bg-black cursor-not-allowed"
-                : "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                ? "cursor-not-allowed"
+                : "hover:bg-emerald-700 focus:ring-emerald-500"
             }`}
             disabled={loading}
           >
@@ -214,14 +237,13 @@ export const Register = () => {
         </form>
 
         {/* FOOTER */}
-        <div className="mt-5 flex justify-between gap-2">
-          <p className="text-gray-600">Already have an account?</p>
-          <Link 
-            to="/login" 
-            className="text-gray-800 underline hover:text-[#007bff]"
-          >
-            Login
-          </Link>
+        <div className="text-center">
+          <p>
+            Already have an account?{" "}
+            <Link to="/login" className="underline hover:text-emerald-600">
+              Login
+            </Link>
+          </p>
         </div>
       </div>
     </div>

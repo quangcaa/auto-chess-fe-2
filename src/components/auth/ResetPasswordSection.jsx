@@ -1,27 +1,44 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
-import { FaEnvelope } from "react-icons/fa";
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "../ui/tooltip";
+
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 
 export const ResetPassword = () => {
-  const [email, setEmail] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const { token } = useParams();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email.trim() == "") {
-      toast.error("Email is required!");
+    if (!password || !confirmPassword) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match!");
       return;
     }
 
     setLoading(true);
 
     try {
-      await api.post("/auth/forgot-password", { email });
+      await api.post(`/auth/reset-password/${token}`, { password });
 
-      toast.success("Sent reset password link to your email successfully");
+      toast.success("Password reset successfully");
     } catch (error) {
       toast.error(error.response.data.message || "Something went wrong");
     } finally {
@@ -29,67 +46,124 @@ export const ResetPassword = () => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   return (
-    <div className="bg-cover bg-center h-screen"
-        style={{ backgroundImage: "url('public/background.png')" }}>
+    <div
+      className="bg-cover bg-center h-screen  flex flex-col justify-center items-center"
+      style={{ backgroundImage: "url('public/background.png')" }}
+    >
       {/* header */}
-      <div className="container mx-auto flex justify-center">
-        <img
-          src="autochess-logo.png"
-          className="h-auto w-auto mix-blend-darken"
-        />
+      <div className="absolute top-0 left-0 m-9 text-white text-5xl font-bold">
+        AUTOCHESS
       </div>
 
-      {/* reset password form  */}
-      <div className="bg-white mt-20 backdrop-blur-md p-8 rounded-lg shadow-md max-w-md w-full mx-auto border border-gray-300">
-        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
-          Reset password
-        </h2>
+      {/* reset password form */}
+      <div className="bg-white flex flex-col justify-center p-6 rounded-lg shadow-md max-w-sm w-full">
+        <div className="text-left mb-7">
+          <h2 className="text-4xl font-bold">Reset Password</h2>
+        </div>
 
-        <form noValidate onSubmit={handleSubmit} className="flex flex-col  w-full ">
-          <p className="mb-2 text-gray-700">
-            Please enter your email to authenticate your account
-          </p>
-          
-          <TooltipProvider>
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          className="flex flex-col w-full"
+        >
+          {/* NEW PASSWORD */}
+          <div className="relative mb-2">
+            <Label htmlFor="password" className="text-base font-medium">
+              New password
+            </Label>
+            <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="relative w-full mb-4">
-                    <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
+                  <div className="relative flex items-center">
                     <input
-                      type="email"
-                      placeholder="Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="w-full p-3 pl-10 bg-[#F1F7EC] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none focus:ring focus:ring-emerald-600 focus:ring-opacity-30"
                     />
+                    <span
+                      className="absolute right-3.5 cursor-pointer text-lg"
+                      onClick={togglePasswordVisibility}
+                    >
+                      {showPassword ? "🙈" : "👁️"}
+                    </span>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent className="bg-blue-600 text-white text-sm p-2 rounded-lg shadow-lg" side="top" sideOffset={5}>
-                  <p>Enter your email address</p>
+                <TooltipContent
+                  className="bg-emerald-600 text-white text-sm p-2 rounded-lg shadow-lg"
+                  side="top"
+                  sideOffset={5}
+                >
+                  <p>Enter your new password</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          <button
+          </div>
+
+          {/* NEW PASSWORD (AGAIN) */}
+          <div className="relative mb-7">
+            <Label htmlFor="confirmPassword" className="text-base font-medium">
+              New password (again)
+            </Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="relative flex items-center">
+                    <input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Confirm Password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none focus:ring focus:ring-emerald-600 focus:ring-opacity-30"
+                    />
+                    <span
+                      className="absolute right-3.5 cursor-pointer text-lg"
+                      onClick={toggleConfirmPasswordVisibility}
+                    >
+                      {showConfirmPassword ? "🙈" : "👁️"}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent
+                  className="bg-emerald-600 text-white text-sm p-2 rounded-lg shadow-lg"
+                  side="top"
+                  sideOffset={5}
+                >
+                  <p>Confirm your password</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+
+          {/* REGISTER BUTTON */}
+          <Button
             type="submit"
-            className={`w-full py-3 bg-black hover:bg-gray-600 text-base text-white font-bold rounded-lg transition duration-300 ${
+            variant={loading ? "default" : "blue"}
+            size="lg"
+            className={`mb-3 w-full bg-black text-white text-[15px] ${
               loading
-                ? "bg-black cursor-not-allowed"
-                : "bg-black-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                ? "cursor-not-allowed"
+                : "hover:bg-emerald-700 focus:ring-emerald-500"
             }`}
             disabled={loading}
           >
-            {loading ? "SENDING..." : "SEND"}
-          </button>
+            {loading ? "CHANGING..." : "CHANGE PASSWORD"}
+          </Button>
         </form>
-
-        {/* FOOTER */}
-        <div className="mt-4 text-center">
-          <Link to="/login" className="text-blue-500 hover:underline">
-            Back to login
-          </Link>
-        </div>
       </div>
     </div>
   );
