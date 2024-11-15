@@ -1,10 +1,21 @@
 import { useState } from "react";
-import { renderLobbyContent } from "../components/homepage/renderLobbyContent";
-import { renderCorrespondenceContent } from "../components/homepage/renderCorrespondenceContent";
+import { Lobby } from "../components/homepage/Lobby";
+
+import CreateGameModal from "../components/homepage/CreateGameModal";
 
 export const Homepage = () => {
   // State lưu trữ tab hiện tại
   const [activeTab, setActiveTab] = useState("quick-pairing");
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to track modal visibility
+
+  // Hàm mở và đóng modal
+  const openModal = () => {
+    setIsModalOpen(true); // Mở modal
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false); // Đóng modal
+  };
 
   // Hàm thay đổi tab khi người dùng click vào
   const handleTabClick = (tab) => {
@@ -31,11 +42,11 @@ export const Homepage = () => {
     return buttons.map((button, index) => (
       <div
         key={index}
-        className="aspect-[2/1] bg-gray-800 text-white rounded-lg transition hover:bg-gray-700"
+        className="aspect-[2/1] bg-[#FFFFFF80] text-[#787878] rounded-lg transition hover:bg-[#D64F0033]"
       >
         <button className="flex flex-col justify-center items-center w-full h-full p-4">
-          <div className="text-2xl font-bold">{button.label}</div>
-          <div className="text-sm text-gray-400">{button.type}</div>
+          <div className="text-4xl font-[Roboto] p-2">{button.label}</div>
+          <div className="text-2xl text-gray-400">{button.type}</div>
         </button>
       </div>
     ));
@@ -50,10 +61,8 @@ export const Homepage = () => {
         </div>
       );
     } else if (activeTab === "lobby") {
-      return renderLobbyContent();
-    } else if (activeTab === "correspondence") {
-      return renderCorrespondenceContent();
-    }
+      return Lobby();
+    } 
   };
 
   return (
@@ -64,10 +73,10 @@ export const Homepage = () => {
       {/* Cột 2: Điều hướng tab và nội dung */}
       <div className="w-1/2 flex flex-col items-center text-white">
         {/* Điều hướng tab */}
-        <div className="flex space-x-6 mb-8">
+        <div className="flex space-x-6 mb-3 w-full justify-center">
           <button
             onClick={() => handleTabClick("quick-pairing")}
-            className={`text-lg px-4 py-2 ${
+            className={`text-lg w-1/2 py-2 ${
               activeTab === "quick-pairing"
                 ? "border-b-2 border-orange-500 text-orange-500"
                 : "text-gray-700"
@@ -77,23 +86,13 @@ export const Homepage = () => {
           </button>
           <button
             onClick={() => handleTabClick("lobby")}
-            className={`text-lg px-4 py-2 ${
+            className={`text-lg w-1/2 py-2 ${
               activeTab === "lobby"
                 ? "border-b-2 border-orange-500 text-orange-500"
                 : "text-gray-700"
             }`}
           >
             Lobby
-          </button>
-          <button
-            onClick={() => handleTabClick("correspondence")}
-            className={`text-lg px-4 py-2 ${
-              activeTab === "correspondence"
-                ? "border-b-2 border-orange-500 text-orange-500"
-                : "text-gray-700"
-            }`}
-          >
-            Correspondence
           </button>
         </div>
 
@@ -103,16 +102,21 @@ export const Homepage = () => {
 
       {/* Cột 3: Các nút hành động được căn giữa */}
       <div className="w-1/4 flex flex-col justify-center items-center space-y-8">
-  <button className="bg-white text-gray-700 font-sans font-semibold text-lg rounded-lg px-6 py-3 shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl hover:bg-white w-3/4">
-    Create Game
-  </button>
-  <button className="bg-white text-gray-700 font-sans font-semibold text-lg rounded-lg px-6 py-3 shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl hover:bg-white w-3/4">
-    Play with Friend
-  </button>
-  <button className="bg-white text-gray-700 font-sans font-semibold text-lg rounded-lg px-6 py-3 shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl hover:bg-white w-3/4">
-    Play with the Computer
-  </button>
-</div>
-</div>
+        <button
+          onClick={openModal}
+          className="bg-gradient-to-b from-[#f5f5f5] to-[#ededed] text-[#949494] font-sans font-semibold text-xl rounded-lg px-6 py-3 shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl hover:from-[#fafafa] hover:to-[#f2f2f2] w-3/4"
+        >
+          Create Game
+        </button>
+
+        <button className="bg-gradient-to-b from-[#f5f5f5] to-[#ededed] text-[#949494] font-sans font-semibold text-xl rounded-lg px-6 py-3 shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl hover:from-[#fafafa] hover:to-[#f2f2f2] w-3/4">
+          Play with Friend
+        </button>
+        <button className="bg-gradient-to-b from-[#f5f5f5] to-[#ededed] text-[#949494] font-sans font-semibold text-xl rounded-lg px-6 py-3 shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl hover:from-[#fafafa] hover:to-[#f2f2f2] w-3/4">
+          Play with the Computer
+        </button>
+      </div>
+      <CreateGameModal isModalOpen={isModalOpen} closeModal={closeModal} />
+    </div>
   );
 };
