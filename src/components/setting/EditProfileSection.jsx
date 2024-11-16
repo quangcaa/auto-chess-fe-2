@@ -1,6 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
+import countryList from 'react-select-country-list'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select"
+
 
 export const EditProfile = () => {
   const [profileData, setProfileData] = useState({
@@ -11,6 +20,8 @@ export const EditProfile = () => {
   });
   const [loading, setLoading] = useState(true);
   const [loadingEdit, setLoadingEdit] = useState(false);
+
+  const options = useMemo(() => countryList().getData(), [])
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -36,6 +47,13 @@ export const EditProfile = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfileData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleFlagChange = (value) => {
+    setProfileData((prevData) => ({
+      ...prevData,
+      flag: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -75,7 +93,7 @@ export const EditProfile = () => {
             <label className="font-bold text-base text-gray-600 py-2 rounded-md">
               Biography
             </label>
-            <textarea
+            {/* <textarea
               name="bio"
               className="bg-gray-200 border border-gray-300 rounded-md h-32 w-full p-3 resize-none focus:border-blue-900 transition duration-200"
               value={profileData.bio || ""}
@@ -85,7 +103,14 @@ export const EditProfile = () => {
             <p className="text-base text-gray-600">
               Talk about yourself, your interests, what you like in chess, your
               favorite openings, players, ...
-            </p>
+            </p> */}
+            <textarea
+              name="bio"
+              className="bg-gray-200 border border-gray-300 rounded-md h-32 w-full p-3 resize-none focus:border-blue-900 transition duration-200"
+              value={profileData.bio || ""}
+              onChange={handleChange}
+              placeholder="Talk about yourself, your interests, what you like in chess, your favorite openings, players, ..."
+            />
           </div>
           <div className="flex flex-col w-1/2 px-4 pt-4 ">
             <label className="font-bold text-base text-gray-600 py-2 rounded-md">
@@ -103,13 +128,22 @@ export const EditProfile = () => {
             <label className="font-bold text-base text-gray-600 py-2 rounded-md">
               Flag
             </label>
-            <input
-              type="text"
-              name="flag"
-              className="bg-gray-200 border border-gray-300 rounded-md h-10 p-2 focus:border-blue-500 focus:ring  transition duration-200"
-              onChange={handleChange}
-              value={profileData.flag || ""}
-            />
+            <Select onValueChange={handleFlagChange} value={profileData.flag}>
+              <SelectTrigger className="w-[480px] p-2 border bg-gray-200 border-gray-300 rounded-md ">
+                <SelectValue placeholder={profileData.flag || "Select your country"} />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-200 rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
+                {options.map((option) => (
+                  <SelectItem
+                    key={option.value}
+                    value={option.label}
+                    className="p-2 text-gray-800 hover:bg-blue-100 cursor-pointer transition-colors duration-200"
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="flex flex-col w-1/2 px-4 pt-4">
             <label className="font-bold text-base text-gray-600 py-2 rounded-md">
