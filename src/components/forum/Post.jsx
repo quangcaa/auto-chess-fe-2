@@ -3,6 +3,8 @@ import { FaTrash } from "react-icons/fa";
 import { Separator } from "@/components/ui/separator";
 
 export const Post = ({ post, onDelete, index }) => {
+  const user_id = localStorage.getItem("user_id");
+
   return (
     <div className="relative mx-8 group">
       <Separator className="w-full" />
@@ -16,10 +18,12 @@ export const Post = ({ post, onDelete, index }) => {
 
           <p className="text-sm text-emerald-600">{post.created_at}</p>
 
-          <FaTrash
-            className="mx-2 size-5 text-red-600 hover:cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            onClick={() => onDelete(post.id)}
-          />
+          {user_id === String(post.user_id) && (
+            <FaTrash
+              className="mx-2 size-5 text-red-600 hover:cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              onClick={() => onDelete(post.id)}
+            />
+          )}
         </div>
 
         <p className="text-emerald-600 text-base font-bold">#{post.index}</p>

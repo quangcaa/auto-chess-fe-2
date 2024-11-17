@@ -126,6 +126,7 @@ export const PostList = () => {
               key={post.post_id}
               post={{
                 id: post.post_id,
+                user_id: post.user_id,
                 username: post.username,
                 text: post.content,
                 created_at: timeStrings[index],
