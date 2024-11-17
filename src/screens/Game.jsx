@@ -177,7 +177,7 @@ export const Game = () => {
   );
 
   return (
-    <div className="flex-grow flex flex-col">
+    <div className="flex-grow flex flex-col m-2">
       {!isGameStarted && !isGameOver ? (
         <div className="flex flex-col items-center justify-center h-full">
           <button
