@@ -1,15 +1,14 @@
 import { useEffect, useState, useMemo } from "react";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
-import countryList from 'react-select-country-list'
+import countryList from "react-select-country-list";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select"
-
+} from "@/components/ui/select";
 
 export const EditProfile = () => {
   const [profileData, setProfileData] = useState({
@@ -21,7 +20,7 @@ export const EditProfile = () => {
   const [loading, setLoading] = useState(true);
   const [loadingEdit, setLoadingEdit] = useState(false);
 
-  const options = useMemo(() => countryList().getData(), [])
+  const options = useMemo(() => countryList().getData(), []);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -130,7 +129,9 @@ export const EditProfile = () => {
             </label>
             <Select onValueChange={handleFlagChange} value={profileData.flag}>
               <SelectTrigger className="w-[480px] p-2 border bg-gray-200 border-gray-300 rounded-md ">
-                <SelectValue placeholder={profileData.flag || "Select your country"} />
+                <SelectValue
+                  placeholder={profileData.flag || "Select your country"}
+                />
               </SelectTrigger>
               <SelectContent className="bg-gray-200 rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
                 {options.map((option) => (
