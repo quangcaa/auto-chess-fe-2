@@ -22,6 +22,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
+const getFlagEmoji = (countryCode) => {
+  if (!countryCode) return "";
+  return countryCode
+    .toUpperCase()
+    .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt()));
+};
+
 export const EditProfile = () => {
   const [profileData, setProfileData] = useState({
     bio: "",
@@ -90,7 +97,7 @@ export const EditProfile = () => {
         </CardHeader>
 
         <CardContent className="flex flex-col">
-          <CardDescription className="text-base text-gray-700 mb-4">
+          <CardDescription className="text-base text-gray-700 mt-4 mb-6">
             All information is public and optional.
           </CardDescription>
 
@@ -99,7 +106,7 @@ export const EditProfile = () => {
             noValidate
             className="flex flex-col w-full"
           >
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-row gap-4 mb-2">
               <div className="relative mb-2 w-full">
                 <Label htmlFor="bio" className="text-base font-medium">
                   Biography
@@ -107,12 +114,15 @@ export const EditProfile = () => {
                 <div className="relative flex items-center">
                   <Textarea
                     name="bio"
-                    placeholder="Talk about yourself, your interests, what you like in chess, your favorite openings, players, ..."
                     value={profileData.bio || ""}
                     onChange={handleChange}
-                    className="h-[120px] border-2 border-gray-300"
+                    className="h-[120px] border-2 border-gray-300 text-gray-800"
                   />
                 </div>
+                <p className="text-sm text-gray-600">
+                  Talk about yourself, your interests, what you like in chess,
+                  your favorite openings, players, ...
+                </p>
               </div>
 
               <div className="relative mb-2 w-full">
@@ -123,7 +133,7 @@ export const EditProfile = () => {
                   <input
                     type="text"
                     name="real_name"
-                    className="border border-2 border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none"
+                    className="text-gray-800 border border-2 border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none"
                     value={profileData.real_name || ""}
                     onChange={handleChange}
                   />
@@ -134,24 +144,24 @@ export const EditProfile = () => {
             <div className="flex flex-row gap-4 mb-2">
               <div className="relative mb-2 w-full">
                 <Label htmlFor="flag" className="text-base font-medium">
-                  Flag
+                  Country
                 </Label>
                 <div className="relative flex items-center">
                   <Select
                     onValueChange={handleFlagChange}
                     value={profileData.flag}
                   >
-                    <SelectTrigger className="border border-2 border-gray-300 rounded-lg focus:border-emerald-600 h-[52px] p-3 flex flex-row items-center">
+                    <SelectTrigger className="border border-2 border-gray-300 focus:border-emerald-600 h-[52px] p-3 flex flex-row items-center">
                       <SelectValue
                         placeholder={profileData.flag || "Select your country"}
                       />
                     </SelectTrigger>
-                    <SelectContent className="rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
+                    <SelectContent className="shadow-lg mt-1 max-h-60 overflow-auto">
                       {options.map((option) => (
                         <SelectItem
                           key={option.value}
                           value={option.label}
-                          className="font-base p-2 text-gray-800 hover:bg-blue-100 cursor-pointer transition-colors duration-200"
+                          className="font-base text-gray-800 cursor-pointer transition-colors duration-200"
                         >
                           {option.label}
                         </SelectItem>
