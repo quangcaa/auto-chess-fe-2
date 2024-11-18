@@ -7,18 +7,18 @@ export const Setting = () => {
   const [activePage, setActivePage] = useState("EditProfile");
 
   return (
-    <div className="flex justify-center h-screen w-screen">
-      <div className="w-5/6 flex flex-row ">
-        <div className="w-1/6  rounded-lg ">
-          <div className="flex flex-col text-[#5E5E5E] text-lg font-sans   shadow-sm">
+    <div className="flex flex-grow justify-center">
+      <div className="w-4/6 flex flex-row">
+        <div className="w-1/6 rounded-lg">
+          <div className="flex flex-col text-gray-800 text-lg mt-2">
             {["EditProfile", "ChangePassword", "CloseAccount"].map((page) => (
               <p
                 key={page}
                 onClick={() => setActivePage(page)}
-                className={`cursor-pointer px-3 py-2  transition-colors ${
+                className={`cursor-pointer px-3 py-2 transition-colors ${
                   activePage === page
                     ? "text-red-500 border-r-2 border-red-500"
-                    : "text-gray-700 hover:bg-gray-100"
+                    : "hover:border-r-2 hover:border-red-500"
                 }`}
               >
                 {page.replace(/([A-Z])/g, " $1").trim()}

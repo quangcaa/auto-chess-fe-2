@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
 import countryList from "react-select-country-list";
+
 import {
   Select,
   SelectContent,
@@ -9,6 +10,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 export const EditProfile = () => {
   const [profileData, setProfileData] = useState({
@@ -70,112 +82,123 @@ export const EditProfile = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-
   return (
-    <div className="flex flex-col bg-white p-6 w-full  rounded-md shadow-lg ">
-      {/* header */}
-      <div className="flex flex-col mb-3">
-        <p className="text-4xl  text-red-400  p-6 rounded-lg   mb-4">
-          Edit Profile
-        </p>
+    <div className="w-full rounded-md shadow-lg">
+      <Card className="p-6 flex flex-col justify-center">
+        <CardHeader className="flex flex-row items-center gap-4 my-2">
+          <CardTitle className="text-5xl text-red-600">Edit profile</CardTitle>
+        </CardHeader>
 
-        <p className="text-base pl-6 text-gray-600">
-          All information is public and optional.
-        </p>
-      </div>
+        <CardContent className="flex flex-col">
+          <CardDescription className="text-base text-gray-700 mb-4">
+            All information is public and optional.
+          </CardDescription>
 
-      {/* form */}
-      <form className="flex flex-wrap pl-6" onSubmit={handleSubmit}>
-        <div className="flex flex-wrap w-full">
-          <div className="flex flex-col w-1/2 pr-4 pt-4">
-            <label className="font-bold text-base text-gray-600 py-2 rounded-md">
-              Biography
-            </label>
-            {/* <textarea
-              name="bio"
-              className="bg-gray-200 border border-gray-300 rounded-md h-32 w-full p-3 resize-none focus:border-blue-900 transition duration-200"
-              value={profileData.bio || ""}
-              onChange={handleChange}
-            />
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="flex flex-col w-full"
+          >
+            <div className="flex flex-row gap-4">
+              <div className="relative mb-2 w-full">
+                <Label htmlFor="bio" className="text-base font-medium">
+                  Biography
+                </Label>
+                <div className="relative flex items-center">
+                  <Textarea
+                    name="bio"
+                    placeholder="Talk about yourself, your interests, what you like in chess, your favorite openings, players, ..."
+                    value={profileData.bio || ""}
+                    onChange={handleChange}
+                    className="h-[120px] border-2 border-gray-300"
+                  />
+                </div>
+              </div>
 
-            <p className="text-base text-gray-600">
-              Talk about yourself, your interests, what you like in chess, your
-              favorite openings, players, ...
-            </p> */}
-            <textarea
-              name="bio"
-              className="bg-gray-200 border border-gray-300 rounded-md h-32 w-full p-3 resize-none focus:border-blue-900 transition duration-200"
-              value={profileData.bio || ""}
-              onChange={handleChange}
-              placeholder="Talk about yourself, your interests, what you like in chess, your favorite openings, players, ..."
-            />
-          </div>
-          <div className="flex flex-col w-1/2 px-4 pt-4 ">
-            <label className="font-bold text-base text-gray-600 py-2 rounded-md">
-              Real name
-            </label>
-            <input
-              type="text"
-              name="real_name"
-              className="bg-gray-200 border border-gray-300 rounded-md h-10 p-2 focus:border-blue-500 focus:ring  transition duration-200"
-              onChange={handleChange}
-              value={profileData.real_name || ""}
-            />
-          </div>
-          <div className="flex flex-col w-1/2 pr-4 pt-4">
-            <label className="font-bold text-base text-gray-600 py-2 rounded-md">
-              Flag
-            </label>
-            <Select onValueChange={handleFlagChange} value={profileData.flag}>
-              <SelectTrigger className="w-[480px] p-2 border bg-gray-200 border-gray-300 rounded-md ">
-                <SelectValue
-                  placeholder={profileData.flag || "Select your country"}
-                />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-200 rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
-                {options.map((option) => (
-                  <SelectItem
-                    key={option.value}
-                    value={option.label}
-                    className="p-2 text-gray-800 hover:bg-blue-100 cursor-pointer transition-colors duration-200"
+              <div className="relative mb-2 w-full">
+                <Label htmlFor="real_name" className="text-base font-medium">
+                  Real name
+                </Label>
+                <div className="relative flex items-center">
+                  <input
+                    type="text"
+                    name="real_name"
+                    className="border border-2 border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none"
+                    value={profileData.real_name || ""}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-row gap-4 mb-2">
+              <div className="relative mb-2 w-full">
+                <Label htmlFor="flag" className="text-base font-medium">
+                  Flag
+                </Label>
+                <div className="relative flex items-center">
+                  <Select
+                    onValueChange={handleFlagChange}
+                    value={profileData.flag}
                   >
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-col w-1/2 px-4 pt-4">
-            <label className="font-bold text-base text-gray-600 py-2 rounded-md">
-              Location
-            </label>
-            <input
-              type="text"
-              name="location"
-              className="bg-gray-200 border border-gray-300 rounded-md h-10 p-2 focus:border-blue-500 focus:ring  transition duration-200"
-              onChange={handleChange}
-              value={profileData.location || ""}
-            />
-          </div>
-        </div>
+                    <SelectTrigger className="border border-2 border-gray-300 rounded-lg focus:border-emerald-600 h-[52px] p-3 flex flex-row items-center">
+                      <SelectValue
+                        placeholder={profileData.flag || "Select your country"}
+                      />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
+                      {options.map((option) => (
+                        <SelectItem
+                          key={option.value}
+                          value={option.label}
+                          className="font-base p-2 text-gray-800 hover:bg-blue-100 cursor-pointer transition-colors duration-200"
+                        >
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
 
-        <div className="flex flex-col mt-6 w-full">
-          <hr className="my-4 border-gray-300" />
+              <div className="relative mb-2 w-full">
+                <Label htmlFor="location" className="text-base font-medium">
+                  Location
+                </Label>
+                <div className="relative flex items-center">
+                  <input
+                    type="text"
+                    name="location"
+                    className="border border-2 border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none"
+                    onChange={handleChange}
+                    value={profileData.location || ""}
+                  />
+                </div>
+              </div>
+            </div>
 
-          <div className="flex justify-end mb-4">
-            <button
-              type="submit"
-              className={`bg-blue-500 text-white text-base font-semibold rounded-md py-3 px-6 shadow hover:bg-blue-600 hover:shadow-2xl transition duration-200 ${
-                loadingEdit ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              disabled={loadingEdit}
-            >
-              {loadingEdit ? "Submitting..." : "Submit"}
-            </button>
-          </div>
-        </div>
-      </form>
+            <div className="my-4">
+              <Separator />
+            </div>
+
+            <div className="w-full flex justify-end">
+              <Button
+                type="submit"
+                variant="default"
+                size="lg"
+                className={`bg-emerald-600 text-white text-[15px] shadow-lg ${
+                  loadingEdit
+                    ? "cursor-not-allowed"
+                    : "hover:bg-emerald-800 focus:ring-emerald-500"
+                }`}
+                disabled={loadingEdit}
+              >
+                {loadingEdit ? "SUBMITTING..." : "SUBMIT"}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };
