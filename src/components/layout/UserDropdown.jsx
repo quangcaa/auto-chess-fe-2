@@ -29,12 +29,13 @@ const UserDropdown = () => {
         <div className="absolute right-0 z-10 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
           <div className="py-1" role="none">
             <a
-              href="/my-profile"
+              href={`/@/${username}`}
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
             >
               <FaCircle className="text-green-500 size-4 mr-3" />
               Profile
             </a>
+
             <a
               href="/setting"
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
@@ -42,6 +43,7 @@ const UserDropdown = () => {
               <IoMdSettings className="size-5 mr-2" />
               Setting
             </a>
+
             <a>
               <LogoutButton />
             </a>

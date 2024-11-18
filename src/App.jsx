@@ -13,6 +13,7 @@ import { Forum } from "./screens/Forum";
 import { Profile } from "./screens/Profile";
 
 function App() {
+
   return (
     <div className="h-screen bg-main-color flex flex-col">
       <Navbar />
@@ -28,8 +29,9 @@ function App() {
             <Route path="/game" element={<Game />} />
             <Route path="/puzzle" element={<Puzzle />} />
             <Route path="/inbox" element={<Inbox />} />
-            <Route path="/@" element={<Profile />} />
+            <Route path="/@/:username" element={<Profile />} />
             <Route path="/forum/*" element={<Forum />} />
+            
           </Route>
         </Routes>
       </div>
