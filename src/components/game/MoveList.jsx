@@ -38,7 +38,9 @@ export const MoveList = () => {
         <table className="table-auto w-full">
           <thead>
             <tr className="bg-gray-100">
-              <th className="px-2 py-1 text-left">#</th>
+              <th className="px-1 py-1 text-left bg-[#F7F6F5] text-[#B3B3B3] border-r-2 flex justify-center">
+                #
+              </th>
               <th className="px-2 py-1 text-left">White</th>
               <th className="px-2 py-1 text-left">Black</th>
             </tr>
@@ -47,11 +49,13 @@ export const MoveList = () => {
             {movePairs.map(({ moveNumber, white, black }, index) => (
               <tr
                 key={moveNumber}
-                className={`border-b ${
+                className={`${
                   index % 2 === 0 ? "bg-white" : "bg-gray-50"
                 }`}
               >
-                <td className="px-2 py-1">{moveNumber}.</td>
+                <td className="py-1 bg-[#F7F6F5] font-semibold text-[#B3B3B3] border-r-2 flex justify-center">
+                  {moveNumber}
+                </td>
                 <td className="px-2 py-1">{white}</td>
                 <td className="px-2 py-1">{black}</td>
               </tr>
