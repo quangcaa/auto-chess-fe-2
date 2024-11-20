@@ -42,7 +42,10 @@ export function Profile() {
         const response = await api.get(`@/${username}/following`);
 
         const Fdata = await response.data;
+        console.log('get follow');
+        console.log(username);
         console.log(Fdata.followingList);
+
 
         setFollowingList(response.data.followingList);
       } catch (err) {
