@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import { io } from 'socket.io-client'
 
+// const SOCKET_URL = import.meta.env.MODE === "development" ? "http://localhost:3333" : "/"
+
 const useSocketStore = create((set) => ({
     socket: null,
     connect: (user_id) => {
