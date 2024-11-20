@@ -13,15 +13,26 @@ export const Navbar = () => {
   return (
     <>
       <nav className="bg-main-color text-gray-700 font-sans font-semibold text-sm text-lg flex justify-between items-center w-full h-14 user-select-none">
-        <ul className="flex items-center h-full ">
+        <ul className="flex items-center h-full">
           {/* LOGO */}
-          <li className="flex items-center px-5 py-5 hover:bg-gray-300 h-full ">
+          {/* <li className="flex items-center px-5 py-5 hover:bg-gray-300 h-full">
             <Link to="/">
               <img
                 src={"/autochess-logo.png"}
                 alt="AutoChess"
                 className="h-12 w-auto mix-blend-darken hover:filter opacity-85"
               />
+            </Link>
+          </li> */}
+          <li className="flex items-center mx-3 pb-2 text-4xl h-full group">
+            <Link className="flex items-center" to="/">
+
+              <div className="font-normal text-gray-700 group-hover:text-emerald-700">
+                auto
+              </div>
+              <p className="font-normal text-gray-500 group-hover:text-emerald-500">
+                chess
+              </p>
             </Link>
           </li>
 

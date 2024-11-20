@@ -39,7 +39,7 @@ export const ForgotPassword = () => {
   return (
     <div
       className="bg-cover bg-center h-screen flex flex-col justify-center items-center"
-      style={{ backgroundImage: "url('public/background.png')" }}
+      style={{ backgroundImage: "url('/background.png')" }}
     >
       {/* header */}
       <div className="absolute top-0 left-0 m-9 text-white text-5xl font-bold">

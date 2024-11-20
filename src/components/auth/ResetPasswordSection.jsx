@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
 
@@ -20,6 +20,7 @@ export const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
 
   const { token } = useParams();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,6 +40,7 @@ export const ResetPassword = () => {
       await api.post(`/auth/reset-password/${token}`, { password });
 
       toast.success("Password reset successfully");
+      navigate("/login");
     } catch (error) {
       toast.error(error.response.data.message || "Something went wrong");
     } finally {
@@ -57,7 +59,7 @@ export const ResetPassword = () => {
   return (
     <div
       className="bg-cover bg-center h-screen  flex flex-col justify-center items-center"
-      style={{ backgroundImage: "url('public/background.png')" }}
+      style={{ backgroundImage: "url('/background.png')" }}
     >
       {/* header */}
       <div className="absolute top-0 left-0 m-9 text-white text-5xl font-bold">
