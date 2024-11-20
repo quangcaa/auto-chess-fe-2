@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../utils/axios";
 import { Conversation } from "../components/inbox/Conversation";
 import { calculateTimeDifferences } from "../utils/timeUtils";
+import useSocketStore from "@/store/socketStore";
 
 export const Inbox = () => {
   const [inboxList, setInboxList] = useState([]);
@@ -14,7 +15,54 @@ export const Inbox = () => {
   const [isSearching, setIsSearching] = useState(false)
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [errorSearch, setErrorSearch] = useState(null);
-  const [selectedInbox, setSelectedInbox] = useState(null); // Chỉ số của chat được chọn
+  const [selectedInbox, setSelectedInbox] = useState(null);
+  const { socket } = useSocketStore()
+
+  const updateLastMessage = (userId, username, message) => {
+    setInboxList((prevInboxList) => {
+      const userExists = prevInboxList.some((inbox) => inbox.user_id === userId);
+  
+      let updatedInboxList;
+  
+      if (userExists) {
+        updatedInboxList = prevInboxList.map((inbox) => {
+          if (inbox.user_id === userId) {
+            return { 
+              ...inbox, 
+              last_message: message, 
+              last_message_time: new Date().toISOString()
+            };
+          }
+          return inbox;
+        });
+      } else {
+        const newInbox = {
+          user_id: userId,
+          user_name: username,
+          last_message: message,
+          last_message_time: new Date().toISOString(),
+        };
+        updatedInboxList = [newInbox, ...prevInboxList];
+      }
+  
+      return updatedInboxList.sort((a, b) => new Date(b.last_message_time) - new Date(a.last_message_time)); // So sánh thời gian
+    });
+  
+    setIsFocus(false);
+  };
+
+  useEffect(() => {
+    const handleNewMessage = (messageData) => {
+      console.log("Received new message:", messageData);
+      updateLastMessage(messageData.senderId, messageData.senderName, messageData.message);
+    };
+
+    socket.on("newMessage", handleNewMessage);
+
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+    };
+  }, [socket]);
 
   useEffect(() => {
     const fetchInboxList = async () => {
@@ -180,41 +228,7 @@ export const Inbox = () => {
     console.log(item);
     setIsSearching(false)
   };
-
-  const updateLastMessage = (userId, username, message) => {
-    setInboxList((prevInboxList) => {
-      const userExists = prevInboxList.some((inbox) => inbox.user_id === userId);
   
-      let updatedInboxList;
-  
-      if (userExists) {
-        updatedInboxList = prevInboxList.map((inbox) => {
-          if (inbox.user_id === userId) {
-            return { 
-              ...inbox, 
-              last_message: message, 
-              last_message_time: new Date().toISOString()
-            };
-          }
-          return inbox;
-        });
-      } else {
-        const newInbox = {
-          user_id: userId,
-          user_name: username,
-          last_message: message,
-          last_message_time: new Date().toISOString(),
-        };
-        updatedInboxList = [newInbox, ...prevInboxList];
-      }
-  
-      return updatedInboxList.sort((a, b) => new Date(b.last_message_time) - new Date(a.last_message_time)); // So sánh thời gian
-    });
-  
-    setIsFocus(false);
-  };
-  
-
   return (
     <div className="w-full h-[calc(100vh-60px)] py-2 flex justify-center items-center">
       <div className="flex flex-row w-[75%] h-full shadow-gray-400 shadow-md border-[1px] rounded-sm border-gray-400">
