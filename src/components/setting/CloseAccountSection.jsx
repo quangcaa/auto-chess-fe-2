@@ -1,10 +1,28 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { AxiosError } from "axios";
 import api from "../../utils/axios";
 import { useAuth } from "../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 import { PiWarningCircleFill } from "react-icons/pi";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 export const CloseAccount = () => {
   const [password, setPassword] = useState("");
@@ -12,7 +30,7 @@ export const CloseAccount = () => {
   const [loading, setLoading] = useState(false);
   const { logout } = useAuth();
 
-  const navigate = useNavigate();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,70 +46,102 @@ export const CloseAccount = () => {
 
       logout();
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("Something went wrong");
-      }
+      toast.error(error.response.data.message || "Something went wrong");
     } finally {
       setLoading(false);
+      setIsDialogOpen(false);
     }
   };
 
-  return (
-    <div className="flex flex-col bg-white p-12 w-full mx-auto rounded shadow-lg">
-      {/* header  */}
-      <div className="flex items-center pb-4 flex-row ">
-        <PiWarningCircleFill className="size-16 text-red-500" />
-        <p className="text-4xl  text-red-400  p-6 rounded-lg  ">
-          Close Account
-        </p>
-      </div>
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
-      {/* form */}
-      <p className="text-base pb-4 text-gray-600">
-        Are you sure you want to close your account?
-      </p>
-      <p className="text-base pt-4 pb-4 text-gray-600">
-        Closing your account is a permanent decision. You will NEVER be able to
-        log in EVER AGAIN.
-      </p>
-      <p className="font-bold text-base text-gray-600 py-2 rounded-md pb-2 pt-10">
-        Password
-      </p>
-      <div className="relative mb-3 w-full">
-        <input
-          type={showPassword ? "text" : "password"}
-          className="bg-gray-200 border w-full border-gray-300 rounded-md h-10 p-2 focus:border-blue-500 focus:ring  transition duration-200"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <span
-          className="absolute right-3 top-2 cursor-pointer text-lg text-[#555]"
-          onClick={() => setShowPassword(!showPassword)}
-        >
-          {showPassword ? "🙈" : "👁️"}
-        </span>
-      </div>
-      <div className="flex flex-col mt-6">
-        <hr className="my-2" />
-        <div className="flex flex-row items-center justify-between w-full">
-          <p
-            onClick={() => navigate("/profile")}
-            className="cursor-pointer text-blue-600 hover:text-blue-800 hover:underline"
-          >
-            I changed my mind, don&apos;t close my account
-          </p>
-          <button
-            className="bg-red-600 text-white text-sm font-bold rounded-md py-2 px-4 mt-2 shadow-md hover:shadow-lg hover:bg-red-700 transition duration-200"
-            onClick={handleSubmit}
-            disabled={loading}
-          >
-            {loading ? "Closing..." : "CLOSE ACCOUNT"}
-          </button>
+  return (
+    <div className="w-full rounded-lg shadow-lg">
+      <Card className="p-6 flex flex-col justify-center">
+        <CardHeader className="flex flex-row items-center gap-4 my-2">
+          <PiWarningCircleFill className="size-12 text-red-500" />
+          <CardTitle className="text-5xl text-red-600">Close Account</CardTitle>
+        </CardHeader>
+
+        <CardContent className="flex flex-col">
+          <CardDescription className="text-lg text-gray-700 mb-2">
+            Are you sure you want to close your account?
+          </CardDescription>
+          <CardDescription className="text-lg text-gray-700 mb-4">
+            Closing your account is a permanent decision. You will NEVER be able
+            to log in EVER AGAIN.
+          </CardDescription>
+
+          <Label htmlFor="password" className="text-base font-medium mb-2">
+            Password
+          </Label>
+          <div className="relative flex items-center">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-red-600 focus:border-2 focus:outline-none focus:ring-opacity-30"
+            />
+            <span
+              className="absolute right-3.5 cursor-pointer text-lg"
+              onClick={togglePasswordVisibility}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </span>
+          </div>
+        </CardContent>
+
+        <div className="my-4 mx-4">
+          <Separator />
         </div>
-      </div>
+
+        <CardFooter className="px-4 pb-4">
+          <div className=" w-full flex justify-end">
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="default"
+                  size="lg"
+                  className={`bg-red-600 text-white text-[15px] hover:bg-red-800 shadow-lg`}
+                  disabled={loading}
+                >
+                  {loading ? "CLOSING..." : "CLOSE ACCOUNT"}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[440px]">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl">
+                    Confirm Account Closure
+                  </DialogTitle>
+                  <DialogDescription>
+                    Are you sure you want to close your account? This action is
+                    irreversible.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="mt-6 flex justify-end gap-1">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={handleSubmit}
+                    disabled={loading}
+                  >
+                    {loading ? "CLOSING..." : "Confirm"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardFooter>
+      </Card>
     </div>
   );
 };

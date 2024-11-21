@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import api from "../utils/axios";
+import toast from "react-hot-toast";
 import { Conversation } from "../components/inbox/Conversation";
 import { calculateTimeDifferences } from "../utils/timeUtils";
-import useSocketStore from "@/store/socketStore";
+import  from "@/store/socketStore";
+import { Loading } from "../components/Loading";
 
 export const Inbox = () => {
   const [inboxList, setInboxList] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
   const [isFocus, setIsFocus] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -64,18 +64,24 @@ export const Inbox = () => {
     };
   }, [socket]);
 
+  const [loading, setLoading] = useState(true);
+  const [loadingSearch, setLoadingSearch] = useState(false);
+
   useEffect(() => {
     const fetchInboxList = async () => {
       try {
         setLoading(true);
-        const response = await api.get("/inbox");
-        const data = await response.data;
-        console.log('inbox',data);
+        const res = await api.get("/inbox");
+        const data = await res.data;
+
         setInboxList(
-          data.data.sort((a, b) => new Date(b.last_message_time) - new Date(a.last_message_time))
+          data.data.sort(
+            (a, b) =>
+              new Date(b.last_message_time) - new Date(a.last_message_time)
+          )
         );
-      } catch (err) {
-        setError(err.message);
+      } catch (error) {
+        toast.error(error.res.data.message || "Something went wrong");
       } finally {
         setLoading(false);
       }
@@ -95,33 +101,40 @@ export const Inbox = () => {
   }, [inboxList]);
 
   useEffect(() => {
-    setSearchConversation(inboxList.filter((item) => item.user_name.startsWith(query)))
-  }, [query, inboxList])
+    setSearchConversation(
+      inboxList.filter((item) => item.user_name.startsWith(query))
+    );
+  }, [query, inboxList]);
 
   useEffect(() => {
     const fetchSearch = async () => {
       setLoadingSearch(true);
-      setErrorSearch(null);
       try {
         if (query) {
-          const response = await api.get(`/search/${query}`);
-          const data = await response.data;
-          console.log(data.users);
-          setSearchResults(data.users.filter((item) => !searchConversation.map(inbox => inbox.user_name).includes(item.username)));
+          const res = await api.get(`/search/${query}`);
+          const data = await res.data;
+
+          setSearchResults(
+            data.users.filter(
+              (item) =>
+                !searchConversation
+                  .map((inbox) => inbox.user_name)
+                  .includes(item.username)
+            )
+          );
         } else {
-          setSearchResults([])
+          setSearchResults([]);
         }
-      } catch (err) {
-        setErrorSearch(err.message);
+      } catch (error) {
+        toast.error(error.res.data.message || "Something went wrong");
       } finally {
         setLoadingSearch(false);
       }
-    }
+    };
     fetchSearch();
   }, [query, searchConversation]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error loading inboxes.</div>;
+  if (loading) return <Loading />;
 
   const renderInboxList = (inboxs) => {
     return (
@@ -133,35 +146,26 @@ export const Inbox = () => {
               onClick={() => handleInboxSelect(item)}
               className={`w-full`}
             >
-              {/* Conservation UserList */}
+              {/* INBOX LIST */}
               <div
-                className={`flex h-[80px] gap-3 flex-row items-center w-full px-5 py-3 overflow-hidden transition-transform transform ${
-                  selectedInbox !== null && selectedInbox.user_id === item.user_id
-                    && "bg-[#D0E0BD]"
-                } ${(selectedInbox === null || selectedInbox.user_id !== item.user_id) ? "hover:bg-[#e9f0e0]" : ""}`}
+                className={`flex h-[65px] gap-4 flex-row items-center w-full px-4 overflow-hidden transition-transform transform ${
+                  selectedInbox !== null &&
+                  selectedInbox.user_id === item.user_id &&
+                  "bg-[#D0E0BD]"
+                } ${
+                  selectedInbox === null ||
+                  selectedInbox.user_id !== item.user_id
+                    ? "hover:bg-[#e9f0e0]"
+                    : ""
+                }`}
               >
-                {/* <img
-                  
-                  className="h-14 w-14 rounded-full"
-                  alt="User Avatar"
-                /> */}
-                <div className="w-6 h-6 border-t-4 border-b-4 border-l-4 border-r-4 rounded-full border-[#4d4d4d] opacity-50"></div>
-                <div className="flex flex-col flex-1 overflow-hidden gap-1">
+                <div className="w-6 h-6 border-4 rounded-full border-[#4d4d4d] opacity-50"></div>
+                <div className="flex flex-col flex-1 overflow-hidden">
                   <div className="flex flex-row items-center justify-between">
-                    <p
-                      className={`text-lg font-semibold`}
-                    >
-                      {item.user_name}
-                    </p>
-                    <p
-                      className={`text-sm`}
-                    >
-                      {timeStrings[index]}
-                    </p>
+                    <p className={`text-base`}>{item.user_name}</p>
+                    <p className={`text-xs text-gray-600`}>{timeStrings[index]}</p>
                   </div>
-                  <p
-                    className={`text-sm w-full truncate`}
-                  >
+                  <p className={`text-sm text-gray-600 w-full truncate`}>
                     {item.last_message}
                   </p>
                 </div>
@@ -174,67 +178,82 @@ export const Inbox = () => {
   };
 
   const renderSearchResults = () => {
-    if (loadingSearch) return <div className="text-center mt-3 font-bold">Loading...</div>;
-    if (errorSearch) return <div className="text-center mt-3 font-bold">Error searching.</div>;
-    if (searchResults.length === 0 && searchConversation.length === 0) return <div className="text-center mt-3 font-bold">No results found.</div>;
+    if (loadingSearch)
+      return <div className="text-center mt-3 font-bold">Loading...</div>;
+    if (searchResults.length === 0 && searchConversation.length === 0)
+      return (
+        <div className="text-center mt-3 font-bold">No results found.</div>
+      );
 
     return (
       <>
-        {searchConversation.length !== 0 && 
+        {searchConversation.length !== 0 && (
           <>
-            <p className="text-[#d59020] m-5 mb-1 font-semibold">CONVERSATIONS</p>
+            <p className="text-emerald-600 m-5 mb-1 font-semibold">
+              CONVERSATIONS
+            </p>
             {renderInboxList(searchConversation)}
           </>
-        }
-        {searchResults.length !== 0 &&
-        <>
-          <p className="text-[#d59020] m-5 mb-1 font-semibold">PLAYERS</p>
-          {
-            searchResults.map((item) => {
+        )}
+        {searchResults.length !== 0 && (
+          <>
+            <p className="text-emerald-600 m-5 mb-1 font-semibold">PLAYERS</p>
+            {searchResults.map((item) => {
               const username = item.username;
               return (
                 <div
                   key={item.user_id + item.username}
-                  onClick={() => handleInboxSelect({
-                    user_id: item.user_id,
-                    user_name: item.username
-                  })}
+                  onClick={() =>
+                    handleInboxSelect({
+                      user_id: item.user_id,
+                      user_name: item.username,
+                    })
+                  }
                   className={`w-full`}
                 >
                   {/* Conservation UserList */}
                   <div
-                    className={`flex h-[50px] gap-4 flex-row items-center w-full px-5 py-3 rounded-xl transition-transform transform text-gray-800 hover:bg-[#e9f0e0]`}
+                    className={`flex h-[50px] gap-4 flex-row items-center w-full px-5 py-3 rounded-lg transition-transform transform text-gray-800 hover:bg-[#e9f0e0]`}
                   >
                     {/* <img
                       className="h-14 w-14 rounded-full"
                       alt="User Avatar"
                     /> */}
-                    { item.online !== null ?
-                     <div className="w-6 h-6 rounded-full bg-[#629924] opacity-90"></div> :
-                     <div className="w-6 h-6 border-t-4 border-b-4 border-l-4 border-r-4 rounded-full border-[#4d4d4d] opacity-50"></div>}
-                    <p className="text-lg" dangerouslySetInnerHTML={{ __html: username.replace(new RegExp(query, 'g'), `<b>${query}</b>`) }} />
+                    {item.online !== null ? (
+                      <div className="w-6 h-6 rounded-full bg-[#629924] opacity-90"></div>
+                    ) : (
+                      <div className="w-6 h-6 border-t-4 border-b-4 border-l-4 border-r-4 rounded-full border-[#4d4d4d] opacity-50"></div>
+                    )}
+                    <p
+                      className="text-lg"
+                      dangerouslySetInnerHTML={{
+                        __html: username.replace(
+                          new RegExp(query, "g"),
+                          `<b>${query}</b>`
+                        ),
+                      }}
+                    />
                   </div>
                 </div>
               );
-            })
-          }
-        </>}
+            })}
+          </>
+        )}
       </>
     );
   };
 
   const handleInboxSelect = (item) => {
     setSelectedInbox(item);
-    console.log(item);
-    setIsSearching(false)
+    setIsSearching(false);
   };
-  
+
   return (
     <div className="w-full h-[calc(100vh-60px)] py-2 flex justify-center items-center">
-      <div className="flex flex-row w-[75%] h-full shadow-gray-400 shadow-md border-[1px] rounded-sm border-gray-400">
-        <div className="flex flex-col w-1/3 items-center h-full border-r-[1px] border-gray-400">
-          {/* Search bar div */}
-          <div className="bg-[#EDEBE8] w-full flex flex-col py-1 justify-center items-center rounded-tl-xl border-b-[1px] border-gray-400 ">
+      <div className="flex flex-row w-[75%] h-full rounded-lg border border-gray-300 shadow-lg">
+        <div className="flex flex-col w-1/3 items-center h-full border-r border-gray-300">
+          {/* SEARCH BAR */}
+          <div className="bg-[#EDEBE8] w-full flex flex-col py-1 justify-center items-center rounded-tl-lg border-b border-gray-300">
             <input
               type="text"
               value={query}
@@ -242,11 +261,11 @@ export const Inbox = () => {
               onFocus={() => setIsFocus(true)}
               onBlur={() => isSearching && setIsFocus(false)}
               placeholder="Search"
-              className="w-[90%] h-12 px-4 py-2 my-1 text-gray-700 placeholder-gray-500 bg-gray-100 rounded-3xl border-none shadow-md focus:outline-none transition-all duration-300 ease-in-out"
+              className="w-[90%] h-12 px-4 py-2 my-1 text-gray-700 placeholder-gray-500 bg-white rounded-3xl shadow-md transition-all duration-300 ease-in-out"
             />
           </div>
-          {/* Conservation List div */}
-          <div className="w-full h-full overflow-auto  rounded-bl-xl ">
+          {/* Conservation List */}
+          <div className="w-full h-full overflow-auto rounded-bl-lg bg-[#F7F6F5]">
             {isFocus && query.length > 0
               ? renderSearchResults()
               : renderInboxList(inboxList)}
@@ -260,7 +279,7 @@ export const Inbox = () => {
             userId={selectedInbox.user_id}
           />
         ) : (
-          <div className="w-2/3 flex flex-col border-gray-100 border-r-2 bg-white rounded-r-xl"></div>
+          <div className="w-2/3 flex flex-col border-gray-100 border-r-2 bg-white rounded-r-lg"></div>
         )}
       </div>
     </div>

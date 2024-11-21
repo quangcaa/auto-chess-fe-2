@@ -9,6 +9,9 @@ export default {
   	extend: {
   		colors: {
   			'main-color': '#EDEBE9',
+			'my-inbox':'#E9F0E0',
+			'partner-inbox':'#F8EEDD',
+			'time-inbox': '#DDEBF8',
   			'nav-color': '#',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',

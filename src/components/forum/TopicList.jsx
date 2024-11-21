@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { IoArrowBackOutline } from "react-icons/io5";
-import { calculateTimeDifferences } from "../../utils/timeUtils";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
+
+import { IoArrowBackOutline } from "react-icons/io5";
+import { FaPen } from "react-icons/fa";
+
+import { calculateTimeDifferences } from "../../utils/timeUtils";
 
 export const TopicList = () => {
   const location = useLocation();
@@ -11,19 +14,15 @@ export const TopicList = () => {
   const category_name = location.state;
   const navigate = useNavigate();
   const [topics, setTopics] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        setLoading(true);
         const response = await api.get(`/forum/${category_id}`);
         const data = await response.data;
         setTopics(data.topics);
       } catch (error) {
         toast.error(error.response.data.message || "Something went wrong");
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -40,38 +39,40 @@ export const TopicList = () => {
   }, [topics]);
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="border rounded-md bg-white w-7/8 m-4 shadow-md">
-        <div className="flex flex-row justify-between items-center m-7 py-4 min-h-[80px]">
+    <div className="flex flex-col items-center overflow-auto">
+      <div className="border border-gray-300 rounded-lg bg-white w-full max-w-screen-xl lg:w-[70%] h-full m-2 mb-4 shadow-lg">
+        {/* HEADER */}
+        <div className="flex flex-row justify-between m-7 ml-10 py-4">
           <div className="flex flex-row items-center gap-4">
             <IoArrowBackOutline
-              className="size-20 text-gray-700 ml-1"
+              className="size-20 text-gray-800 cursor-pointer hover:text-emerald-600"
               onClick={() => navigate("/forum")}
             />
-            <p className="text-4xl font-sans font-base text-[#4D4D4D] mb-2">
-              {category_name}
-            </p>
+            <p className="text-5xl font-base text-gray-800">{category_name}</p>
           </div>
           <button>
             <Link
               to={`/forum/${category_id}/create-topic`}
               state={{ category_name }}
             >
-              <p className="text-green-500 font-bold">CREATE A NEW TOPIC</p>
+              <div className="flex items-center gap-2 text-emerald-600 hover:text-emerald-800">
+                <FaPen className="" />
+                <p className=" font-bold mr-4">CREATE A NEW TOPIC</p>
+              </div>
             </Link>
           </button>
         </div>
-        <table className="w-full">
+
+        {/* CONTENT */}
+        <table className="table-auto w-full">
           <thead>
-            <tr className="bg-[#EDEBE9] border-b border-gray-300 font-sans">
+            <tr className="bg-[#E9E9E9] border-y border-gray-300">
               <td></td>
               <td>
-                <p className="text-gray-500 text-lg text-right mr-10">
-                  Replies
-                </p>
+                <p className="text-gray-800 text-lg text-right mr-8">Replies</p>
               </td>
               <td>
-                <p className="text-gray-500 text-lg">Last Post</p>
+                <p className="text-gray-800 text-lg">Last Post</p>
               </td>
             </tr>
           </thead>
@@ -79,26 +80,23 @@ export const TopicList = () => {
             {topics.map((topic, index) => (
               <tr
                 key={topic.topic_id}
-                className={
-                  "hover:bg-gray-100 transition-colors" +
-                  (index % 2 !== 0 ? " bg-[#EDEBE9]" : "")
-                }
+                className="hover:bg-gray-200 transition-colors border-y border-gray-300"
               >
-                <Link
-                  to={`/forum/${category_id}/${topic.topic_id}`}
-                  state={topic.subject}
-                >
-                  <td className="py-4">
-                    <p className="mx-10 text-lg text-blue-500">
+                <td className="py-4">
+                  <Link
+                    to={`/forum/${category_id}/${topic.topic_id}`}
+                    state={topic.subject}
+                  >
+                    <p className="mx-10 text-lg text-emerald-600">
                       {topic.subject}
                     </p>
-                  </td>
-                </Link>
-                <td className="py-4">
-                  <p className="text-right mr-10">{topic.replies}</p>
+                  </Link>
                 </td>
-                <td className="flex flex-col items-start gap-1 justify-center py-4">
-                  <p className="text-blue-500">{timeStrings[index]}</p>
+                <td className="py-4">
+                  <p className="text-right mr-8">{topic.replies}</p>
+                </td>
+                <td className="flex flex-col items-start gap-1 justify-center py-3">
+                  <p className="text-emerald-600">{timeStrings[index]}</p>
                   <p>by {topic.last_post_user}</p>
                 </td>
               </tr>

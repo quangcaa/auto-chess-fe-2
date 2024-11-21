@@ -1,24 +1,37 @@
-export const Post = ({ post, onDelete,index}) => {
+import { FaCircle } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
+import { Separator } from "@/components/ui/separator";
+
+export const Post = ({ post, onDelete, index }) => {
+  const user_id = localStorage.getItem("user_id");
+
   return (
-    <div className="relative mx-7 py-3  pb-14 border-b-2 group">
-      <div className="flex flex-row justify-between items-center">
-      <div className="flex items-center">
-        {/* Green circle in front of the username */}
-        <span className="w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full mx-2"></span>
-        
-        <p className="font-semibold text-xl text-[#787878]">
-          {post.username} 
-        </p>  
-        <span className="px-2 text-sm text-[#1b78d0] hover:cursor-pointer">{post.created_at}</span>
-        <div className="h-5 w-5 hover:cursor-pointer hover:shadow-sm">
-        <img src="/deleteInbox.png" onClick={() => onDelete(post.id)} className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:cursor-pointer" />
+    <div className="relative mx-8 group">
+      <Separator className="w-full" />
+      <div className="flex flex-row justify-between items-center my-2">
+        <div className="flex items-center">
+          <FaCircle className="text-green-500 size-4" />
+
+          <p className="font-semibold text-xl text-gray-600 mx-3">
+            {post.username}
+          </p>
+
+          <p className="text-sm text-emerald-600">{post.created_at}</p>
+
+          {user_id === String(post.user_id) && (
+            <FaTrash
+              className="mx-2 size-5 text-red-600 hover:cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              onClick={() => onDelete(post.id)}
+            />
+          )}
         </div>
-      
+
+        <p className="text-emerald-600 text-base font-bold">#{post.index}</p>
       </div>
-      <p className="text-[#428FD8] text-sm">#{post.index}</p>
-      </div>
-      <p className="text-[#4D4D4D] mt-3 px-2 leading-relaxed text-lg break-words">{post.text}</p>
-      
+
+      <p className="text-gray-800 mt-2 mb-4 leading-relaxed text-lg break-words">
+        {post.text}
+      </p>
     </div>
   );
 };
