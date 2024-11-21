@@ -3,7 +3,6 @@ import api from "../utils/axios";
 import toast from "react-hot-toast";
 import { Conversation } from "../components/inbox/Conversation";
 import { calculateTimeDifferences } from "../utils/timeUtils";
-import  from "@/store/socketStore";
 import { Loading } from "../components/Loading";
 
 export const Inbox = () => {
@@ -11,58 +10,9 @@ export const Inbox = () => {
   const [query, setQuery] = useState("");
   const [isFocus, setIsFocus] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
-  const [searchConversation, setSearchConversation] = useState([])
-  const [isSearching, setIsSearching] = useState(false)
-  const [loadingSearch, setLoadingSearch] = useState(false);
-  const [errorSearch, setErrorSearch] = useState(null);
-  const [selectedInbox, setSelectedInbox] = useState(null);
-  const { socket } = useSocketStore()
-
-  const updateLastMessage = (userId, username, message) => {
-    setInboxList((prevInboxList) => {
-      const userExists = prevInboxList.some((inbox) => inbox.user_id === userId);
-  
-      let updatedInboxList;
-  
-      if (userExists) {
-        updatedInboxList = prevInboxList.map((inbox) => {
-          if (inbox.user_id === userId) {
-            return { 
-              ...inbox, 
-              last_message: message, 
-              last_message_time: new Date().toISOString()
-            };
-          }
-          return inbox;
-        });
-      } else {
-        const newInbox = {
-          user_id: userId,
-          user_name: username,
-          last_message: message,
-          last_message_time: new Date().toISOString(),
-        };
-        updatedInboxList = [newInbox, ...prevInboxList];
-      }
-  
-      return updatedInboxList.sort((a, b) => new Date(b.last_message_time) - new Date(a.last_message_time)); // So sánh thời gian
-    });
-  
-    setIsFocus(false);
-  };
-
-  useEffect(() => {
-    const handleNewMessage = (messageData) => {
-      console.log("Received new message:", messageData);
-      updateLastMessage(messageData.senderId, messageData.senderName, messageData.message);
-    };
-
-    socket.on("newMessage", handleNewMessage);
-
-    return () => {
-      socket.off("newMessage", handleNewMessage);
-    };
-  }, [socket]);
+  const [searchConversation, setSearchConversation] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [selectedInbox, setSelectedInbox] = useState(null); // Chỉ số của chat được chọn
 
   const [loading, setLoading] = useState(true);
   const [loadingSearch, setLoadingSearch] = useState(false);
@@ -163,7 +113,9 @@ export const Inbox = () => {
                 <div className="flex flex-col flex-1 overflow-hidden">
                   <div className="flex flex-row items-center justify-between">
                     <p className={`text-base`}>{item.user_name}</p>
-                    <p className={`text-xs text-gray-600`}>{timeStrings[index]}</p>
+                    <p className={`text-xs text-gray-600`}>
+                      {timeStrings[index]}
+                    </p>
                   </div>
                   <p className={`text-sm text-gray-600 w-full truncate`}>
                     {item.last_message}
@@ -246,6 +198,43 @@ export const Inbox = () => {
   const handleInboxSelect = (item) => {
     setSelectedInbox(item);
     setIsSearching(false);
+  };
+
+  const updateLastMessage = (userId, username, message) => {
+    setInboxList((prevInboxList) => {
+      const userExists = prevInboxList.some(
+        (inbox) => inbox.user_id === userId
+      );
+
+      let updatedInboxList;
+
+      if (userExists) {
+        updatedInboxList = prevInboxList.map((inbox) => {
+          if (inbox.user_id === userId) {
+            return {
+              ...inbox,
+              last_message: message,
+              last_message_time: new Date().toISOString(),
+            };
+          }
+          return inbox;
+        });
+      } else {
+        const newInbox = {
+          user_id: userId,
+          user_name: username,
+          last_message: message,
+          last_message_time: new Date().toISOString(),
+        };
+        updatedInboxList = [newInbox, ...prevInboxList];
+      }
+
+      return updatedInboxList.sort(
+        (a, b) => new Date(b.last_message_time) - new Date(a.last_message_time)
+      ); // So sánh thời gian
+    });
+
+    setIsFocus(false);
   };
 
   return (

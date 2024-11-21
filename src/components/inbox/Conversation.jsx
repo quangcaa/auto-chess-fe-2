@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
 import { formatMessageTime } from "@/utils/timeUtils";
-import useSocketStore from "@/store/socketStore";
 import { Loading } from "@/components/Loading";
 import { RiSendPlane2Fill } from "react-icons/ri";
 import { FaTrash } from "react-icons/fa";
@@ -13,44 +12,38 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
   const [loadingSend, setLoadingSend] = useState(false);
   const [errorSend, setErrorSend] = useState(null);
   const [successSend, setSuccessSend] = useState(false);
-  const [inbox, setInbox] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
+
+  const [messages, setMessages] = useState([]);
+
+  const sendMessage = async (userId, message) => {
+    setLoadingSend(true);
+    setErrorSend(null);
+    setSuccessSend(false);
+
+    try {
+      const res = await api.post(`/inbox/send-message/${userId}`, {
+        message,
+      });
+      const data = await res.data;
+
+      setSuccessSend(true);
+      return data;
+    } catch (error) {
+      toast.error(error.res.data.message || "Something went wrong");
+    } finally {
+      setLoadingSend(false);
+    }
+  };
+
   const [loadingInbox, setLoadingInbox] = useState(true);
   const [errorInbox, setErrorInbox] = useState(null);
-
-  const messagesEndRef = useRef(null);
-
-  const { socket } = useSocketStore();
-  
-  useEffect(() => {
-    const handleNewMessage = (messageData) => {
-      console.log("Received new message:", messageData);
-      if (messageData.senderId === userId) {
-        setInbox((prevInbox) => [
-          ...prevInbox,
-          formatMessageTime({
-            sender_id: messageData.senderId,
-            receiver_id: messageData.receiverId,
-            message: messageData.message,
-            time: messageData.time,
-          }),
-        ]);
-      }
-    };
-
-    socket.on("newMessage", handleNewMessage);
-
-    return () => {
-      socket.off("newMessage", handleNewMessage);
-    };
-  }, [socket, userId]);
 
   const fetchInbox = useCallback(async (userId) => {
     setLoadingInbox(true);
     setErrorInbox(null);
     try {
       const { data } = await api.get(`/inbox/${userId}`);
-      setInbox(data.data.map(formatMessageTime));
+      return data.data;
     } catch (error) {
       toast.error(error.res.data.message || "Something went wrong");
     } finally {
@@ -58,8 +51,24 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
     }
   }, []);
 
+  const [inbox, setInbox] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const messagesEndRef = useRef(null);
+
   useEffect(() => {
-    fetchInbox(userId);
+    const loadInbox = async () => {
+      try {
+        const data = await fetchInbox(userId);
+        setInbox(data.map(formatMessageTime));
+      } catch (error) {
+        toast.error(error.res.data.message || "Something went wrong");
+      }
+    };
+
+    loadInbox();
+    return () => {
+      setInbox([]);
+    };
   }, [userId, fetchInbox]);
 
   useEffect(() => {
@@ -68,37 +77,22 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
     }
   }, [inbox]);
 
-  const sendMessage = async (userId, message) => {
-    setLoadingSend(true);
-    setErrorSend(null);
-    setSuccessSend(false);
-
-    try {
-      const response = await api.post(`/inbox/send-message/${userId}`, { message });
-      const data = response.data;
-      setSuccessSend(true);
-      return data;
-    } catch (err) {
-      setErrorSend(err.message);
-    } finally {
-      setLoadingSend(false);
-    }
-  };
-
   const handleSendMessage = async (e) => {
     e.preventDefault();
 
     if (!newMessage.trim()) return;
 
-    socket.emit("sendMessage", { senderId: Number(localStorage.getItem("user_id")), senderName: localStorage.getItem("username"), receiverId: userId, message: newMessage });
-
     const messageData = await sendMessage(userId, newMessage);
-    console.log(messageData);
+
     if (messageData) {
       onUpdateLastMessage(userId, username, newMessage);
       setInbox((prevInbox) => [
         ...prevInbox,
-        formatMessageTime({ sender_id: Number(localStorage.getItem("user_id")), message: newMessage, time: Date.now() }),
+        formatMessageTime({
+          sender_id: null,
+          message: newMessage,
+          time: Date.now(),
+        }),
       ]);
       setNewMessage("");
     }
@@ -144,6 +138,7 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
 
       {/* Message List */}
       <div className="flex w-full flex-1 overflow-y-auto overflow-x-hidden justify-center items-start py-3 bg-white">
+        {/* This div takes 3/5 of the width and is centered */}
         <div className="flex flex-col w-[95%] px-10 gap-1 overflow-auto">
           {loadingInbox ? (
             <Loading />
@@ -190,8 +185,8 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
                     </p>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
           <div ref={messagesEndRef} />
         </div>
@@ -211,6 +206,8 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
           placeholder="Type a message..."
           disabled={loadingSend}
         />
+
+        {/* Send button */}
         <button
           type="submit"
           disabled={loadingSend || !newMessage.trim()}
@@ -218,6 +215,8 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
         >
           <RiSendPlane2Fill className="size-6" />
         </button>
+
+        {/* Error messages */}
         {(errorSend || errorInbox) && (
           <p className="text-red-500 text-sm ml-2">{errorSend || errorInbox}</p>
         )}
