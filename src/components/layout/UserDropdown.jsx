@@ -14,11 +14,11 @@ const UserDropdown = () => {
   const username = localStorage.getItem("username");
 
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative inline-block text-center">
       <span
         onClick={toggleDropdown}
-        className={`cursor-pointer text-base transition duration-300 px-3 py-5 flex items-center ${
-          isOpen ? "bg-white" : "hover:bg-gray-300"
+        className={`cursor-pointer h-[60px] text-lg transition duration-300 pl-3 pr-3 py-5 flex items-center font-medium ${
+          isOpen ? "bg-white hover:text-emerald-600" : "hover:text-emerald-600"
         }`}
       >
         {username || "Profile"}

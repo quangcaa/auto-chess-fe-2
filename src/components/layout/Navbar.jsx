@@ -4,6 +4,8 @@ import UserSearch from "./UserSearch";
 import { RiSwordFill } from "react-icons/ri";
 import { GoBellFill } from "react-icons/go";
 import { useAuth } from "../../contexts/AuthContext";
+import { ViewChallengeButton } from "./ViewChallengeButton";
+import { ViewNotificationButton } from "./ViewNotificationButton";
 
 export const Navbar = () => {
   const { isAuthenticated } = useAuth();
@@ -12,27 +14,21 @@ export const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-main-color text-gray-700 font-sans font-semibold text-sm text-lg flex justify-between items-center w-full h-14 user-select-none">
+      <nav className="bg-main-color text-gray-600 text-base flex justify-between items-center w-full h-[60px] user-select-none">
         <ul className="flex items-center h-full">
           {/* LOGO */}
-          {/* <li className="flex items-center px-5 py-5 hover:bg-gray-300 h-full">
-            <Link to="/">
-              <img
-                src={"/autochess-logo.png"}
-                alt="AutoChess"
-                className="h-12 w-auto mix-blend-darken hover:filter opacity-85"
-              />
-            </Link>
-          </li> */}
-          <li className="flex items-center mx-3 pb-2 text-4xl h-full group">
+          <li className="flex items-center ml-5 mr-2 pb-2 text-4xl h-full group">
             <Link className="flex items-center" to="/">
-
+              <img
+                src="/favicon.png"
+                className="size-10 grayscale mr-1 group-hover:grayscale-0 group-hover:-hue-rotate-60"
+              />
               <div className="font-normal text-gray-700 group-hover:text-emerald-700">
                 auto
               </div>
-              <p className="font-normal text-gray-500 group-hover:text-emerald-500">
+              <div className="font-normal text-gray-600 group-hover:text-emerald-600">
                 chess
-              </p>
+              </div>
             </Link>
           </li>
 
@@ -40,7 +36,7 @@ export const Navbar = () => {
           <li>
             <Link
               to="/game"
-              className="hover:bg-gray-300 font-bold transition duration-300 px-5 py-5"
+              className="hover:text-emerald-600 font-semibold transition duration-300 px-5 py-5"
             >
               PLAY
             </Link>
@@ -50,7 +46,7 @@ export const Navbar = () => {
           <li>
             <Link
               to="/puzzle"
-              className="hover:bg-gray-300 font-bold transition duration-300 px-5 py-5"
+              className="hover:text-emerald-600 font-semibold transition duration-300 px-5 py-5"
             >
               PUZZLE
             </Link>
@@ -60,7 +56,7 @@ export const Navbar = () => {
           <li>
             <Link
               to="/inbox"
-              className="hover:bg-gray-300 font-bold transition duration-300 px-5 py-5"
+              className="hover:text-emerald-600 font-semibold transition duration-300 px-5 py-5"
             >
               INBOX
             </Link>
@@ -70,18 +66,18 @@ export const Navbar = () => {
           <li>
             <Link
               to="/forum"
-              className="hover:bg-gray-300 font-bold transition duration-300 px-5 py-5"
+              className="hover:text-emerald-600 font-semibold transition duration-300 px-5 py-5"
             >
               FORUM
             </Link>
           </li>
         </ul>
 
-        <div className="flex flex-row items-center">
-          <div className="flex flex-row items-center space-x-4">
+        <div className="flex items-center h-full">
+          <div className="flex flex-row items-center justify-center h-full">
             <UserSearch />
-            <RiSwordFill className="size-6" />
-            <GoBellFill className="size-6" />
+            <ViewChallengeButton />
+            <ViewNotificationButton />
             <UserDropdown />
           </div>
         </div>
