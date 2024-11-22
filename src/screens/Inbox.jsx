@@ -13,7 +13,7 @@ export const Inbox = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchConversation, setSearchConversation] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedInbox, setSelectedInbox] = useState(null); // Chỉ số của chat được chọn
+  const [selectedInbox, setSelectedInbox] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [loadingSearch, setLoadingSearch] = useState(false);
@@ -62,10 +62,10 @@ export const Inbox = () => {
       updateLastMessage(messageData.senderId, messageData.senderName, messageData.message);
     };
 
-    socket.on("newMessage", handleNewMessage);
+    socket.on('receive_inbox_message', handleNewMessage);
 
     return () => {
-      socket.off("newMessage", handleNewMessage);
+      socket.off('receive_inbox_message', handleNewMessage);
     };
   }, [socket]);
 

@@ -32,10 +32,10 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
       }
     };
 
-    socket.on("newMessage", handleNewMessage);
+    socket.on('receive_inbox_message', handleNewMessage);
 
     return () => {
-      socket.off("newMessage", handleNewMessage);
+      socket.off('receive_inbox_message', handleNewMessage);
     };
   }, [socket, userId]);
 
@@ -106,7 +106,7 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
 
     if (!newMessage.trim()) return;
 
-    socket.emit("sendMessage", { senderId: Number(localStorage.getItem("user_id")), senderName: localStorage.getItem("username"), receiverId: userId, message: newMessage });
+    socket.emit('send_inbox_message', { senderId: Number(localStorage.getItem("user_id")), senderName: localStorage.getItem("username"), receiverId: userId, message: newMessage });
 
     const messageData = await sendMessage(userId, newMessage);
     console.log(messageData);
