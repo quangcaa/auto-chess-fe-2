@@ -7,13 +7,37 @@ import { RiSendPlane2Fill } from "react-icons/ri";
 import { FaTrash } from "react-icons/fa";
 import { IoIosWarning } from "react-icons/io";
 import { RiSwordFill } from "react-icons/ri";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
   const [loadingSend, setLoadingSend] = useState(false);
   const [errorSend, setErrorSend] = useState(null);
   const [successSend, setSuccessSend] = useState(false);
 
-  const [messages, setMessages] = useState([]);
+  const { socket } = useAuth()
+
+  useEffect(() => {
+    const handleNewMessage = (messageData) => {
+      console.log("Received new message:", messageData);
+      if (messageData.senderId === userId) {
+        setInbox((prevInbox) => [
+          ...prevInbox,
+          formatMessageTime({
+            sender_id: messageData.senderId,
+            receiver_id: messageData.receiverId,
+            message: messageData.message,
+            time: messageData.time,
+          }),
+        ]);
+      }
+    };
+
+    socket.on('receive_inbox_message', handleNewMessage);
+
+    return () => {
+      socket.off('receive_inbox_message', handleNewMessage);
+    };
+  }, [socket, userId]);
 
   const sendMessage = async (userId, message) => {
     setLoadingSend(true);
@@ -82,17 +106,15 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
 
     if (!newMessage.trim()) return;
 
-    const messageData = await sendMessage(userId, newMessage);
+    socket.emit('send_inbox_message', { senderId: Number(localStorage.getItem("user_id")), senderName: localStorage.getItem("username"), receiverId: userId, message: newMessage });
 
+    const messageData = await sendMessage(userId, newMessage);
+    console.log(messageData);
     if (messageData) {
       onUpdateLastMessage(userId, username, newMessage);
       setInbox((prevInbox) => [
         ...prevInbox,
-        formatMessageTime({
-          sender_id: null,
-          message: newMessage,
-          time: Date.now(),
-        }),
+        formatMessageTime({ sender_id: Number(localStorage.getItem("user_id")), message: newMessage, time: Date.now() }),
       ]);
       setNewMessage("");
     }

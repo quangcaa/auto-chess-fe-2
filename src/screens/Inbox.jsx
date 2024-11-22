@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { Conversation } from "../components/inbox/Conversation";
 import { calculateTimeDifferences } from "../utils/timeUtils";
 import { Loading } from "../components/Loading";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const Inbox = () => {
   const [inboxList, setInboxList] = useState([]);
@@ -12,10 +13,61 @@ export const Inbox = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchConversation, setSearchConversation] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedInbox, setSelectedInbox] = useState(null); // Chỉ số của chat được chọn
+  const [selectedInbox, setSelectedInbox] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [loadingSearch, setLoadingSearch] = useState(false);
+  const { socket } = useAuth()
+
+  const updateLastMessage = (userId, username, message) => {
+    setInboxList((prevInboxList) => {
+      const userExists = prevInboxList.some(
+        (inbox) => inbox.user_id === userId
+      );
+
+      let updatedInboxList;
+
+      if (userExists) {
+        updatedInboxList = prevInboxList.map((inbox) => {
+          if (inbox.user_id === userId) {
+            return {
+              ...inbox,
+              last_message: message,
+              last_message_time: new Date().toISOString(),
+            };
+          }
+          return inbox;
+        });
+      } else {
+        const newInbox = {
+          user_id: userId,
+          user_name: username,
+          last_message: message,
+          last_message_time: new Date().toISOString(),
+        };
+        updatedInboxList = [newInbox, ...prevInboxList];
+      }
+
+      return updatedInboxList.sort(
+        (a, b) => new Date(b.last_message_time) - new Date(a.last_message_time)
+      ); // So sánh thời gian
+    });
+
+    setIsFocus(false);
+  };
+
+  useEffect(() => {
+    const handleNewMessage = (messageData) => {
+      console.log("Received new message:", messageData);
+      updateLastMessage(messageData.senderId, messageData.senderName, messageData.message);
+    };
+
+    socket.on('receive_inbox_message', handleNewMessage);
+
+    return () => {
+      socket.off('receive_inbox_message', handleNewMessage);
+    };
+  }, [socket]);
 
   useEffect(() => {
     const fetchInboxList = async () => {
@@ -198,43 +250,6 @@ export const Inbox = () => {
   const handleInboxSelect = (item) => {
     setSelectedInbox(item);
     setIsSearching(false);
-  };
-
-  const updateLastMessage = (userId, username, message) => {
-    setInboxList((prevInboxList) => {
-      const userExists = prevInboxList.some(
-        (inbox) => inbox.user_id === userId
-      );
-
-      let updatedInboxList;
-
-      if (userExists) {
-        updatedInboxList = prevInboxList.map((inbox) => {
-          if (inbox.user_id === userId) {
-            return {
-              ...inbox,
-              last_message: message,
-              last_message_time: new Date().toISOString(),
-            };
-          }
-          return inbox;
-        });
-      } else {
-        const newInbox = {
-          user_id: userId,
-          user_name: username,
-          last_message: message,
-          last_message_time: new Date().toISOString(),
-        };
-        updatedInboxList = [newInbox, ...prevInboxList];
-      }
-
-      return updatedInboxList.sort(
-        (a, b) => new Date(b.last_message_time) - new Date(a.last_message_time)
-      ); // So sánh thời gian
-    });
-
-    setIsFocus(false);
   };
 
   return (
