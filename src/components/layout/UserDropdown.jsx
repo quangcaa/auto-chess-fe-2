@@ -26,21 +26,21 @@ const UserDropdown = () => {
       </span>
 
       {isOpen && (
-        <div className="absolute right-0 z-10 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+        <div className="absolute right-0 z-10 w-48 font-medium border border-gray-300 rounded-l-lg shadow-lg bg-white">
           <div className="py-1" role="none">
             <a
               href={`/@/${username}`}
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+              className="block px-4 py-2 text-gray-600 flex items-center group hover:bg-emerald-600"
             >
-              <FaCircle className="text-green-500 size-4 mr-3" />
-              Profile
+              <FaCircle className="text-emerald-500 size-4 mr-3 group-hover:text-white" />
+              <p className="group-hover:text-white">Profile</p>
             </a>
             <a
               href="/setting"
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+              className="block px-4 py-2 text-gray-600 flex items-center group hover:bg-emerald-600"
             >
-              <IoMdSettings className="size-5 mr-2" />
-              Setting
+              <IoMdSettings className="size-5 mr-2 group-hover:text-white" />
+              <p className="group-hover:text-white">Setting</p>
             </a>
             <a>
               <LogoutButton />

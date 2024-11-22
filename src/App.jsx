@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./guards/ProtectedRoute";
 import PublicRoute from "./guards/PublicRoute";
-import Navbar from "./components/layout/Navbar";
+import { Navbar } from "./components/layout/Navbar";
 import { Auth } from "./screens/Auth";
 import { Setting } from "./screens/Setting";
 import { Homepage } from "./screens/Homepage";

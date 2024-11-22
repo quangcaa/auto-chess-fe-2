@@ -93,7 +93,7 @@ export const EditProfile = () => {
     <div className="w-full rounded-md shadow-lg">
       <Card className="p-6 flex flex-col justify-center">
         <CardHeader className="flex flex-row items-center gap-4 my-2">
-          <CardTitle className="text-5xl text-red-600">Edit profile</CardTitle>
+          <CardTitle className="text-5xl text-emerald-600">Edit profile</CardTitle>
         </CardHeader>
 
         <CardContent className="flex flex-col">

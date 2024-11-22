@@ -107,8 +107,8 @@ export const PostList = () => {
   };
 
   return (
-    <div className="flex flex-col items-center overflow-auto">
-      <Card className="border border-gray-300 rounded-lg bg-white w-full max-w-screen-xl lg:w-[70%] h-full m-2 mb-4 shadow-lg">
+    <div className="flex flex-col items-center overflow-auto py-2">
+      <Card className="border border-gray-300 rounded-lg bg-white w-full max-w-screen-xl lg:w-[70%] h-full mb-4 shadow-lg">
         {/* HEADER */}
         <CardHeader className="flex flex-row items-center gap-4 m-7 ml-10 py-4 px-0">
           <IoArrowBackOutline

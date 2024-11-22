@@ -53,7 +53,7 @@ export const ChangePassword = () => {
     <div className="w-full rounded-lg shadow-lg">
       <Card className="p-6 flex flex-col justify-center">
         <CardHeader className="flex flex-row items-center gap-4 my-2">
-          <CardTitle className="text-5xl text-red-600">
+          <CardTitle className="text-5xl text-emerald-600">
             Change password
           </CardTitle>
         </CardHeader>

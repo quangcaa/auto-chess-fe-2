@@ -17,8 +17,8 @@ export const Setting = () => {
                 onClick={() => setActivePage(page)}
                 className={`cursor-pointer px-3 py-2 transition-colors ${
                   activePage === page
-                    ? "text-red-500 border-r-2 border-red-500"
-                    : "hover:border-r-2 hover:border-red-500"
+                    ? "text-emerald-600 border-r-2 border-emerald-600"
+                    : "hover:border-r-2 hover:border-emerald-600"
                 }`}
               >
                 {page.replace(/([A-Z])/g, " $1").trim()}

@@ -11,10 +11,9 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
   const [loadingSend, setLoadingSend] = useState(false);
-  const [errorSend, setErrorSend] = useState(null);
   const [successSend, setSuccessSend] = useState(false);
 
-  const { socket } = useAuth()
+  const { socket } = useAuth();
 
   useEffect(() => {
     const handleNewMessage = (messageData) => {
@@ -32,16 +31,15 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
       }
     };
 
-    socket.on('receive_inbox_message', handleNewMessage);
+    socket.on("receive_inbox_message", handleNewMessage);
 
     return () => {
-      socket.off('receive_inbox_message', handleNewMessage);
+      socket.off("receive_inbox_message", handleNewMessage);
     };
   }, [socket, userId]);
 
   const sendMessage = async (userId, message) => {
     setLoadingSend(true);
-    setErrorSend(null);
     setSuccessSend(false);
 
     try {
@@ -60,11 +58,9 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
   };
 
   const [loadingInbox, setLoadingInbox] = useState(true);
-  const [errorInbox, setErrorInbox] = useState(null);
 
   const fetchInbox = useCallback(async (userId) => {
     setLoadingInbox(true);
-    setErrorInbox(null);
     try {
       const { data } = await api.get(`/inbox/${userId}`);
       return data.data;
@@ -106,7 +102,12 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
 
     if (!newMessage.trim()) return;
 
-    socket.emit('send_inbox_message', { senderId: Number(localStorage.getItem("user_id")), senderName: localStorage.getItem("username"), receiverId: userId, message: newMessage });
+    socket.emit("send_inbox_message", {
+      senderId: Number(localStorage.getItem("user_id")),
+      senderName: localStorage.getItem("username"),
+      receiverId: userId,
+      message: newMessage,
+    });
 
     const messageData = await sendMessage(userId, newMessage);
     console.log(messageData);
@@ -114,7 +115,11 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
       onUpdateLastMessage(userId, username, newMessage);
       setInbox((prevInbox) => [
         ...prevInbox,
-        formatMessageTime({ sender_id: Number(localStorage.getItem("user_id")), message: newMessage, time: Date.now() }),
+        formatMessageTime({
+          sender_id: Number(localStorage.getItem("user_id")),
+          message: newMessage,
+          time: Date.now(),
+        }),
       ]);
       setNewMessage("");
     }
@@ -136,7 +141,7 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
 
   return (
     <div className="w-2/3 flex flex-col border-gray-100 justify-center items-center rounded-r-lg">
-      {/* Header */}
+      {/* HEADER */}
       <div className="sticky top-0 flex flex-row px-5 justify-between items-center w-full bg-[#EDEBE8] py-[14px] border-b border-gray-300 z-10 rounded-tr-lg">
         <div className="flex flex-row gap-3 items-center">
           <div className="w-6 h-6 border-t-4 border-b-4 border-l-4 border-r-4 rounded-full border-[#4d4d4d] opacity-50"></div>
@@ -158,9 +163,8 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
         </div>
       </div>
 
-      {/* Message List */}
+      {/* MESSAGE */}
       <div className="flex w-full flex-1 overflow-y-auto overflow-x-hidden justify-center items-start py-3 bg-white">
-        {/* This div takes 3/5 of the width and is centered */}
         <div className="flex flex-col w-[95%] px-10 gap-1 overflow-auto">
           {loadingInbox ? (
             <Loading />
@@ -179,17 +183,6 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
                       {item.time.date}
                     </p>
                   )}
-                  {/* Avatar for the last message from the sender (userId)
-                  {item.sender_id === userId && isLastFromSender ? (
-                  //   <img
-                  //     src={avatarUrl}
-                  //     alt={`${item.user_name}'s avatar`}
-                  //     className="w-10 h-10 rounded-full"
-                  //   />
-                  // ) : (
-                  //   // Placeholder for alignment when no avatar is shown
-                  //   <div className="w-10 h-10"></div>
-                  )} */}
 
                   {/* MESSAGE */}
                   <div
@@ -219,7 +212,6 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
         onSubmit={handleSendMessage}
         className="flex flex-row gap-3 items-center justify-between w-full h-[56px] px-4 py-2 bg-[#edebe8] border-t border-gray-300 mt-auto rounded-br-lg"
       >
-        {/* Message input field */}
         <input
           type="text"
           value={newMessage}
@@ -229,7 +221,6 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
           disabled={loadingSend}
         />
 
-        {/* Send button */}
         <button
           type="submit"
           disabled={loadingSend || !newMessage.trim()}
@@ -237,11 +228,6 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
         >
           <RiSendPlane2Fill className="size-6" />
         </button>
-
-        {/* Error messages */}
-        {(errorSend || errorInbox) && (
-          <p className="text-red-500 text-sm ml-2">{errorSend || errorInbox}</p>
-        )}
       </form>
     </div>
   );

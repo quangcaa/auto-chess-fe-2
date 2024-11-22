@@ -1,7 +1,6 @@
 import { useState } from "react";
 
-const CreateGameModal = ({ isModalOpen, closeModal }) => {
-  if (!isModalOpen) return null;
+export const CreateGameModal = ({ closeModal }) => {
   const [minutes, setMinutes] = useState(5);
   const [increment, setIncrement] = useState(3);
   const [selected, setSelected] = useState("casual");
@@ -106,5 +105,3 @@ const CreateGameModal = ({ isModalOpen, closeModal }) => {
     </div>
   );
 };
-
-export default CreateGameModal;

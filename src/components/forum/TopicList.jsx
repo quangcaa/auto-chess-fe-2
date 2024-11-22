@@ -39,8 +39,8 @@ export const TopicList = () => {
   }, [topics]);
 
   return (
-    <div className="flex flex-col items-center overflow-auto">
-      <div className="border border-gray-300 rounded-lg bg-white w-full max-w-screen-xl lg:w-[70%] h-full m-2 mb-4 shadow-lg">
+    <div className="flex flex-col items-center overflow-auto py-2">
+      <div className="border border-gray-300 rounded-lg bg-white w-full max-w-screen-xl lg:w-[70%] h-full mb-4 shadow-lg">
         {/* HEADER */}
         <div className="flex flex-row justify-between m-7 ml-10 py-4">
           <div className="flex flex-row items-center gap-4">
