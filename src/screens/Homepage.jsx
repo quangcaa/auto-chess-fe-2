@@ -3,35 +3,59 @@ import { useEffect, useState } from "react";
 import { CreateGameModal } from "@/components/homepage/CreateGameModal";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export const Homepage = () => {
   const [activeTab, setActiveTab] = useState("quick-pairing");
+  const [lobby, setLobby] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [lobby, setLobby] = useState([]);
-
+  const navigate = useNavigate();
+  const user_id = localStorage.getItem("user_id");
   const { socket } = useAuth();
 
   const timeControls = [
-    { label: "1+0", type: "Bullet" },
-    { label: "2+1", type: "Bullet" },
-    { label: "3+0", type: "Blitz" },
-    { label: "3+2", type: "Blitz" },
-    { label: "5+0", type: "Blitz" },
-    { label: "5+3", type: "Blitz" },
-    { label: "10+0", type: "Rapid" },
-    { label: "10+5", type: "Rapid" },
-    { label: "15+10", type: "Rapid" },
-    { label: "30+0", type: "Classical" },
-    { label: "30+20", type: "Classical" },
-    { label: "Custom", type: "" },
+    { base_time: "1", increment_by_turn: "0", name: "Bullet" },
+    { base_time: "2", increment_by_turn: "1", name: "Bullet" },
+    { base_time: "3", increment_by_turn: "0", name: "Blitz" },
+    { base_time: "3", increment_by_turn: "2", name: "Blitz" },
+    { base_time: "5", increment_by_turn: "0", name: "Blitz" },
+    { base_time: "5", increment_by_turn: "3", name: "Blitz" },
+    { base_time: "10", increment_by_turn: "0", name: "Rapid" },
+    { base_time: "10", increment_by_turn: "5", name: "Rapid" },
+    { base_time: "15", increment_by_turn: "10", name: "Rapid" },
+    { base_time: "30", increment_by_turn: "0", name: "Classical" },
+    { base_time: "30", increment_by_turn: "20", name: "Classical" },
+    { base_time: null, increment_by_turn: null, name: "Custom" },
   ];
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  const handleQuickPairing = (timeControl) => {
+    const data = {
+      user_id: user_id,
+      time: timeControl.base_time,
+      increment_by_turn: timeControl.increment_by_turn,
+    };
+
+    socket.emit("join_quick_pairing", (response) => {
+      if (response.success) {
+        if (response.game_id) {
+          navigate(`/game/${response.game_id}`);
+        } else {
+          console.log(response.message);
+        }
+      } else {
+        console.error(response.message);
+      }
+    });
+  };
+
   useEffect(() => {
+    if (!socket) return;
+
     // Listen for the initial lobby list
     socket.on("update_lobby", (allLobbies) => {
       const gamesArray = Array.from(allLobbies.values());
@@ -73,7 +97,10 @@ export const Homepage = () => {
 
         <div className="flex w-full h-full pt-2">
           {activeTab === "quick-pairing" && (
-            <QuickPairing timeControls={timeControls} />
+            <QuickPairing
+              timeControls={timeControls}
+              handleQuickPairing={handleQuickPairing}
+            />
           )}
           {activeTab === "lobby" && <Lobby games={lobby} />}
         </div>
@@ -100,7 +127,7 @@ export const Homepage = () => {
   );
 };
 
-const QuickPairing = ({ timeControls }) => (
+const QuickPairing = ({ timeControls, handleQuickPairing }) => (
   <div className="flex h-full w-full">
     <div className="grid grid-cols-3 gap-2 w-full h-full">
       {timeControls.map((time, index) => (
@@ -109,8 +136,10 @@ const QuickPairing = ({ timeControls }) => (
           className="bg-white shadow-md text-gray-700 rounded-lg transition hover:bg-emerald-400"
         >
           <button className="flex flex-col justify-center items-center w-full h-full p-4 opacity-80">
-            <div className="text-4xl p-2">{time.label}</div>
-            <div className="text-2xl text-gray-500">{time.type}</div>
+            <span className="text-4xl p-2">
+              {time.base_time}+{time.increment_by_turn}
+            </span>
+            <div className="text-2xl text-gray-500">{time.name}</div>
           </button>
         </div>
       ))}
@@ -161,7 +190,7 @@ const Lobby = ({ games }) => (
         </tbody>
       </table>
     ) : (
-      <div className="w-full h-full flex justify-center items-center text-xl text-emerald-700">
+      <div className="w-full h-full flex justify-center items-center text-xl text-gray-700">
         No games available. Create one now!
       </div>
     )}

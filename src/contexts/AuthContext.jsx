@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
       }
     }
     setLoading(false);
-  }, [connect]);
+  }, [connect, socket]);
 
   const login = (accessToken, refreshToken, username, user_id) => {
     localStorage.setItem("accessToken", accessToken);
@@ -52,8 +52,6 @@ export function AuthProvider({ children }) {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-
-  console.log(context);
 
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");

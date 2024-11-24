@@ -47,7 +47,12 @@ export const Register = () => {
 
       toast.success("Account created successfully");
 
-      login(data.accessToken, data.refreshToken, data.user.username);
+      login(
+        data.accessToken,
+        data.refreshToken,
+        data.user.username,
+        data.user.user_id
+      );
     } catch (error) {
       toast.error(error.response.data.message || "Something went wrong");
     } finally {

@@ -7,7 +7,7 @@ export const CreateGameModal = ({ closeModal }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white w-96 p-8 rounded-lg relative shadow-xl transition-transform transform">
+      <div className="bg-white w-96 p-8 rounded-lg relative shadow-xl transition-transform transform border border-gray-300">
         <button
           className="absolute top-4 right-4 text-xl text-gray-600 hover:text-red-600 transition-colors"
           onClick={closeModal}
@@ -21,21 +21,21 @@ export const CreateGameModal = ({ closeModal }) => {
 
         <div className="mb-6">
           <div className="flex flex-col gap-4 w-full">
-            <div className="flex flex-row gap-2 items-center justify-center">
+            {/* <div className="flex flex-row gap-2 items-center justify-center">
               <label className="block text-gray-700">Variant</label>
               <select className="px-4 py-2 border rounded-lg bg-[#FAFAF9] text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                 <option>Standard</option>
                 <option>Chess960</option>
               </select>
-            </div>
+            </div> */}
 
-            <div className="flex flex-row gap-2 items-center justify-center">
+            {/* <div className="flex flex-row gap-2 items-center justify-center">
               <label className="block text-gray-700">Time control</label>
               <select className="w-1/2 px-4 py-2 border rounded-lg bg-[#FAFAF9] text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                 <option>Real time</option>
                 <option>Correspondence</option>
               </select>
-            </div>
+            </div> */}
 
             <div className="flex flex-col gap-2 justify-center items-center">
               <label className="block text-gray-700">
@@ -58,7 +58,7 @@ export const CreateGameModal = ({ closeModal }) => {
               <input
                 type="range"
                 min="0"
-                max="30"
+                max="60"
                 value={increment}
                 onChange={(e) => setIncrement(e.target.value)}
                 className="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer hover:bg-gray-300 transition"

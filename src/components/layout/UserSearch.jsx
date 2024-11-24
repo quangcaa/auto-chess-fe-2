@@ -48,7 +48,7 @@ const UserSearch = () => {
       <FaSearch
         onClick={handleIconClick}
         size="22"
-        className={`text-gray-600 cursor-pointer transition-transform duration-300 ${
+        className={`text-gray-600 cursor-pointer transition-transform duration-300 hover:text-emerald-600 ${
           isExpanded ? "transform translate-x-2" : ""
         }`}
       />
@@ -73,7 +73,7 @@ const UserSearch = () => {
             {userList.map((user, index) => (
               <a
                 key={index}
-                className="px-4 py-2 text-gray-600 hover:bg-gray-200 cursor-pointer"
+                className="px-4 py-2 text-gray-700 hover:bg-gray-200 cursor-pointer"
                 href={`/@/${user.username}`}
               >
                 {user.username}

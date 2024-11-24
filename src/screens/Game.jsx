@@ -1,9 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Chess } from "chess.js";
-import { Chessboard } from "react-chessboard";
 import toast from "react-hot-toast";
 
 import { useAuth } from "../contexts/AuthContext";
+import movesStore from "@/store/movesStore";
+
+import { Board } from "@/components/game/Board";
+import { GameInfo } from "@/components/game/GameInfo";
+import { ChatRoom } from "@/components/game/ChatRoom";
+import { MoveList } from "@/components/game/MoveList";
+import Timer from "@/components/game/Timer";
 
 import {
   CREATE_GAME,
@@ -14,15 +21,9 @@ import {
   START_GAME,
 } from "@/constants/game";
 
-import { GameInfo } from "@/components/game/GameInfo";
-import { ChatRoom } from "@/components/game/ChatRoom";
-import { MoveList } from "@/components/game/MoveList";
-
-import movesStore from "@/store/movesStore";
-
 export const Game = () => {
   const [game, setGame] = useState(new Chess());
-  const [roomId, setRoomId] = useState("");
+  const [gameId, setGameId] = useState("");
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   const [players, setPlayers] = useState({
@@ -34,16 +35,21 @@ export const Game = () => {
   const addMove = movesStore((state) => state.addMove);
   const resetMoves = movesStore((state) => state.resetMoves);
 
+  const navigate = useNavigate();
   const { socket } = useAuth();
 
-  const [whiteTime, setWhiteTime] = useState(10 * 60 * 1000); // 10 minutes in milliseconds
-  const [blackTime, setBlackTime] = useState(10 * 60 * 1000); // 10 minutes in milliseconds
-  const [activePlayer, setActivePlayer] = useState("w"); // 'w' for white, 'b' for black
+  const initialWhiteTime = 10 * 60 * 1000;
+  const initialBlackTime = 10 * 60 * 1000;
+
+  const [whiteTime, setWhiteTime] = useState(initialWhiteTime);
+  const [blackTime, setBlackTime] = useState(initialBlackTime);
+  const [activePlayer, setActivePlayer] = useState("w");
 
   useEffect(() => {
     if (!socket) return;
 
     socket.on(START_GAME, (data) => {
+      // navigate(`/game/${gameId}`);
       console.log(data);
       setPlayers({ whitePlayer: data.white, blackPlayer: data.black });
 
@@ -52,23 +58,24 @@ export const Game = () => {
       setGame(new Chess());
 
       resetMoves();
-      setWhiteTime(10 * 60 * 1000); // Reset to 10 minutes
-      setBlackTime(10 * 60 * 1000); // Reset to 10 minutes
+      setWhiteTime(initialWhiteTime); // Reset to initial time
+      setBlackTime(initialBlackTime);
       setActivePlayer("w"); // White starts
+
       toast.success("Game started!");
     });
 
-    socket.on(MOVE, (move) => {
-      game.move(move);
-      setGame(new Chess(game.fen()));
+    socket.on(MOVE, (moveData) => {
+      setGame((prevGame) => {
+        const gameCopy = new Chess(prevGame.fen());
+        gameCopy.move(moveData);
 
-      // Get the last move and add it to the store
-      const lastMove = game.history({ verbose: true }).slice(-1)[0];
-      addMove(lastMove);
+        const lastMove = gameCopy.history({ verbose: true }).slice(-1)[0];
+        addMove(lastMove);
 
-      console.log("New move added:", lastMove);
+        return gameCopy;
+      });
 
-      // Switch active player
       setActivePlayer((prev) => (prev === "w" ? "b" : "w"));
     });
 
@@ -84,7 +91,14 @@ export const Game = () => {
       socket.off(MOVE);
       socket.off(GAME_OVER);
     };
-  }, [socket, game, addMove, resetMoves]);
+  }, [socket, gameId, addMove, resetMoves, initialBlackTime, initialWhiteTime]);
+
+  const onTimeUp = (player) => {
+    toast.error(`${player} has run out of time!`);
+    setIsGameOver(true);
+    setGameResult(`${player} lost on time.`);
+    socket.emit(GAME_OVER, { result: `${player} lost on time.` });
+  };
 
   useEffect(() => {
     let timer;
@@ -98,90 +112,30 @@ export const Game = () => {
     return () => clearInterval(timer);
   }, [isGameStarted, isGameOver, activePlayer]);
 
-  const formatTime = (milliseconds) => {
-    const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
-    const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
-    const seconds = String(totalSeconds % 60).padStart(2, "0");
-    return `${minutes}:${seconds}`;
-  };
-
-  const createRoom = () => {
+  const createGame = () => {
     socket.emit(CREATE_GAME, (game_id) => {
-      setRoomId(game_id);
+      setGameId(game_id);
     });
   };
 
-  const joinRoom = () => {
-    if (roomId) {
-      socket.emit(JOIN_GAME, roomId);
+  const joinGame = () => {
+    if (gameId) {
+      socket.emit(JOIN_GAME, gameId);
     }
   };
 
   const leaveGame = () => {
-    if (roomId) {
-      socket.emit(LEAVE_GAME, roomId);
+    if (gameId) {
+      socket.emit(LEAVE_GAME, gameId);
     }
   };
-
-  const onDrop = useCallback(
-    (source, target) => {
-      if (isGameOver) {
-        toast.error("Game đã kết thúc. Bạn không thể di chuyển quân cờ nữa.");
-        return false;
-      }
-
-      const move = { from: source, to: target, promotion: "q" };
-
-      socket.emit(MOVE, { game_id: roomId, move }, (response) => {
-        if (response.success) {
-          game.move(move);
-          setGame(new Chess(game.fen()));
-
-          // Get the last move and add it to the store
-          const lastMove = game.history({ verbose: true }).slice(-1)[0];
-          addMove(lastMove);
-          console.log("New move added:", lastMove);
-
-          // Switch active player
-          setActivePlayer((prev) => (prev === "w" ? "b" : "w"));
-        } else {
-          toast.error(response.message || "Nước đi không hợp lệ.");
-        }
-      });
-
-      return true;
-    },
-    [socket, roomId, game, isGameOver, addMove]
-  );
-
-  const gameFen = game.fen();
-
-  const chessboardMemo = useMemo(
-    () => (
-      <Chessboard
-        position={gameFen}
-        onPieceDrop={onDrop}
-        boardWidth={550}
-        customBoardStyle={{
-          borderRadius: "8px",
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.4)",
-        }}
-        customSquareStyles={{
-          light: { backgroundColor: "#f0d9b5" },
-          dark: { backgroundColor: "#b58863" },
-        }}
-        arePiecesDraggable={!isGameOver} // Disable dragging if game is over
-      />
-    ),
-    [gameFen, onDrop, isGameOver]
-  );
 
   return (
     <div className="flex-grow flex flex-col m-2">
       {!isGameStarted && !isGameOver ? (
         <div className="flex flex-col items-center justify-center h-full">
           <button
-            onClick={createRoom}
+            onClick={createGame}
             className="bg-blue-500 text-white px-4 py-2 rounded m-2"
           >
             Create Room
@@ -189,13 +143,13 @@ export const Game = () => {
           <div className="flex items-center">
             <input
               type="text"
-              value={roomId}
-              onChange={(e) => setRoomId(e.target.value)}
+              value={gameId}
+              onChange={(e) => setGameId(e.target.value)}
               placeholder="Enter Room ID"
               className="border p-2 rounded mr-2"
             />
             <button
-              onClick={joinRoom}
+              onClick={joinGame}
               className="bg-green-500 text-white px-4 py-2 rounded"
             >
               Join Room
@@ -216,26 +170,38 @@ export const Game = () => {
                   />
                 </div>
                 <div className="flex-grow h-64">
-                  <ChatRoom game_id={roomId}/>
+                  <ChatRoom game_id={gameId} />
                 </div>
               </div>
               {/* Middle Section (Chessboard) */}
               <div className="w-2/4 h-full flex items-center justify-center flex-shrink-0 w-auto max-w-fit">
-                <div>{chessboardMemo}</div>
+                <div>
+                  <Board
+                    game={game}
+                    setGame={setGame}
+                    socket={socket}
+                    gameId={gameId}
+                    isGameOver={isGameOver}
+                    addMove={addMove}
+                    setActivePlayer={setActivePlayer}
+                  />
+                </div>
               </div>
-              {/* Right Sidebar */}
+              {/* RIGHT SIDEBAR */}
               <div className="w-1/4 h-full flex flex-col flex-shrink-0">
                 <div className="flex justify-between mb-4">
-                  <div
-                    className={`timer ${activePlayer === "w" ? "active" : ""}`}
-                  >
-                    White: {formatTime(whiteTime)}
-                  </div>
-                  <div
-                    className={`timer ${activePlayer === "b" ? "active" : ""}`}
-                  >
-                    Black: {formatTime(blackTime)}
-                  </div>
+                  <Timer
+                    initialTime={whiteTime}
+                    isActive={activePlayer === "w" && !isGameOver}
+                    onTimeUp={() => onTimeUp("White")}
+                    player="White"
+                  />
+                  <Timer
+                    initialTime={blackTime}
+                    isActive={activePlayer === "b" && !isGameOver}
+                    onTimeUp={() => onTimeUp("Black")}
+                    player="Black"
+                  />
                 </div>
                 <div className="flex-grow">
                   <MoveList />

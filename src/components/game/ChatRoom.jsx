@@ -19,7 +19,7 @@ export const ChatRoom = ({ game_id }) => {
 
   const { socket } = useAuth();
 
-  const sender = localStorage.getItem('username')
+  const sender = localStorage.getItem("username");
 
   const handleSend = () => {
     if (input.trim()) {
@@ -28,7 +28,7 @@ export const ChatRoom = ({ game_id }) => {
         sender: sender,
         timestamp: new Date(),
       };
-      socket.emit(SEND_MESSAGE, {game_id, message});
+      socket.emit(SEND_MESSAGE, { game_id, message });
       // setMessages([...messages, input]);
       setInput("");
     }
@@ -41,6 +41,8 @@ export const ChatRoom = ({ game_id }) => {
   };
 
   useEffect(() => {
+    if (!socket) return;
+
     socket.on(RECEIVE_MESSAGE, (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
@@ -64,7 +66,9 @@ export const ChatRoom = ({ game_id }) => {
         <div className="flex flex-col space-y-2 p-2">
           {messages.map((message, index) => (
             <div key={index} className="mb-2">
-              <span>{message.sender}:  {message.content}</span>
+              <span>
+                {message.sender}: {message.content}
+              </span>
             </div>
           ))}
           <div ref={messagesEndRef} />
