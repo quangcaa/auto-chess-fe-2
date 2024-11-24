@@ -14,13 +14,13 @@ export const Board = ({
   setActivePlayer,
 }) => {
   const onDrop = useCallback(
-    (sourceSquare, targetSquare) => {
+    (sourceSquare, targetSquare, piece) => {
       if (isGameOver) {
         toast.error("Game đã kết thúc. Bạn không thể thực hiện nước đi.");
         return false;
       }
 
-      const move = { from: sourceSquare, to: targetSquare, promotion: "q" };
+      const move = { from: sourceSquare, to: targetSquare, promotion: piece[1].toLowerCase() ?? "q" };
 
       socket.emit("move", { game_id: gameId, move }, (response) => {
         if (!response.success) {
