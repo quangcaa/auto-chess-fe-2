@@ -11,6 +11,8 @@ import { Game } from "./screens/Game";
 import { Inbox } from "./screens/Inbox";
 import { Forum } from "./screens/Forum";
 import { Profile } from "./screens/Profile";
+import { PlayVsComputer } from "./screens/PlayVsComputer";
+import { PlayVsComputerCard } from "./components/homepage/PlayVsComputerCard";
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
             <Route path="/inbox" element={<Inbox />} />
             <Route path="/@/:username" element={<Profile />} />
             <Route path="/forum/*" element={<Forum />} />
+            <Route path="/playVsComputer" element={<PlayVsComputer />} />
+            <Route path="/test2" element={<PlayVsComputerCard />} />
           </Route>
         </Routes>
       </div>

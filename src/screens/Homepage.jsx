@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { CreateGameModal } from "@/components/homepage/CreateGameModal";
+import { PlayVsComputerCard } from "@/components/homepage/PlayVsComputerCard";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +11,7 @@ export const Homepage = () => {
   const [lobby, setLobby] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showPlayVsComputerCard, setShowPlayVsComputerCard] = useState(false);
 
   const navigate = useNavigate();
   const user_id = localStorage.getItem("user_id");
@@ -117,12 +119,18 @@ export const Homepage = () => {
         <button className="bg-white opacity-80 border border-gray-300 text-gray-600 font-medium text-lg rounded-lg px-6 py-3 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:opacity-100 w-3/4 uppercase">
           Join Game
         </button>
-        <button className="bg-white opacity-80 border border-gray-300 text-gray-600 font-medium text-lg rounded-lg px-6 py-3 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:opacity-100 w-3/4 uppercase">
+        <button
+          className="bg-white opacity-80 border border-gray-300 text-gray-600 font-medium text-lg rounded-lg px-6 py-3 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:opacity-100 w-3/4 uppercase"
+          onClick={() => setShowPlayVsComputerCard(true)}
+        >
           Play with the Computer
         </button>
       </div>
 
       {isModalOpen && <CreateGameModal closeModal={closeModal} />}
+      {showPlayVsComputerCard && (
+        <PlayVsComputerCard closeCard={() => setShowPlayVsComputerCard(false)} />
+      )}
     </div>
   );
 };
