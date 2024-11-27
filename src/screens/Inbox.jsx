@@ -65,7 +65,7 @@ export const Inbox = () => {
     socket.on('receive_inbox_message', handleNewMessage);
 
     return () => {
-      socket.off('receive_inbox_message', handleNewMessage);
+      socket.off('receive_inbox_message');
     };
   }, [socket]);
 

@@ -34,7 +34,7 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
     socket.on("receive_inbox_message", handleNewMessage);
 
     return () => {
-      socket.off("receive_inbox_message", handleNewMessage);
+      socket.off("receive_inbox_message");
     };
   }, [socket, userId]);
 
@@ -192,7 +192,7 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
                         : "bg-my-inbox text-left"
                     }`}
                   >
-                    <p className="break-words flex items-center">
+                    <p className="break-words">
                       {item.message}
                       <span className="text-gray-600 ml-5 text-xs">
                         {item.time.time}
