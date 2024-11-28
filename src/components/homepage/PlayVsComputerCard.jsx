@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "@/utils/axios";
 
 import { IoClose } from "react-icons/io5";
+import toast from "react-hot-toast";
 
 import {
   Card,
@@ -22,7 +24,7 @@ export const PlayVsComputerCard = ({ closeCard }) => {
   const [selectedSide, setSelectedSide] = useState(null);
   const navigate = useNavigate();
 
-  const handleStartGame = () => {
+  const handleStartGame = async () => {
     let pickedSide = selectedSide;
 
     if (selectedSide === "random") {
@@ -31,9 +33,18 @@ export const PlayVsComputerCard = ({ closeCard }) => {
       setSelectedSide(pickedSide);
     }
 
-    navigate(`/playVsComputer`, {
-      state: { strength: selectedStrength, side: pickedSide },
-    });
+    try {
+      const res = await api.post("/game/create-computer", {
+        strength: selectedStrength,
+        side: pickedSide,
+      });
+
+      const { game_id } = res.data;
+
+      navigate(`/computer/${game_id}`);
+    } catch (error) {
+      toast.error(error.res.data.message || "Something went wrong");
+    }
 
     closeCard();
   };

@@ -32,8 +32,7 @@ function App() {
             <Route path="/inbox" element={<Inbox />} />
             <Route path="/@/:username" element={<Profile />} />
             <Route path="/forum/*" element={<Forum />} />
-            <Route path="/playVsComputer" element={<PlayVsComputer />} />
-            <Route path="/test2" element={<PlayVsComputerCard />} />
+            <Route path="/computer" element={<PlayVsComputer />} />
           </Route>
         </Routes>
       </div>
