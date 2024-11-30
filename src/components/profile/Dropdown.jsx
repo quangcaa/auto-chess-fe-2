@@ -8,7 +8,7 @@ import api from "@/utils/axios";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
-const Dropdown = ({ isOwner = true, isFollowing = false, user_id }) => {
+export const Dropdown = ({ isOwner = true, isFollowing = false, user_id }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFollow, setIsFollow] = useState(isFollowing);
 
@@ -98,5 +98,3 @@ const Dropdown = ({ isOwner = true, isFollowing = false, user_id }) => {
     </div>
   );
 };
-
-export default Dropdown;

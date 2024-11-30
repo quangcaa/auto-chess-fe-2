@@ -2,12 +2,18 @@ import { useState, useRef, useEffect } from "react";
 import api from "@/utils/axios";
 import toast from "react-hot-toast";
 import { FaSearch } from "react-icons/fa";
+import { Online } from "@/components/Online";
+import { Offline } from "@/components/Offline";
+
+import { useOnlineUsers } from "@/contexts/OnlineUsersContext";
 
 const UserSearch = () => {
   const [query, setQuery] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
   const [userList, setUserList] = useState([]);
   const inputRef = useRef(null);
+
+  const { onlineUsers } = useOnlineUsers();
 
   const handleIconClick = () => {
     setIsExpanded(true);
@@ -68,14 +74,19 @@ const UserSearch = () => {
         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
       />
       {query && userList.length > 0 && (
-        <div className="absolute top-full mt-2 w-full bg-white shadow-lg rounded-lg z-10 ">
+        <div className="absolute top-full mt-2 w-full bg-white shadow-lg border border-gray-300 rounded-lg z-10 ">
           <ul className="flex flex-col max-h-60 overflow-auto">
             {userList.map((user, index) => (
               <a
                 key={index}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-200 cursor-pointer"
+                className={`px-4 py-2 text-gray-700 hover:bg-gray-100 cursor-pointer flex gap-2 
+                  ${index === 0 ? "rounded-t-lg" : ""} 
+                  ${index === userList.length - 1 ? "rounded-b-lg" : ""}`}
                 href={`/@/${user.username}`}
               >
+                <div className="w-4 h-4 place-self-center">
+                  {onlineUsers.has(user.user_id) ? <Online /> : <Offline />}
+                </div>
                 {user.username}
               </a>
             ))}

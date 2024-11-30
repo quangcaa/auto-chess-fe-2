@@ -45,10 +45,10 @@ export const TopicList = () => {
         <div className="flex flex-row justify-between m-7 ml-10 py-4">
           <div className="flex flex-row items-center gap-4">
             <IoArrowBackOutline
-              className="size-20 text-gray-800 cursor-pointer hover:text-emerald-600"
+              className="size-20 text-gray-700 cursor-pointer hover:text-emerald-600"
               onClick={() => navigate("/forum")}
             />
-            <p className="text-5xl font-base text-gray-800">{category_name}</p>
+            <p className="text-5xl font-base text-gray-700">{category_name}</p>
           </div>
           <button>
             <Link
@@ -69,10 +69,10 @@ export const TopicList = () => {
             <tr className="bg-[#E9E9E9] border-y border-gray-300">
               <td></td>
               <td>
-                <p className="text-gray-800 text-lg text-right mr-8">Replies</p>
+                <p className="text-gray-700 text-lg text-right mr-8">Replies</p>
               </td>
               <td>
-                <p className="text-gray-800 text-lg">Last Post</p>
+                <p className="text-gray-700 text-lg">Last Post</p>
               </td>
             </tr>
           </thead>

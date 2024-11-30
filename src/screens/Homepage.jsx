@@ -11,7 +11,6 @@ export const Homepage = () => {
   const [lobby, setLobby] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showPlayVsComputerCard, setShowPlayVsComputerCard] = useState(false);
 
   const navigate = useNavigate();
   const user_id = localStorage.getItem("user_id");
@@ -120,17 +119,14 @@ export const Homepage = () => {
           Join Game
         </button>
         <button
+          onClick={() => navigate("/computer")}
           className="bg-white opacity-80 border border-gray-300 text-gray-600 font-medium text-lg rounded-lg px-6 py-3 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:opacity-100 w-3/4 uppercase"
-          onClick={() => setShowPlayVsComputerCard(true)}
         >
-          Play with the Computer
+          Play with Computer
         </button>
       </div>
 
       {isModalOpen && <CreateGameModal closeModal={closeModal} />}
-      {showPlayVsComputerCard && (
-        <PlayVsComputerCard closeCard={() => setShowPlayVsComputerCard(false)} />
-      )}
     </div>
   );
 };
