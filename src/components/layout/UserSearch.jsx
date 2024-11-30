@@ -44,7 +44,7 @@ const UserSearch = () => {
   };
 
   return (
-    <div className="relative flex items-center z-30">
+    <div className="relative flex p-5 items-center z-30">
       <FaSearch
         onClick={handleIconClick}
         size="22"
