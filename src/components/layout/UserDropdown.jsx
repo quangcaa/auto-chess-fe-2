@@ -27,10 +27,10 @@ const UserDropdown = () => {
 
       {isOpen && (
         <div className="absolute right-0 z-10 w-48 font-medium border border-gray-300 rounded-l-lg shadow-lg bg-white">
-          <div className="py-1" role="none">
+          <div>
             <a
               href={`/@/${username}`}
-              className="block px-4 py-2 text-gray-600 flex items-center group hover:bg-emerald-600"
+              className="block px-4 py-2 text-gray-600 flex items-center group hover:bg-emerald-600 rounded-tl-lg"
             >
               <FaCircle className="text-emerald-500 size-4 mr-3 group-hover:text-white" />
               <p className="group-hover:text-white">Profile</p>

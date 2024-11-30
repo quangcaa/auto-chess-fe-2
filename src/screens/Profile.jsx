@@ -1,14 +1,19 @@
 import { useState, useEffect } from "react";
-import api from "@/utils/axios";
 import { useParams } from "react-router-dom";
+import api from "@/utils/axios";
+import toast from "react-hot-toast";
+import { Chessboard } from "react-chessboard";
+
 import { GiBurningEmbers } from "react-icons/gi";
 import { GiCrossedSwords } from "react-icons/gi";
-import { Chessboard } from "react-chessboard";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import Dropdown from "@/components/profile/Dropdown";
-import { Loading } from "@/components/Loading";
-import toast from "react-hot-toast";
+import { Dropdown } from "@/components/profile/Dropdown";
 import { HistoryGames } from "../components/profile/HistoryGames";
+import { Loading } from "@/components/Loading";
+import { Online } from "../components/Online";
+import { Offline } from "../components/Offline";
+
+import { useOnlineUsers } from "@/contexts/OnlineUsersContext";
 
 export function Profile() {
   const [profile, setProfile] = useState(null);
@@ -20,6 +25,7 @@ export function Profile() {
   const { username } = useParams();
   const currentUser = localStorage.getItem("username");
   const [flagUrl, setFlagUrl] = useState("");
+  const { onlineUsers } = useOnlineUsers();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -105,7 +111,9 @@ export function Profile() {
         {/* Header */}
         <div className="bg-gray-100">
           <div className="flex flex-row px-8 pt-7 pb-4">
-            <div className="size-6 border-t-4 border-b-4 border-l-4 border-r-4 rounded-full border-[#4d4d4d] opacity-60 place-self-center"></div>
+            <div className="w-6 h-6 place-self-center">
+              {onlineUsers.has(profile?.user_id) ? <Online /> : <Offline />}
+            </div>
             <div className="text-3xl text-gray-700 mx-3">
               {profile?.username || username}
             </div>
@@ -125,11 +133,6 @@ export function Profile() {
             <div className="flex flex-col items-center w-30 text-sm text-gray-700 ">
               <h2>300</h2>
               <h2>Forum Posts</h2>
-            </div>
-
-            <div className="flex flex-col items-center w-30 text-sm text-gray-700 ">
-              <h2>300</h2>
-              <h2>Rated</h2>
             </div>
 
             <div className="ml-auto">
@@ -201,10 +204,7 @@ export function Profile() {
                 }`}
               >
                 <div className="w-[220px] h-[200px]">
-                  <Chessboard
-                    position={game.fen || "start"}
-                    boardWidth={200}
-                  />
+                  <Chessboard position={game.fen || "start"} boardWidth={200} />
                 </div>
                 <div className="flex-1">
                   <div className="flex gap-x-3">

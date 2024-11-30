@@ -28,8 +28,8 @@ export const CategoryList = () => {
         {/* HEADER */}
         <div className="flex flex-row items-center gap-4 m-7 ml-10 py-4">
           {/* FORUM ICON */}
-          <MdOutlineForum className="size-20 text-gray-800" />
-          <p className="text-5xl font-base text-gray-800">Autochess Forum</p>
+          <MdOutlineForum className="size-20 text-gray-700" />
+          <p className="text-5xl font-base text-gray-700">Autochess Forum</p>
         </div>
 
         {/* CONTENT */}
@@ -38,10 +38,10 @@ export const CategoryList = () => {
             <tr className="bg-[#E9E9E9] border-y border-gray-300">
               <td></td>
               <td>
-                <p className="text-gray-800 text-lg text-right mr-4">Topics</p>
+                <p className="text-gray-700 text-lg text-right mr-4">Topics</p>
               </td>
               <td>
-                <p className="text-gray-800 text-lg text-left">Posts</p>
+                <p className="text-gray-700 text-lg text-left">Posts</p>
               </td>
             </tr>
           </thead>
