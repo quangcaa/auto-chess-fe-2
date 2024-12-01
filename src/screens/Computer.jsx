@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Chess } from "chess.js";
 import Engine from "@/stockfish/engine";
 import { Chessboard } from "react-chessboard";
@@ -81,7 +81,7 @@ export const PlayVsComputer = () => {
           <div className="flex flex-col mt-7">
             {Object.entries(levels).map(([level, depth]) => (
               <button
-                className={`cursor-pointer px-5 py-2 m-2 mt-0 rounded-md border border-gray-300 hover:bg-[#B58863] shadow-lg ${
+                className={`cursor-pointer px-5 py-2 mb-2 mt-0 rounded-md border border-gray-300 hover:bg-[#B58863] shadow-lg ${
                   stockfishLevel === depth ? "bg-[#B58863]" : "bg-[#f0d9b5]"
                 }`}
                 key={level}
@@ -101,17 +101,10 @@ export const PlayVsComputer = () => {
               position={game.fen()}
               onPieceDrop={onDrop}
               boardOrientation={color}
-              // customArrows={
-              //   bestMove
-              //     ? [
-              //         [
-              //           bestMove.substring(0, 2),
-              //           bestMove.substring(2, 4),
-              //           "rgb(0, 128, 0)",
-              //         ],
-              //       ]
-              //     : undefined
-              // }
+              customBoardStyle={{
+                borderRadius: "8px",
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.4)",
+              }}
             />
 
             <button

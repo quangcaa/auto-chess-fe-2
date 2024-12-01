@@ -1,20 +1,35 @@
-import { useEffect, useState } from "react";
-
+// Homepage.jsx
+import { useEffect, useState, useCallback } from "react";
+import PropTypes from "prop-types";
 import { CreateGameModal } from "@/components/homepage/CreateGameModal";
-import { PlayVsComputerCard } from "@/components/homepage/PlayVsComputerCard";
-
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Loading } from "@/components/Loading";
+
+const debounce = (func, delay) => {
+  let debounceTimer;
+  return function (...args) {
+    const context = this;
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => func.apply(context, args), delay);
+  };
+};
 
 export const Homepage = () => {
+  const [isCreateGameClicked, setIsCreateGameClicked] = useState(false);
+  const [isJoinGameClicked, setIsJoinGameClicked] = useState(false);
+  const [createdGameId, setCreatedGameId] = useState("");
+  const [joinGameId, setJoinGameId] = useState("");
   const [activeTab, setActiveTab] = useState("quick-pairing");
   const [lobby, setLobby] = useState([]);
-
+  const [isWaiting, setIsWaiting] = useState(false);
+  const [loadingIndex, setLoadingIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const navigate = useNavigate();
-  const user_id = localStorage.getItem("user_id");
   const { socket } = useAuth();
+
+  const debouncedNavigate = useCallback(debounce(navigate, 300), [navigate]);
 
   const timeControls = [
     { base_time: "1", increment_by_turn: "0", name: "Bullet" },
@@ -34,28 +49,44 @@ export const Homepage = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const handleQuickPairing = (timeControl) => {
-    const data = {
-      user_id: user_id,
-      time: timeControl.base_time,
-      increment_by_turn: timeControl.increment_by_turn,
-    };
+  const handleQuickPairing = (index) => {
+    setIsWaiting(true);
+    setLoadingIndex(index);
+    socket.emit("join_quick_pairing");
+  };
 
-    socket.emit("join_quick_pairing", (response) => {
+  const handleCreateGame = () => {
+    socket.emit("create_game", (response) => {
       if (response.success) {
-        if (response.game_id) {
-          navigate(`/game/${response.game_id}`);
-        } else {
-          console.log(response.message);
-        }
+        setCreatedGameId(response.game_id);
+        setIsCreateGameClicked(true);
       } else {
         console.error(response.message);
       }
     });
   };
 
+  // testing
+  const handleJoinGame = () => {
+    if (joinGameId) {
+      socket.emit("join_game", joinGameId, (response) => {
+        if (response.success) {
+          debouncedNavigate(`/${joinGameId}`);
+        } else {
+          console.error(response.message);
+        }
+      });
+    }
+  };
+
   useEffect(() => {
     if (!socket) return;
+
+    socket.on("paired", (game_id) => {
+      console.log(`Paired with game_id: ${game_id}`);
+      // Navigate to the game page with the game_id
+      navigate(`/${game_id}`);
+    });
 
     // Listen for the initial lobby list
     socket.on("update_lobby", (allLobbies) => {
@@ -65,8 +96,9 @@ export const Homepage = () => {
 
     return () => {
       socket.off("update_lobby");
+      socket.off("paired"); // Cleanup listener
     };
-  }, [socket]);
+  }, [socket, navigate]);
 
   return (
     <div className="flex w-full h-[calc(100vh-60px)] py-2">
@@ -101,6 +133,7 @@ export const Homepage = () => {
             <QuickPairing
               timeControls={timeControls}
               handleQuickPairing={handleQuickPairing}
+              loadingIndex={loadingIndex}
             />
           )}
           {activeTab === "lobby" && <Lobby games={lobby} />}
@@ -109,17 +142,54 @@ export const Homepage = () => {
 
       <div className="w-1/4 flex flex-col justify-center items-center space-y-8">
         <button
-          onClick={openModal}
+          onClick={handleCreateGame}
           className="bg-white opacity-80 border border-gray-300 text-gray-600 font-medium text-lg rounded-lg px-6 py-3 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:opacity-100 w-3/4 uppercase"
         >
           Create Game
         </button>
+        {isCreateGameClicked && (
+          <div className="mt-4 text-center">
+            <p
+              className="text-lg cursor-pointer"
+              onClick={() => navigator.clipboard.writeText(createdGameId)}
+            >
+              Game ID: <span className="font-bold">{createdGameId}</span>
+            </p>
+            <button
+              onClick={() => debouncedNavigate(`/game/${createdGameId}`)}
+              className="mt-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
+            >
+              Start Game
+            </button>
+          </div>
+        )}
 
-        <button className="bg-white opacity-80 border border-gray-300 text-gray-600 font-medium text-lg rounded-lg px-6 py-3 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:opacity-100 w-3/4 uppercase">
+        <button
+          onClick={() => setIsJoinGameClicked(!isJoinGameClicked)}
+          className="bg-white opacity-80 border border-gray-300 text-gray-600 font-medium text-lg rounded-lg px-6 py-3 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:opacity-100 w-3/4 uppercase"
+        >
           Join Game
         </button>
+        {isJoinGameClicked && (
+          <div className="mt-4 flex flex-col items-center">
+            <input
+              type="text"
+              value={joinGameId}
+              onChange={(e) => setJoinGameId(e.target.value)}
+              placeholder="Enter Game ID"
+              className="border border-gray-300 p-2 rounded-md text-center"
+            />
+            <button
+              onClick={handleJoinGame}
+              className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+            >
+              Join Game
+            </button>
+          </div>
+        )}
+
         <button
-          onClick={() => navigate("/computer")}
+          onClick={() => debouncedNavigate("/computer")}
           className="bg-white opacity-80 border border-gray-300 text-gray-600 font-medium text-lg rounded-lg px-6 py-3 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:opacity-100 w-3/4 uppercase"
         >
           Play with Computer
@@ -131,7 +201,7 @@ export const Homepage = () => {
   );
 };
 
-const QuickPairing = ({ timeControls, handleQuickPairing }) => (
+const QuickPairing = ({ timeControls, handleQuickPairing, loadingIndex }) => (
   <div className="flex h-full w-full">
     <div className="grid grid-cols-3 gap-2 w-full h-full">
       {timeControls.map((time, index) => (
@@ -139,17 +209,29 @@ const QuickPairing = ({ timeControls, handleQuickPairing }) => (
           key={index}
           className="bg-white shadow-md text-gray-700 rounded-lg transition hover:bg-emerald-400"
         >
-          <button className="flex flex-col justify-center items-center w-full h-full p-4 opacity-80">
-            <span className="text-4xl p-2">
-              {time.base_time}+{time.increment_by_turn}
-            </span>
-            <div className="text-2xl text-gray-500">{time.name}</div>
-          </button>
+          {loadingIndex === index ? (
+            <Loading />
+          ) : (
+            <button
+              className="flex flex-col justify-center items-center w-full h-full p-4 opacity-80"
+              onClick={() => handleQuickPairing(index)}
+            >
+              <span className="text-4xl p-2">
+                {time.base_time}+{time.increment_by_turn}
+              </span>
+              <div className="text-2xl text-gray-500">{time.name}</div>
+            </button>
+          )}
         </div>
       ))}
     </div>
   </div>
 );
+QuickPairing.propTypes = {
+  timeControls: PropTypes.array.isRequired,
+  handleQuickPairing: PropTypes.func.isRequired,
+  loadingIndex: PropTypes.number.isRequired,
+};
 
 const Lobby = ({ games }) => (
   <div className="flex h-full w-full flex-col bg-white shadow-md rounded-lg overflow-auto py-2">
@@ -200,3 +282,6 @@ const Lobby = ({ games }) => (
     )}
   </div>
 );
+Lobby.propTypes = {
+  games: PropTypes.array.isRequired,
+};
