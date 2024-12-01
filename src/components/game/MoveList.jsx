@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import movesStore from "@/store/movesStore";
 
-export const MoveList = () => {
+export const MoveList = ({ handleViewHistory = (item) => {} }) => {
   const moves = movesStore((state) => state.moves);
   const listRef = useRef(null);
 
@@ -15,6 +15,8 @@ export const MoveList = () => {
       moveNumber: Math.floor(i / 2) + 1,
       white: whiteMove,
       black: blackMove,
+      after: moves[i+1]?.after,
+      before: moves[i+1]?.before || moves[i].after
     });
   }
 
@@ -46,7 +48,7 @@ export const MoveList = () => {
             </tr>
           </thead>
           <tbody>
-            {movePairs.map(({ moveNumber, white, black }, index) => (
+            {movePairs.map(({ moveNumber, white, black, after, before }, index) => (
               <tr
                 key={moveNumber}
                 className={`${
@@ -56,8 +58,8 @@ export const MoveList = () => {
                 <td className="py-1 bg-[#F7F6F5] font-semibold text-[#B3B3B3] border-r-2 flex justify-center">
                   {moveNumber}
                 </td>
-                <td className="px-2 py-1">{white}</td>
-                <td className="px-2 py-1">{black}</td>
+                <td className="px-2 py-1 hover:bg-gray-100 cursor-pointer" onClick={() => handleViewHistory(before)}>{white}</td>
+                <td className="px-2 py-1 hover:bg-gray-100 cursor-pointer" onClick={() => handleViewHistory(after)}>{black}</td>
               </tr>
             ))}
           </tbody>
