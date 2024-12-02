@@ -8,60 +8,73 @@ import { MoveList } from "@/components/game/MoveList";
 import { GameInfo } from "@/components/game/GameInfo";
 import { extractMoves } from "@/utils/extractMoves";
 import { set } from "react-hook-form";
+import api from "@/utils/axios";
 
 export const Puzzle = () => {
+  const [data, setData] = useState(null);
   const [game, setGame] = useState(new Chess());
   const [isPuzzleSolved, setIsPuzzleSolved] = useState(false);
   const addMove = movesStore((state) => state.addMove);
   const resetMoves = movesStore((state) => state.resetMoves);
   const moves = movesStore((state) => state.moves);
   const [isWatchingHistory, setIsWatchingHistory] = useState(false);
-
+  const [botMove, setBotMove] = useState(1);
 
   // const initialPosition =
   //   "r1bqkbnr/pppppppp/2n5/8/8/2N5/PPPPPPPP/R1BQKBNR w KQkq - 0 1"; // Example FEN
 
-  // Set up initial puzzle position
   useEffect(() => {
-    const fetchPGNAndExtractMoves = async (url) => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error('Failed to fetch PGN data');
-        }
-
-        const pgn = await response.text();
-        
-        const moves = extractMoves(pgn);
-        return moves;
+        const res = await api.get('/puzzle/training');
+        console.log(res.data);
+        setData(res.data); // Set fetched data
       } catch (error) {
-        console.error('Error:', error);
-        return [];
+        console.log(error);
       }
     };
 
+    fetchData();
+  }, []);
+
+  const fetchPGNAndExtractMoves = async (url) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error('Failed to fetch PGN data');
+      }
+      const pgn = await response.text();
+      return extractMoves(pgn);
+    } catch (error) {
+      console.error('Error:', error);
+      return [];
+    }
+  };
+
+  useEffect(() => {
     const loadGame = async () => {
-      const moves = await fetchPGNAndExtractMoves('https://lichess.org/game/export/yyznGmXs');
-      
+      const moveList = await fetchPGNAndExtractMoves('https://lichess.org/game/export/yyznGmXs');
       resetMoves();
       const newGame = new Chess();
-      for (let i = 0; i < moves.length - 1; i++) {
-        const moveResult = newGame.move(moves[i]);
-        addMove(moveResult)
+      for (let i = 0; i < moveList.length - data.moves.length; i++) {
+        const moveResult = newGame.move(moveList[i]);
+        addMove(moveResult);
       }
       
       setGame(newGame);
     };
 
     loadGame();
-  }, []);
+  }, [data]);
 
   const handleViewHistory = (item) => {
+    if (item === undefined) return;
     if (item === moves[moves.length - 1].after) {
       setIsWatchingHistory(false);
     } else {
       setIsWatchingHistory(true);
     }
+    console.log(item);
     setGame(new Chess(item));
   }
 
@@ -77,7 +90,12 @@ export const Puzzle = () => {
 
       if (moveResult && !isWatchingHistory) {
         addMove(moveResult);
+        if (data.moves[botMove] && data.moves[botMove - 1] === `${source}${target}`) {
+          const botMoveResult = game.move({ from: data.moves[botMove].substring(0, 2), to: data.moves[botMove].substring(2, 4), promotion: "q" });
+          addMove(botMoveResult)
+        }
         setGame(new Chess(game.fen()));
+        setBotMove(botMove + 2);
 
         // Check for puzzle solution (example condition: checkmate)
         if (game.isCheckmate()) {
@@ -90,7 +108,7 @@ export const Puzzle = () => {
 
       return !!moveResult;
     },
-    [game, isPuzzleSolved, addMove]
+    [game, isPuzzleSolved, addMove, isWatchingHistory, data, botMove]
   );
 
   const chessboardMemo = useMemo(
@@ -125,7 +143,7 @@ export const Puzzle = () => {
                   alt="PUZZLE"
                   className="w-14 h-14 "
                 />
-                <h2 className="text-2xl font-semibold">Rating:</h2>
+                <h2 className="text-2xl font-semibold">Rating: {data?.rating}</h2>
                 {/* Nội dung rating ở đây */}
               </div>
               <div className="p-4 bg-[#ffffff] rounded-lg shadow-lg">
