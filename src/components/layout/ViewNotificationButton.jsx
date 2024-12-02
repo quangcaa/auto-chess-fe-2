@@ -1,109 +1,75 @@
-import React, { useState, useEffect, useRef } from "react";
-import { GoBellFill } from "react-icons/go";
-import { FaRegTrashAlt, FaFacebookMessenger } from "react-icons/fa";
-import { MdTopic } from "react-icons/md";
-import { SlUserFollowing } from "react-icons/sl";
+import { useState, useEffect, useRef } from "react";
 import api from "@/utils/axios";
+import toast from "react-hot-toast";
+import { formatDistanceToNow } from "date-fns";
+
+import { FaRegTrashAlt, FaCaretUp } from "react-icons/fa";
+import { IoMdCheckmark } from "react-icons/io";
+import { GoBellFill } from "react-icons/go";
+import { MdPostAdd } from "react-icons/md";
+import { SlUserFollowing } from "react-icons/sl";
+
 import { useLocation } from "react-router-dom";
 
 export const ViewNotificationButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [notificationList, setNotificationList] = useState([]);
-  const [error, setError] = useState('');
-  const [isLoaded, setIsLoaded] = useState(false);
   const dropdownRef = useRef(null);
   const location = useLocation();
-
-  const getUsername = async (user_id) => {
-    try {
-      const response = await api.get(`/@/${user_id}/public`);
-      console.log(response.data);
-      return response.data.user.username;
-    } catch (error) {
-      setError('Error fetching notification');
-      console.error(error);
-    }
-  }
 
   useEffect(() => {
     const fetchNotification = async () => {
       try {
-        const response = await api.get('/notification');
+        const response = await api.get("/notification");
+        const data = response.data.data;
 
-        const testData = response.data.data;
-        console.log((testData));
+        console.log(data);
 
-        setNotificationList(response.data.data);
+        setNotificationList(data);
       } catch (error) {
-        setError('Error fetching user notification');
-        console.error(error);
+        toast.error(error.response.data.message || "Something went wrong");
       }
     };
-  
+
     fetchNotification();
-  }, [location])
+  }, [location]);
 
-
-  const toggleNotifications = () => {
-    setIsOpen((prev) => !prev);
-    // setIsLoaded((prev) => !prev);
-  }
-
-  useEffect(() => {
-    if (isOpen && !isLoaded) {
-      const fetchUsernameList = async () => {
-        if (notificationList.length > 0) {
-          const usernamePromises = notificationList.map(async (noti) => {
-            const username = await getUsername(noti.source_id);
-            return { ...noti, username }; 
-          });
-
-          const updatedNoti = await Promise.all(usernamePromises);
-          console.log(updatedNoti);
-          setNotificationList(updatedNoti); 
-        }
-      };
-
-      fetchUsernameList();
-      setIsLoaded(true);
-    }
-  }, [isOpen, notificationList, isLoaded]);
-
-  // close dropdown when click outside
+  // close the dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        isOpen
+      ) {
         setIsOpen(false);
-        // setIsLoaded(true);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [isOpen]);
 
-  const handleReadAll = async () => {
+  const toggleNotifications = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleMarkAll = async () => {
     try {
-      const response = await api.patch("/notification/mark-all-read");
-      if (response.data.success) {
-        console.log("Notification marked as read all successfully.");
-      }
+      await api.patch("/notification/mark-all-read");
       setNotificationList((prev) =>
         prev.map((noti) => ({ ...noti, is_read: true }))
       );
     } catch (error) {
-      setError("Error to read all notifications")
-      console.error(error)
+      toast.error(error.response.data.message || "Something went wrong");
     }
   };
 
-  const handleRead = async (notification_id) => {
+  const handleMarkAsRead = async (notification_id) => {
     try {
-      const response = await api.patch(`/notification/mark-read/${notification_id}`)
-      if (response.data.success) {
-        console.log("Notification marked as read successfully.");
-      }
+      await api.patch(`/notification/mark-read/${notification_id}`);
       setNotificationList((prev) =>
         prev.map((noti) =>
           noti.notification_id === notification_id
@@ -112,77 +78,133 @@ export const ViewNotificationButton = () => {
         )
       );
     } catch (error) {
-      setError("Error to read this notification")
-      console.error(error);
+      toast.error(error.response.data.message || "Something went wrong");
     }
-  }
+  };
 
   const handleDeleteAll = async () => {
     try {
-      const response = await api.delete("/notification");
-      if (response.data.success) {
-        console.log("Completely delete!");
-      }
+      await api.delete("/notification");
       setNotificationList([]);
     } catch (error) {
-      setError("Error to delete notifications")
-      console.error(error);
+      toast.error(error.response.data.message || "Something went wrong");
     }
-  }
+  };
 
   return (
-    <div className="relative h-full flex items-center justify-center" ref={dropdownRef}>
-      {/* Icon chuông */}
+    <div
+      className="relative h-full flex items-center justify-center"
+      ref={dropdownRef}
+    >
       <div
-        className={`flex items-center justify-center cursor-pointer transition-colors duration-300 ${isOpen ? "text-emerald-600" : "text-gray-600"
-          }`}
         onClick={toggleNotifications}
+        className={`cursor-pointer h-[60px] text-lg flex items-center justify-center transition duration-300 ${
+          isOpen ? "bg-white hover:text-emerald-600" : "hover:text-emerald-600"
+        }`}
       >
-        <GoBellFill className="text-xl mx-2" />
+        <GoBellFill className="mx-2 size-6" />
       </div>
 
-      {/* Dropdown thông báo */}
       {isOpen && (
-        <div className="absolute top-full right-0 w-64 bg-white shadow-lg border border-gray-300 rounded-lg p-4 z-10">
-          <button  className="absolute right-5 " 
-                  onClick={() => handleReadAll()}>
-            Read all
-          </button>
-          <div className="mt-5 mb-3">
+        <div className="absolute top-full right-0 w-[350px] bg-white shadow-lg border border-gray-300 rounded-l-lg rounded-br-lg z-10">
+          {/* HEADER */}
+          <div className="flex flex-row justify-between items-center p-2 border-b border-gray-300">
+            <button className="px-1 group" onClick={() => handleMarkAll()}>
+              <IoMdCheckmark
+                className="size-6 hover:text-green-600"
+                title="Mark all read"
+              />
+            </button>
+
+            <FaCaretUp className="size-6 opacity-50" />
+
+            <button className="px-1 group" onClick={() => handleDeleteAll()}>
+              <FaRegTrashAlt
+                className="size-5 hover:text-red-600"
+                title="Delete all"
+              />
+            </button>
+          </div>
+
+          <div className="max-h-60 no-scrollbar overflow-y-auto rounded-b-lg">
             {notificationList.length > 0 ? (
               notificationList.map((notification) => (
                 <a
                   key={notification.notification_id}
-                  className={`flex py-2 px-2 flex-grow border-b last:border-none text-sm ${notification.is_read ? "bg-gray-100" : "bg-white"
-                    }`}
-                    onClick={() => handleRead(notification.notification_id)}
+                  className={`flex flex-grow border-b last:border-none ${
+                    notification.is_read ? "bg-gray-100" : "bg-white"
+                  }`}
+                  onClick={() => handleMarkAsRead(notification.notification_id)}
                 >
-                  <div className="flex justify-center items-center mr-5">
-                    {notification.type === "message" ? (
-                      <FaFacebookMessenger className="size-5" />
-                    ) : notification.type === "topic" ? (
-                      <MdTopic className="size-6" />
+                  <div className="pl-3 py-2 flex justify-center items-center">
+                    {notification.type === "forum" ? (
+                      <MdPostAdd className="size-7" />
                     ) : (
-                      <SlUserFollowing className="size-5" />
+                      <SlUserFollowing className="size-6 mr-1" />
                     )}
                   </div>
-                  
-                  <div >
-                    <span className="text-gray-600">{notification.username} </span>
-                    <span className="text-gray-600">{notification.content}</span>
-                    <div className="text-xs text-gray-500">{notification.create_at}</div>
+
+                  <div className="px-3 py-2 flex w-full">
+                    {notification.type === "forum" ? (
+                      <div className="flex w-full justify-between items-center">
+                        <div className="flex flex-col">
+                          <span
+                            className="text-gray-600 font-medium text-base truncate max-w-[185px]"
+                            title={notification.subject}
+                          >
+                            {notification.subject}
+                          </span>
+                          <span
+                            className="text-gray-600 text-sm truncate max-w-[185px]"
+                            title={notification.content}
+                          >
+                            {notification.content}
+                          </span>
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {formatDistanceToNow(
+                            new Date(notification.created_at),
+                            {
+                              addSuffix: true,
+                            }
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex w-full justify-between items-center">
+                        <div className="flex flex-col">
+                          <span
+                            className="text-gray-600 font-medium text-base truncate max-w-[185px]"
+                            title={notification.username}
+                          >
+                            {notification.username}
+                          </span>
+                          <span
+                            className="text-gray-600 text-sm truncate max-w-[185px]"
+                            title={notification.content}
+                          >
+                            {notification.content}
+                          </span>
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {formatDistanceToNow(
+                            new Date(notification.created_at),
+                            {
+                              addSuffix: true,
+                            }
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </a>
               ))
             ) : (
-              <div className="py-2 text-sm text-gray-500">No notifications</div>
+              <div className="py-2 text-lg text-gray-500 flex justify-center">
+                No notifications
+              </div>
             )}
           </div>
-
-          <button className="absolute bottom-3 right-5 "
-                onClick={() => handleDeleteAll()}>
-            <FaRegTrashAlt />
-          </button>
         </div>
       )}
     </div>

@@ -13,6 +13,7 @@ import { Loading } from "@/components/Loading";
 import { Online } from "../components/Online";
 import { Offline } from "../components/Offline";
 
+import { useAuth } from "@/contexts/AuthContext";
 import { useOnlineUsers } from "@/contexts/OnlineUsersContext";
 
 export function Profile() {
@@ -26,11 +27,14 @@ export function Profile() {
   const currentUser = localStorage.getItem("username");
   const [flagUrl, setFlagUrl] = useState("");
   const { onlineUsers } = useOnlineUsers();
+  const { socket } = useAuth();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await api.get(`@/${username}`);
+
+        console.log(onlineUsers);
 
         setProfile(response.data.profile);
         setGames(response.data.games);
@@ -112,7 +116,7 @@ export function Profile() {
         <div className="bg-gray-100">
           <div className="flex flex-row px-8 pt-7 pb-4">
             <div className="w-6 h-6 place-self-center">
-              {onlineUsers.has(profile?.user_id) ? <Online /> : <Offline />}
+              {profile && profile.online ? <Online /> : <Offline />}
             </div>
             <div className="text-3xl text-gray-700 mx-3">
               {profile?.username || username}

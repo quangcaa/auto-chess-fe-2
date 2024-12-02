@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { LogoutButton } from "./LogoutButton";
 import { IoMdSettings } from "react-icons/io";
 import { FaUserCircle } from "react-icons/fa";
@@ -6,15 +6,33 @@ import { FaCircle } from "react-icons/fa";
 
 const UserDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const username = localStorage.getItem("username");
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
-  const username = localStorage.getItem("username");
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        isOpen
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
-    <div className="relative inline-block text-center">
+    <div className="relative inline-block text-center" ref={dropdownRef}>
       <span
         onClick={toggleDropdown}
         className={`cursor-pointer h-[60px] text-lg transition duration-300 pl-3 pr-3 py-5 flex items-center font-medium ${
