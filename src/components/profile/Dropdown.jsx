@@ -4,13 +4,15 @@ import { IoMdSettings } from "react-icons/io";
 import { ImBubble2, ImHeart, ImUser } from "react-icons/im";
 import { GiBattleAxe } from "react-icons/gi";
 import { FaRegHeart } from "react-icons/fa";
+import { MdReportProblem } from "react-icons/md";
 import api from "@/utils/axios";
 import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 
-const Dropdown = ({ isOwner = true, isFollowing = false, user_id }) => {
+const Dropdown = ({ isOwner = true, isFollowing, user_id }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFollow, setIsFollow] = useState(isFollowing);
+  // console.log("dropdown" + isFollow);
 
   const { username } = useParams();
 
@@ -73,7 +75,7 @@ const Dropdown = ({ isOwner = true, isFollowing = false, user_id }) => {
               </a>
               <button
                 onClick={handleFollow}
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full"
               >
                 {isFollow ? (
                   <>
@@ -90,6 +92,11 @@ const Dropdown = ({ isOwner = true, isFollowing = false, user_id }) => {
               <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                 <GiBattleAxe className="size-5 mr-2" />
                 Challenge to a game
+              </a>
+              <a href= {`/report?username=${username}`}
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                <MdReportProblem className="size-5 mr-2"/>
+                Report
               </a>
             </>
           )}

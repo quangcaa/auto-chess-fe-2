@@ -15,51 +15,70 @@ export function Profile() {
   const [games, setGames] = useState([]);
   const [followingList, setFollowingList] = useState([]);
   const [followerList, setFollowerList] = useState([]);
+  const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const { username } = useParams();
   const currentUser = localStorage.getItem("username");
+  const current_id = localStorage.getItem("user_id");
   const [flagUrl, setFlagUrl] = useState("");
 
+
   useEffect(() => {
+    setLoading(true);
+    let isMounted = true; // Để tránh cập nhật state sau khi unmount
+  
     const fetchUserProfile = async () => {
       try {
         const response = await api.get(`@/${username}`);
-
-        setProfile(response.data.profile);
-        setGames(response.data.games);
+        if (isMounted) {
+          setProfile(response.data.profile);
+          setGames(response.data.games);
+        }
       } catch (error) {
-        toast.error(error.response.data.message || "Something went wrong");
+        toast.error(error.response?.data?.message || "Something went wrong");
       }
     };
-
+  
     const fetchFollowingList = async () => {
       try {
         const response = await api.get(`@/${username}/following`);
-        const data = response.data;
-        setFollowingList(data);
+        if (isMounted) {
+          setFollowingList(response.data);
+        }
       } catch (error) {
-        toast.error(error.response.data.message || "Something went wrong");
+        toast.error(error.response?.data?.message || "Something went wrong");
       }
     };
-
+  
     const fetchFollowerList = async () => {
       try {
         const response = await api.get(`@/${username}/follower`);
-        const data = response.data;
-        setFollowerList(data);
+        if (isMounted) {
+          setFollowerList(response.data);
+          if (response.data.length > 0) {
+            setIsFollowing(
+              response.data.some((follow) => current_id === String(follow.follower_id))
+            );
+          }
+        }
       } catch (error) {
-        toast.error(error.response.data.message || "Something went wrong");
+        toast.error(error.response?.data?.message || "Something went wrong");
       }
     };
-
-    // Call 2 APIs
-    fetchUserProfile();
-    fetchFollowingList();
-    fetchFollowerList();
-
-    setLoading(false);
+  
+    const fetchData = async () => {
+      await Promise.all([fetchUserProfile(), fetchFollowingList(), fetchFollowerList()]);
+      if (isMounted) setLoading(false);
+    };
+  
+    fetchData();
+  
+    return () => {
+      isMounted = false;
+    };
   }, [username]);
+  
 
   useEffect(() => {
     const fetchFlag = async () => {
@@ -85,17 +104,9 @@ export function Profile() {
   };
 
   const checkFollow = () => {
-    if (followingList.length === 0) {
-      return false;
-    }
-    const current_id = localStorage.getItem("user_id");
-    console.log(current_id);
-    return followingList.some((follow) => current_id === follow.following_id);
-  };
-
-  // const checkIsOwner = () => {
-  //   return username === currentUser;
-  // }
+    console.log("check " + isFollowing);
+    return isFollowing;
+  }
 
   if (loading) return <Loading />;
 
@@ -135,7 +146,7 @@ export function Profile() {
             <div className="ml-auto">
               <Dropdown
                 isOwner={username === currentUser}
-                isFollowing={!(username === currentUser) && checkFollow()}
+                isFollowing={checkFollow}
                 user_id={profile?.user_id}
               />
             </div>

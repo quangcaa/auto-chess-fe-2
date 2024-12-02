@@ -13,6 +13,7 @@ import { Forum } from "./screens/Forum";
 import { Profile } from "./screens/Profile";
 import { PlayVsComputer } from "./screens/PlayVsComputer";
 import { PlayVsComputerCard } from "./components/homepage/PlayVsComputerCard";
+import { Report } from "./screens/Report";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
             <Route path="/@/:username" element={<Profile />} />
             <Route path="/forum/*" element={<Forum />} />
             <Route path="/computer" element={<PlayVsComputer />} />
+            <Route path="/report" element={<Report />} />
           </Route>
         </Routes>
       </div>
