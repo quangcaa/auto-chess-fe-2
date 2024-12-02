@@ -56,7 +56,7 @@ export const Puzzle = () => {
       const moveList = await fetchPGNAndExtractMoves('https://lichess.org/game/export/yyznGmXs');
       resetMoves();
       const newGame = new Chess();
-      for (let i = 0; i < moveList.length - data.moves.length; i++) {
+      for (let i = 0; i < moveList.length - data.moves.length + 1; i++) {
         const moveResult = newGame.move(moveList[i]);
         addMove(moveResult);
       }
@@ -90,8 +90,12 @@ export const Puzzle = () => {
 
       if (moveResult && !isWatchingHistory) {
         addMove(moveResult);
-        if (data.moves[botMove] && data.moves[botMove - 1] === `${source}${target}`) {
-          const botMoveResult = game.move({ from: data.moves[botMove].substring(0, 2), to: data.moves[botMove].substring(2, 4), promotion: "q" });
+        if (data.moves[botMove + 1] && data.moves[botMove] === `${source}${target}`) {
+          const botMoveResult = game.move({ 
+            from: data.moves[botMove + 1].substring(0, 2), 
+            to: data.moves[botMove + 1].substring(2, 4), 
+            promotion: "q" 
+          });
           addMove(botMoveResult)
         }
         setGame(new Chess(game.fen()));

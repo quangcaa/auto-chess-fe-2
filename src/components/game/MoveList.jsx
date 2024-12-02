@@ -38,7 +38,7 @@ export const MoveList = ({ handleViewHistory = (item) => {} }) => {
         ref={listRef}
       >
         <table className="table-auto w-full">
-          <thead>
+          <thead className="sticky top-0">
             <tr className="bg-gray-100">
               <th className="px-1 py-1 text-left bg-[#F7F6F5] text-[#B3B3B3] border-r-2 flex justify-center">
                 #
