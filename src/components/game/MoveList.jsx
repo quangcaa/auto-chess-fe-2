@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import movesStore from "@/store/movesStore";
@@ -7,25 +7,22 @@ export const MoveList = ({ handleViewHistory = (item) => {} }) => {
   const moves = movesStore((state) => state.moves);
   const listRef = useRef(null);
 
-  const movePairs = [];
-  for (let i = 0; i < moves.length; i += 2) {
-    const whiteMove = moves[i].san;
-    const blackMove = moves[i + 1]?.san || "";
-    movePairs.push({
-      moveNumber: Math.floor(i / 2) + 1,
-      white: whiteMove,
-      black: blackMove,
-      after: moves[i+1]?.after,
-      before: moves[i+1]?.before || moves[i].after
-    });
-  }
+  const [movePairs, setMovePairs] = useState([]);
+  useEffect(() => {
+    setMovePairs(moves.map((item, index) => ({
+      moveNumber: Math.floor(index / 2) + 1,
+      san: item.san,
+      fen: item.after,
+      selected: item.selected
+    })))
+  }, [moves])
 
   // auto scroll to bottom when new moves added
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
-  }, [moves]);
+  }, [movePairs]);
 
   return (
     <Card className="w-full h-full shadow-lg flex flex-col">
@@ -48,18 +45,23 @@ export const MoveList = ({ handleViewHistory = (item) => {} }) => {
             </tr>
           </thead>
           <tbody>
-            {movePairs.map(({ moveNumber, white, black, after, before }, index) => (
-              <tr
-                key={moveNumber}
+            {movePairs.map((item, index) => (
+              index % 2 == 0 &&
+                <tr
+                key={index}
                 className={`${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                  item.moveNumber % 2 === 0 ? "bg-white" : "bg-gray-50"
                 }`}
               >
                 <td className="py-1 bg-[#F7F6F5] font-semibold text-[#B3B3B3] border-r-2 flex justify-center">
-                  {moveNumber}
+                  {item.moveNumber}
                 </td>
-                <td className="px-2 py-1 hover:bg-gray-100 cursor-pointer" onClick={() => handleViewHistory(before)}>{white}</td>
-                <td className="px-2 py-1 hover:bg-gray-100 cursor-pointer" onClick={() => handleViewHistory(after)}>{black}</td>
+                <td className={`px-2 py-1 hover:text-white hover:bg-emerald-600 cursor-pointer ${item.selected && 'bg-emerald-600 text-white'}`} onClick={() => handleViewHistory(item.fen)}>{item.san}</td>
+                {movePairs[index + 1] ? 
+                
+                <td className={`px-2 py-1 hover:text-white hover:bg-emerald-600 cursor-pointer ${movePairs[index + 1].selected && 'bg-emerald-600 text-white'}`} onClick={() => handleViewHistory(movePairs[index + 1].fen)}>{movePairs[index + 1].san}</td> : 
+                <td ></td>
+              }
               </tr>
             ))}
           </tbody>

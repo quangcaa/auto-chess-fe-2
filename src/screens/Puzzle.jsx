@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import toast from "react-hot-toast";
@@ -14,11 +14,13 @@ export const Puzzle = () => {
   const [data, setData] = useState(null);
   const [game, setGame] = useState(new Chess());
   const [isPuzzleSolved, setIsPuzzleSolved] = useState(false);
-  const addMove = movesStore((state) => state.addMove);
+  // const addMove = movesStore((state) => state.addMove);
   const resetMoves = movesStore((state) => state.resetMoves);
   const moves = movesStore((state) => state.moves);
+  const setMoves = movesStore((state) => state.setMoves);
   const [isWatchingHistory, setIsWatchingHistory] = useState(false);
-  const [botMove, setBotMove] = useState(1);
+  const [botMove, setBotMove] = useState(0);
+  const [trueMove, setTrueMove] = useState([])
 
   // const initialPosition =
   //   "r1bqkbnr/pppppppp/2n5/8/8/2N5/PPPPPPPP/R1BQKBNR w KQkq - 0 1"; // Example FEN
@@ -53,12 +55,22 @@ export const Puzzle = () => {
 
   useEffect(() => {
     const loadGame = async () => {
-      const moveList = await fetchPGNAndExtractMoves('https://lichess.org/game/export/yyznGmXs');
+      const moveList = await fetchPGNAndExtractMoves(`https://lichess.org/game/export/${data.id}`);
       resetMoves();
       const newGame = new Chess();
-      for (let i = 0; i < moveList.length - data.moves.length + 1; i++) {
-        const moveResult = newGame.move(moveList[i]);
-        addMove(moveResult);
+      let moveResultList = []
+      let trueMoveList = []
+      if (data) {
+        for (let i = 0; i < moveList.length; i++) {
+          if (i < moveList.length - data.moves) {
+            const moveResult = newGame.move(moveList[i]);
+            moveResultList.push({...moveResult, selected: i === moveList.length - data.moves.length ? true : false });
+          } else {
+            trueMoveList.push(moveList[i])
+          }
+        }
+        setMoves(moveResultList);
+        setTrueMove(trueMoveList)
       }
       
       setGame(newGame);
@@ -75,6 +87,12 @@ export const Puzzle = () => {
       setIsWatchingHistory(true);
     }
     console.log(item);
+    setMoves(moves.map(move => {
+      if (move.after === item) {
+        return {...move, selected: true}
+      }
+      return {...move, selected: false }
+    }))
     setGame(new Chess(item));
   }
 
@@ -84,25 +102,23 @@ export const Puzzle = () => {
         toast.error("You have already solved the puzzle!");
         return false;
       }
-
+      const newChess = new Chess(game.fen())
       const move = { from: source, to: target, promotion: "q" };
-      const moveResult = game.move(move);
+      const moveResult = newChess.move(move);
+      console.log(trueMove[botMove])
 
-      if (moveResult && !isWatchingHistory) {
-        addMove(moveResult);
-        if (data.moves[botMove + 1] && data.moves[botMove] === `${source}${target}`) {
-          const botMoveResult = game.move({ 
-            from: data.moves[botMove + 1].substring(0, 2), 
-            to: data.moves[botMove + 1].substring(2, 4), 
-            promotion: "q" 
-          });
-          addMove(botMoveResult)
-        }
-        setGame(new Chess(game.fen()));
-        setBotMove(botMove + 2);
+      console.log(moveResult)
+      if (moveResult && !isWatchingHistory && data && trueMove[botMove] === moveResult.san) {
+          setMoves([...moves.map(item => ({...item, selected: false})), { ...moveResult, selected: true}]);
+          if (trueMove[botMove + 1]) {
+            const botMoveResult = newChess.move(trueMove[botMove + 1]);
+            setMoves([...moves.map(item => ({...item, selected: false})), { ...moveResult, selected: false}, { ...botMoveResult, selected: true}])
+            setBotMove(botMove + 2);
+          }
+          setGame(new Chess(newChess.fen()));
 
         // Check for puzzle solution (example condition: checkmate)
-        if (game.isCheckmate()) {
+        if (newChess.isCheckmate()) {
           setIsPuzzleSolved(true);
           toast.success("Puzzle solved!");
         }
@@ -112,7 +128,7 @@ export const Puzzle = () => {
 
       return !!moveResult;
     },
-    [game, isPuzzleSolved, addMove, isWatchingHistory, data, botMove]
+    [game, isPuzzleSolved, setMoves, isWatchingHistory, data, botMove]
   );
 
   const chessboardMemo = useMemo(
