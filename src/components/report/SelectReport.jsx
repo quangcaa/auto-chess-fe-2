@@ -10,7 +10,7 @@ export const SelectReport = ({ onChange }) => {
   return (
     <div className="w-full">
       <Select onValueChange={handleSelectChange}>
-        <SelectTrigger className="w-full h-10 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        <SelectTrigger className="w-full h-10 border border-gray-300 rounded-md shadow-sm focus:border-2 focus:border-emerald-600">
           <SelectValue placeholder="Select a reason" />
         </SelectTrigger>
         <SelectContent className="w-full">

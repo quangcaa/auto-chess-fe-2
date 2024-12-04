@@ -19,22 +19,22 @@ export const MoveList = ({
 
   return (
     <Card className="w-full h-full shadow-lg flex flex-col">
-      <CardHeader>
+      {/* <CardHeader>
         <CardTitle>Move List</CardTitle>
-      </CardHeader>
+      </CardHeader> */}
       <Separator />
       <CardContent
-        className="flex-grow overflow-y-auto no-scrollbar h-64 p-0 text-sm"
+        className="flex-grow overflow-y-auto no-scrollbar h-64 p-0 text-sm rounded-lg"
         ref={listRef}
       >
-        <table className="table-auto w-full">
-          <thead className="sticky top-0">
-            <tr className="bg-gray-100">
-              <th className="px-1 py-1 text-left bg-[#F7F6F5] text-[#B3B3B3] border-r-2 flex justify-center">
+        <table className="table-auto w-full rounded-xl">
+          <thead className="sticky top-0 rounded-xl">
+            <tr className="bg-gray-200">
+              <th className="px-1 py-1 text-left text-[#B3B3B3] flex justify-center">
                 #
               </th>
               <th className="px-2 py-1 text-left">White</th>
-              <th className="px-2 py-1 text-left">Black</th>
+              <th className="px-2 py-1 text-left ">Black</th>
             </tr>
           </thead>
           <tbody>

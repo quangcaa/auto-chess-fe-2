@@ -20,7 +20,11 @@ export const Board = ({
         return false;
       }
 
-      const move = { from: sourceSquare, to: targetSquare, promotion: piece[1].toLowerCase() ?? "q" };
+      const move = {
+        from: sourceSquare,
+        to: targetSquare,
+        promotion: piece[1].toLowerCase() ?? "q",
+      };
 
       socket.emit("move", { game_id: gameId, move }, (response) => {
         if (!response.success) {
@@ -67,9 +71,10 @@ export const Board = ({
         fontWeight: "bold",
         fontFamily: "'Roboto', sans-serif",
       }}
-      // customDarkSquareStyle={{ backgroundColor: "#B58863" }}
+      customDarkSquareStyle={{ backgroundColor: "#779952" }}
+      customLightSquareStyle={{ backgroundColor: "#edeed1" }}
       customDropSquareStyle={{
-        backgroundColor: "#4d7c0f",
+        boxShadow: "inset 0 0 1px 6px rgba(132,23,255,0.75)",
       }}
       customSquareStyles={{
         light: { backgroundColor: "#f0d9b5" },

@@ -158,7 +158,7 @@ export const Game = () => {
       <div className="flex-grow flex items-center justify-center">
         <div className="w-full max-w-screen-xl w-[80%] h-full">
           <div className="flex-grow flex flex-row justify-center h-full gap-4">
-            {/* Left Sidebar */}
+            {/* LEFT */}
             <div className="w-1/4 flex flex-col gap-4 flex-shrink-0">
               <div>
                 <GameInfo
@@ -171,7 +171,7 @@ export const Game = () => {
                 <ChatRoom game_id={gameId} />
               </div>
             </div>
-            {/* Middle Section (Chessboard) */}
+            {/* MID */}
             <div className="w-2/4 h-full flex items-center justify-center flex-shrink-0 w-auto max-w-fit">
               <div>
                 <Board
@@ -183,10 +183,9 @@ export const Game = () => {
                   addMove={addMove}
                   setActivePlayer={setActivePlayer}
                 />
-                {players.whitePlayer}
               </div>
             </div>
-            {/* RIGHT SIDEBAR */}
+            {/* RIGHT */}
             <div className="w-1/4 h-full flex flex-col flex-shrink-0">
               <div className="flex justify-between mb-4">
                 {/* <Timer
