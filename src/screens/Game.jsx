@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Chess } from "chess.js";
 import toast from "react-hot-toast";
-
+import api from "@/utils/axios";
 import { useAuth } from "../contexts/AuthContext";
 import movesStore from "@/store/movesStore";
-
 import { Board } from "@/components/game/Board";
 import { GameInfo } from "@/components/game/GameInfo";
 import { ChatRoom } from "@/components/game/ChatRoom";
 import { MoveList } from "@/components/game/MoveList";
-import Timer from "@/components/game/Timer";
-
+import { Timer } from "@/components/game/Timer";
 import {
   CREATE_GAME,
   GAME_OVER,
@@ -24,6 +22,7 @@ import {
 export const Game = () => {
   const [game, setGame] = useState(new Chess());
   const [gameId, setGameId] = useState("");
+  const [gameData, setGameData] = useState("");
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   const [players, setPlayers] = useState({
@@ -38,29 +37,47 @@ export const Game = () => {
   const navigate = useNavigate();
   const { socket } = useAuth();
 
-  const initialWhiteTime = 10 * 60 * 1000;
-  const initialBlackTime = 10 * 60 * 1000;
-
-  const [whiteTime, setWhiteTime] = useState(initialWhiteTime);
-  const [blackTime, setBlackTime] = useState(initialBlackTime);
+  const [whiteTime, setWhiteTime] = useState(0);
+  const [blackTime, setBlackTime] = useState(0);
   const [activePlayer, setActivePlayer] = useState("w");
+
+  const { game_id } = useParams();
+
+  useEffect(() => {
+    const fetchGame = async () => {
+      try {
+        const response = await api.get(`/game/${game_id}`);
+        const data = response.data.game;
+
+        setGameId(data.game_id);
+        setGameData(data);
+        setPlayers({
+          whitePlayer: data.white_player_id,
+          blackPlayer: data.black_player_id,
+        });
+      } catch (error) {
+        toast.error(error.response.data.message || "Something went wrong");
+      }
+    };
+
+    fetchGame();
+  }, []);
 
   useEffect(() => {
     if (!socket) return;
 
     socket.on(START_GAME, (data) => {
-      // navigate(`/game/${gameId}`);
-      console.log(data);
-      setPlayers({ whitePlayer: data.white, blackPlayer: data.black });
+      setGameId(game_id);
+      // setPlayers({ whitePlayer: data.white, blackPlayer: data.black });
 
       setIsGameStarted(true);
       setIsGameOver(false);
       setGame(new Chess());
 
       resetMoves();
-      setWhiteTime(initialWhiteTime); // Reset to initial time
-      setBlackTime(initialBlackTime);
-      setActivePlayer("w"); // White starts
+      setWhiteTime(data.timeData.whiteTime); // Initialize with time from server
+      setBlackTime(data.timeData.blackTime);
+      setActivePlayer("w");
 
       toast.success("Game started!");
     });
@@ -76,22 +93,28 @@ export const Game = () => {
         return gameCopy;
       });
 
-      setActivePlayer((prev) => (prev === "w" ? "b" : "w"));
+      // setActivePlayer((prev) => (prev === "w" ? "b" : "w"));
+    });
+
+    socket.on("time_update", ({ whiteTime: wTime, blackTime: bTime }) => {
+      setWhiteTime(wTime);
+      setBlackTime(bTime);
     });
 
     socket.on(GAME_OVER, (result) => {
       setGameResult(result);
       setIsGameStarted(false);
       setIsGameOver(true);
-      toast.success(`Game Kết Thúc: ${result}`);
+      toast.success(`Game Over: ${result}`);
     });
 
     return () => {
       socket.off(START_GAME);
       socket.off(MOVE);
       socket.off(GAME_OVER);
+      socket.off("time_update");
     };
-  }, [socket, gameId, addMove, resetMoves, initialBlackTime, initialWhiteTime]);
+  }, [socket, game_id, addMove, resetMoves]);
 
   const onTimeUp = (player) => {
     toast.error(`${player} has run out of time!`);
@@ -132,100 +155,73 @@ export const Game = () => {
 
   return (
     <div className="flex-grow flex flex-col m-2">
-      {!isGameStarted && !isGameOver ? (
-        <div className="flex flex-col items-center justify-center h-full">
-          <button
-            onClick={createGame}
-            className="bg-blue-500 text-white px-4 py-2 rounded m-2"
-          >
-            Create Room
-          </button>
-          <div className="flex items-center">
-            <input
-              type="text"
-              value={gameId}
-              onChange={(e) => setGameId(e.target.value)}
-              placeholder="Enter Room ID"
-              className="border p-2 rounded mr-2"
-            />
-            <button
-              onClick={joinGame}
-              className="bg-green-500 text-white px-4 py-2 rounded"
-            >
-              Join Room
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex-grow flex items-center justify-center">
-          <div className="w-full max-w-screen-xl w-[80%] h-full">
-            <div className="flex-grow flex flex-row justify-center h-full gap-4">
-              {/* Left Sidebar */}
-              <div className="w-1/4 flex flex-col gap-4 flex-shrink-0">
+      <div className="flex-grow flex items-center justify-center">
+        <div className="w-full max-w-screen-xl w-[80%] h-full">
+          <div className="flex-grow flex flex-row justify-center h-full gap-4">
+            {/* Left Sidebar */}
+            <div className="w-1/4 flex flex-col gap-4 flex-shrink-0">
+              <div>
+                <GameInfo
+                  white={players.whitePlayer}
+                  black={players.blackPlayer}
+                  gameType="Standard Rated"
+                />
+              </div>
+              <div className="flex-grow h-64">
+                <ChatRoom game_id={gameId} />
+              </div>
+            </div>
+            {/* Middle Section (Chessboard) */}
+            <div className="w-2/4 h-full flex items-center justify-center flex-shrink-0 w-auto max-w-fit">
+              <div>
+                <Board
+                  game={game}
+                  setGame={setGame}
+                  socket={socket}
+                  gameId={gameId}
+                  isGameOver={isGameOver}
+                  addMove={addMove}
+                  setActivePlayer={setActivePlayer}
+                />
+                {players.whitePlayer}
+              </div>
+            </div>
+            {/* RIGHT SIDEBAR */}
+            <div className="w-1/4 h-full flex flex-col flex-shrink-0">
+              <div className="flex justify-between mb-4">
+                {/* <Timer
+                  timeLeft={whiteTime}
+                  isActive={activePlayer === "w"}
+                  player="White"
+                />
+                <Timer
+                  timeLeft={blackTime}
+                  isActive={activePlayer === "b"}
+                  player="Black"
+                /> */}
+              </div>
+              <div className="flex-grow">
+                <MoveList />
+              </div>
+              {gameResult && (
+                <div className="mt-4 text-xl">
+                  {isGameOver ? `Kết thúc: ${gameResult}` : ""}
+                </div>
+              )}
+              {!isGameOver && (
                 <div>
-                  <GameInfo
-                    white={players.whitePlayer}
-                    black={players.blackPlayer}
-                    gameType="Standard Rated"
-                  />
+                  <button
+                    onClick={leaveGame}
+                    className="bg-red-500 text-white px-4 py-2 rounded mt-4"
+                  >
+                    LEAVE GAME
+                  </button>
                 </div>
-                <div className="flex-grow h-64">
-                  <ChatRoom game_id={gameId} />
-                </div>
-              </div>
-              {/* Middle Section (Chessboard) */}
-              <div className="w-2/4 h-full flex items-center justify-center flex-shrink-0 w-auto max-w-fit">
-                <div>
-                  <Board
-                    game={game}
-                    setGame={setGame}
-                    socket={socket}
-                    gameId={gameId}
-                    isGameOver={isGameOver}
-                    addMove={addMove}
-                    setActivePlayer={setActivePlayer}
-                  />
-                </div>
-              </div>
-              {/* RIGHT SIDEBAR */}
-              <div className="w-1/4 h-full flex flex-col flex-shrink-0">
-                <div className="flex justify-between mb-4">
-                  <Timer
-                    initialTime={whiteTime}
-                    isActive={activePlayer === "w" && !isGameOver}
-                    onTimeUp={() => onTimeUp("White")}
-                    player="White"
-                  />
-                  <Timer
-                    initialTime={blackTime}
-                    isActive={activePlayer === "b" && !isGameOver}
-                    onTimeUp={() => onTimeUp("Black")}
-                    player="Black"
-                  />
-                </div>
-                <div className="flex-grow">
-                  <MoveList />
-                </div>
-                {gameResult && (
-                  <div className="mt-4 text-xl">
-                    {isGameOver ? `Kết thúc: ${gameResult}` : ""}
-                  </div>
-                )}
-                {!isGameOver && (
-                  <div>
-                    <button
-                      onClick={leaveGame}
-                      className="bg-red-500 text-white px-4 py-2 rounded mt-4"
-                    >
-                      LEAVE GAME
-                    </button>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

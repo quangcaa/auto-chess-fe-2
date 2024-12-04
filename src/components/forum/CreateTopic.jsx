@@ -64,24 +64,24 @@ export const CreateTopic = () => {
         {/*</div> HEADER */}
         <CardHeader className="flex flex-row items-center gap-4 m-7 ml-10 py-4 px-0">
           <IoArrowBackOutline
-            className="size-20 text-gray-800 cursor-pointer hover:text-emerald-600"
+            className="size-20 text-gray-700 cursor-pointer hover:text-emerald-600"
             onClick={() => navigate(-1)}
           />
-          <CardTitle className="text-5xl text-gray-800">
+          <CardTitle className="text-5xl font-base text-gray-700">
             {category_name}
           </CardTitle>
         </CardHeader>
 
         <CardContent className="w-full mb-4">
           <form className="m-5 space-y-4" onSubmit={handleSubmit}>
-            <p className="font-bold text-sm">Subject</p>
+            <p className="font-bold text-sm text-gray-700">Subject</p>
             <input
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               className="border bg-gray-100 border-gray-300 w-full rounded-md px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-emerald-600 focus-visible:border-2 focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-base"
             />
-            <p className="font-bold text-sm">Message</p>
+            <p className="font-bold text-sm text-gray-700">Message</p>
             <Textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}

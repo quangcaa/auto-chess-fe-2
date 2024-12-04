@@ -1,20 +1,21 @@
-import { useEffect, useState } from "react";
-
-import { CreateGameModal } from "@/components/homepage/CreateGameModal";
-import { PlayVsComputerCard } from "@/components/homepage/PlayVsComputerCard";
-
+import { useEffect, useState, useCallback } from "react";
+import PropTypes from "prop-types";
+import { CreateGameCard } from "@/components/homepage/CreateGameCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Loading } from "@/components/Loading";
 
 export const Homepage = () => {
+  const [isJoinGameClicked, setIsJoinGameClicked] = useState(false);
+  const [createdGameId, setCreatedGameId] = useState("");
+  const [joinGameId, setJoinGameId] = useState("");
   const [activeTab, setActiveTab] = useState("quick-pairing");
   const [lobby, setLobby] = useState([]);
-
+  const [isWaiting, setIsWaiting] = useState(false);
+  const [loadingIndex, setLoadingIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showPlayVsComputerCard, setShowPlayVsComputerCard] = useState(false);
 
   const navigate = useNavigate();
-  const user_id = localStorage.getItem("user_id");
   const { socket } = useAuth();
 
   const timeControls = [
@@ -29,36 +30,49 @@ export const Homepage = () => {
     { base_time: "15", increment_by_turn: "10", name: "Rapid" },
     { base_time: "30", increment_by_turn: "0", name: "Classical" },
     { base_time: "30", increment_by_turn: "20", name: "Classical" },
-    { base_time: null, increment_by_turn: null, name: "Custom" },
+    // { base_time: null, increment_by_turn: null, name: "Custom" },
   ];
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const openCard = () => setIsModalOpen(true);
+  const closeCard = () => setIsModalOpen(false);
 
-  const handleQuickPairing = (timeControl) => {
-    const data = {
-      user_id: user_id,
-      time: timeControl.base_time,
-      increment_by_turn: timeControl.increment_by_turn,
-    };
+  const handleQuickPairing = (index) => {
+    const selectedTimeControl = timeControls[index];
+    setIsWaiting(true);
+    setLoadingIndex(index);
+    socket.emit("join_quick_pairing", selectedTimeControl);
+  };
 
-    socket.emit("join_quick_pairing", (response) => {
+  const handleCreateGame = () => {
+    socket.emit("create_game", (response) => {
       if (response.success) {
-        if (response.game_id) {
-          navigate(`/game/${response.game_id}`);
-        } else {
-          console.log(response.message);
-        }
+        setCreatedGameId(response.game_id);
       } else {
         console.error(response.message);
       }
     });
   };
 
+  // testing
+  const handleJoinGame = () => {
+    if (joinGameId) {
+      socket.emit("join_game", joinGameId, (response) => {
+        if (response.success) {
+          navigate(`/game/${joinGameId}`);
+        } else {
+          console.error(response.message);
+        }
+      });
+    }
+  };
+
   useEffect(() => {
     if (!socket) return;
 
-    // Listen for the initial lobby list
+    socket.on("paired", (game_id) => {
+      navigate(`/game/${game_id}`);
+    });
+
     socket.on("update_lobby", (allLobbies) => {
       const gamesArray = Array.from(allLobbies.values());
       setLobby(gamesArray);
@@ -66,8 +80,9 @@ export const Homepage = () => {
 
     return () => {
       socket.off("update_lobby");
+      socket.off("paired");
     };
-  }, [socket]);
+  }, [socket, navigate]);
 
   return (
     <div className="flex w-full h-[calc(100vh-60px)] py-2">
@@ -102,6 +117,7 @@ export const Homepage = () => {
             <QuickPairing
               timeControls={timeControls}
               handleQuickPairing={handleQuickPairing}
+              loadingIndex={loadingIndex}
             />
           )}
           {activeTab === "lobby" && <Lobby games={lobby} />}
@@ -110,32 +126,50 @@ export const Homepage = () => {
 
       <div className="w-1/4 flex flex-col justify-center items-center space-y-8">
         <button
-          onClick={openModal}
+          onClick={openCard}
           className="bg-white opacity-80 border border-gray-300 text-gray-600 font-medium text-lg rounded-lg px-6 py-3 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:opacity-100 w-3/4 uppercase"
         >
           Create Game
         </button>
 
-        <button className="bg-white opacity-80 border border-gray-300 text-gray-600 font-medium text-lg rounded-lg px-6 py-3 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:opacity-100 w-3/4 uppercase">
+        <button
+          onClick={() => setIsJoinGameClicked(!isJoinGameClicked)}
+          className="bg-white opacity-80 border border-gray-300 text-gray-600 font-medium text-lg rounded-lg px-6 py-3 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:opacity-100 w-3/4 uppercase"
+        >
           Join Game
         </button>
+        {isJoinGameClicked && (
+          <div className="flex flex-row items-center gap-2">
+            <input
+              type="text"
+              value={joinGameId}
+              onChange={(e) => setJoinGameId(e.target.value)}
+              placeholder="Enter Game ID"
+              className="border border-gray-300 p-2 rounded-md shadow-lg text-center focus:outline-none focus:ring-1 focus:ring-emerald-600 transition"
+            />
+            <button
+              onClick={handleJoinGame}
+              className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 shadow-lg transition"
+            >
+              Join
+            </button>
+          </div>
+        )}
+
         <button
+          onClick={() => navigate("/computer")}
           className="bg-white opacity-80 border border-gray-300 text-gray-600 font-medium text-lg rounded-lg px-6 py-3 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:opacity-100 w-3/4 uppercase"
-          onClick={() => setShowPlayVsComputerCard(true)}
         >
-          Play with the Computer
+          Play with Computer
         </button>
       </div>
 
-      {isModalOpen && <CreateGameModal closeModal={closeModal} />}
-      {showPlayVsComputerCard && (
-        <PlayVsComputerCard closeCard={() => setShowPlayVsComputerCard(false)} />
-      )}
+      {isModalOpen && <CreateGameCard closeCard={closeCard} />}
     </div>
   );
 };
 
-const QuickPairing = ({ timeControls, handleQuickPairing }) => (
+const QuickPairing = ({ timeControls, handleQuickPairing, loadingIndex }) => (
   <div className="flex h-full w-full">
     <div className="grid grid-cols-3 gap-2 w-full h-full">
       {timeControls.map((time, index) => (
@@ -143,17 +177,29 @@ const QuickPairing = ({ timeControls, handleQuickPairing }) => (
           key={index}
           className="bg-white shadow-md text-gray-700 rounded-lg transition hover:bg-emerald-400"
         >
-          <button className="flex flex-col justify-center items-center w-full h-full p-4 opacity-80">
-            <span className="text-4xl p-2">
-              {time.base_time}+{time.increment_by_turn}
-            </span>
-            <div className="text-2xl text-gray-500">{time.name}</div>
-          </button>
+          {loadingIndex === index ? (
+            <Loading />
+          ) : (
+            <button
+              className="flex flex-col justify-center items-center w-full h-full p-4 opacity-80"
+              onClick={() => handleQuickPairing(index)}
+            >
+              <span className="text-4xl p-2">
+                {time.base_time}+{time.increment_by_turn}
+              </span>
+              <div className="text-2xl text-gray-500">{time.name}</div>
+            </button>
+          )}
         </div>
       ))}
     </div>
   </div>
 );
+QuickPairing.propTypes = {
+  timeControls: PropTypes.array.isRequired,
+  handleQuickPairing: PropTypes.func.isRequired,
+  loadingIndex: PropTypes.number.isRequired,
+};
 
 const Lobby = ({ games }) => (
   <div className="flex h-full w-full flex-col bg-white shadow-md rounded-lg overflow-auto py-2">
@@ -204,3 +250,6 @@ const Lobby = ({ games }) => (
     )}
   </div>
 );
+Lobby.propTypes = {
+  games: PropTypes.array.isRequired,
+};

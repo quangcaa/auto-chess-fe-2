@@ -1,73 +1,89 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../utils/axios";
 import toast from "react-hot-toast";
-import { Conversation } from "../components/inbox/Conversation";
+import { Conversation } from "@/components/inbox/Conversation";
+import { Online } from "@/components/Online";
+import { Offline } from "@/components/Offline";
 import { calculateTimeDifferences } from "../utils/timeUtils";
 import { Loading } from "../components/Loading";
+
 import { useAuth } from "@/contexts/AuthContext";
+import { useOnlineUsers } from "@/contexts/OnlineUsersContext";
 
 export const Inbox = () => {
   const [inboxList, setInboxList] = useState([]);
+  const [selectedInbox, setSelectedInbox] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const { socket } = useAuth();
+  const currentUserId = Number(localStorage.getItem("user_id"));
+
   const [query, setQuery] = useState("");
   const [isFocus, setIsFocus] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [searchConversation, setSearchConversation] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedInbox, setSelectedInbox] = useState(null);
-
-  const [loading, setLoading] = useState(true);
   const [loadingSearch, setLoadingSearch] = useState(false);
-  const { socket } = useAuth()
 
-  const updateLastMessage = (userId, username, message) => {
+  const updateLastMessage = useCallback((userId, username, message, time) => {
     setInboxList((prevInboxList) => {
-      const userExists = prevInboxList.some(
+      const existingInboxIndex = prevInboxList.findIndex(
         (inbox) => inbox.user_id === userId
       );
 
       let updatedInboxList;
 
-      if (userExists) {
-        updatedInboxList = prevInboxList.map((inbox) => {
-          if (inbox.user_id === userId) {
-            return {
-              ...inbox,
-              last_message: message,
-              last_message_time: new Date().toISOString(),
-            };
-          }
-          return inbox;
-        });
+      if (existingInboxIndex !== -1) {
+        const updatedInbox = {
+          ...prevInboxList[existingInboxIndex],
+          last_message: message,
+          last_message_time: time,
+        };
+
+        updatedInboxList = [
+          updatedInbox,
+          ...prevInboxList.filter((_, index) => index !== existingInboxIndex),
+        ];
       } else {
         const newInbox = {
           user_id: userId,
           user_name: username,
           last_message: message,
-          last_message_time: new Date().toISOString(),
+          last_message_time: time,
         };
         updatedInboxList = [newInbox, ...prevInboxList];
       }
 
-      return updatedInboxList.sort(
-        (a, b) => new Date(b.last_message_time) - new Date(a.last_message_time)
-      ); // So sánh thời gian
+      return updatedInboxList;
     });
 
     setIsFocus(false);
-  };
+  }, []);
 
   useEffect(() => {
+    if (!socket) return;
+
     const handleNewMessage = (messageData) => {
-      console.log("Received new message:", messageData);
-      updateLastMessage(messageData.senderId, messageData.senderName, messageData.message);
+      const isSender = messageData.senderId === currentUserId;
+      const userId = isSender ? messageData.receiverId : messageData.senderId;
+      const username = isSender
+        ? selectedInbox?.user_name || ""
+        : messageData.senderName;
+
+      updateLastMessage(
+        userId,
+        username,
+        messageData.message,
+        messageData.time
+      );
     };
 
-    socket.on('receive_inbox_message', handleNewMessage);
+    socket.on("receive_inbox_message", handleNewMessage);
 
     return () => {
-      socket.off('receive_inbox_message');
+      socket.off("receive_inbox_message", handleNewMessage);
     };
-  }, [socket]);
+  }, [socket, updateLastMessage, currentUserId, selectedInbox]);
 
   useEffect(() => {
     const fetchInboxList = async () => {
@@ -83,7 +99,7 @@ export const Inbox = () => {
           )
         );
       } catch (error) {
-        toast.error(error.res.data.message || "Something went wrong");
+        toast.error(error.response?.data?.message || "Something went wrong");
       } finally {
         setLoading(false);
       }
@@ -128,7 +144,7 @@ export const Inbox = () => {
           setSearchResults([]);
         }
       } catch (error) {
-        toast.error(error.res.data.message || "Something went wrong");
+        toast.error(error.response?.data?.message || "Something went wrong");
       } finally {
         setLoadingSearch(false);
       }
@@ -161,7 +177,9 @@ export const Inbox = () => {
                     : ""
                 }`}
               >
-                <div className="w-6 h-6 border-4 rounded-full border-[#4d4d4d] opacity-50"></div>
+                <div className="w-6 h-6 place-self-center">
+                  {item.online ? <Online /> : <Offline />}
+                </div>
                 <div className="flex flex-col flex-1 overflow-hidden">
                   <div className="flex flex-row items-center justify-between">
                     <p className={`text-base`}>{item.user_name}</p>
@@ -217,17 +235,12 @@ export const Inbox = () => {
                 >
                   {/* Conservation UserList */}
                   <div
-                    className={`flex h-[50px] gap-4 flex-row items-center w-full px-5 py-3 rounded-lg transition-transform transform text-gray-800 hover:bg-[#e9f0e0]`}
+                    className={`flex h-[50px] gap-4 flex-row items-center w-full px-4 py-3 rounded-lg transition-transform transform text-gray-800 hover:bg-[#e9f0e0]`}
                   >
-                    {/* <img
-                      className="h-14 w-14 rounded-full"
-                      alt="User Avatar"
-                    /> */}
-                    {item.online !== null ? (
-                      <div className="w-6 h-6 rounded-full bg-[#629924] opacity-90"></div>
-                    ) : (
-                      <div className="w-6 h-6 border-t-4 border-b-4 border-l-4 border-r-4 rounded-full border-[#4d4d4d] opacity-50"></div>
-                    )}
+                    <div className="w-6 h-6 place-self-center">
+                      {item.online ? <Online /> : <Offline />}
+                    </div>
+
                     <p
                       className="text-lg"
                       dangerouslySetInnerHTML={{

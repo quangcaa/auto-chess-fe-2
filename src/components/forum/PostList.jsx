@@ -112,10 +112,10 @@ export const PostList = () => {
         {/* HEADER */}
         <CardHeader className="flex flex-row items-center gap-4 m-7 ml-10 py-4 px-0">
           <IoArrowBackOutline
-            className="size-20 text-gray-800 cursor-pointer hover:text-emerald-600"
+            className="size-20 text-gray-700 cursor-pointer hover:text-emerald-600"
             onClick={() => navigate(-1)}
           />
-          <CardTitle className="text-5xl text-gray-800">
+          <CardTitle className="text-5xl text-gray-700">
             {subjectTopic}
           </CardTitle>
         </CardHeader>
@@ -140,7 +140,7 @@ export const PostList = () => {
         <CardFooter className="w-full p-3 pt-0 flex flex-col">
           <div className="mx-8 mb-8">
             <Separator />
-            <p className="text-gray-800 text-3xl font-semibold mt-6 mb-3">
+            <p className="text-gray-700 text-3xl font-semibold mt-6 mb-3">
               Reply to this topic
             </p>
             <Textarea
