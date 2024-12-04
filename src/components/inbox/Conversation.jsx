@@ -11,6 +11,7 @@ import { Online } from "@/components/Online";
 import { Offline } from "@/components/Offline";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { useOnlineUsers } from "@/contexts/OnlineUsersContext";
 
 export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
   const [loadingSend, setLoadingSend] = useState(false);
@@ -78,7 +79,6 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
     e.preventDefault();
 
     if (!newMessage.trim()) return;
-
     // Gửi tin nhắn qua socket
     socket.emit("send_inbox_message", {
       senderId: currentUserId,

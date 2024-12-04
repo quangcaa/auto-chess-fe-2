@@ -12,9 +12,10 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (token) {
+    const user_id = parseInt(localStorage.getItem("user_id"), 10);
+
+    if (token && user_id) {
       setIsAuthenticated(true);
-      const user_id = parseInt(localStorage.getItem("user_id"), 10);
       if(!socket) {
         connect(user_id);
       }

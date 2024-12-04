@@ -23,6 +23,8 @@ export function Profile() {
   const { username } = useParams();
   const currentUser = localStorage.getItem("username");
   const [flagUrl, setFlagUrl] = useState("");
+  const { onlineUsers } = useOnlineUsers();
+  const { socket } = useAuth();
 
   useEffect(() => {
     const fetchUserProfile = async () => {

@@ -8,6 +8,7 @@ import { calculateTimeDifferences } from "../utils/timeUtils";
 import { Loading } from "../components/Loading";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { useOnlineUsers } from "@/contexts/OnlineUsersContext";
 
 export const Inbox = () => {
   const [inboxList, setInboxList] = useState([]);
