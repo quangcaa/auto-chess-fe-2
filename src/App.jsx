@@ -11,6 +11,7 @@ import { Game } from "./screens/Game";
 import { Inbox } from "./screens/Inbox";
 import { Forum } from "./screens/Forum";
 import { Profile } from "./screens/Profile";
+import { Report } from "./screens/Report";
 import { PlayVsComputer } from "./screens/Computer";
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
             <Route path="/inbox" element={<Inbox />} />
             <Route path="/@/:username" element={<Profile />} />
             <Route path="/forum/*" element={<Forum />} />
+            <Route path="/report" element={<Report />} />
           </Route>
         </Routes>
       </div>

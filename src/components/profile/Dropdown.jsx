@@ -4,13 +4,15 @@ import { IoMdSettings } from "react-icons/io";
 import { ImBubble2, ImHeart, ImUser } from "react-icons/im";
 import { GiBattleAxe } from "react-icons/gi";
 import { FaRegHeart } from "react-icons/fa";
+import { MdReportProblem } from "react-icons/md";
 import api from "@/utils/axios";
 import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 
 export const Dropdown = ({ isOwner = true, isFollowing = false, user_id }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFollow, setIsFollow] = useState(isFollowing);
+  // console.log("dropdown" + isFollow);
 
   const { username } = useParams();
 
@@ -29,6 +31,15 @@ export const Dropdown = ({ isOwner = true, isFollowing = false, user_id }) => {
       }
     } catch (error) {
       toast.error(error.response.data.message || "Something went wrong");
+    }
+  };
+
+  const handleChallenge = async () => {
+    try {
+      const response = await api.post(`/@/${username}/challenge`);
+      toast.success(response.data.message || "Challenge sent successfully!");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to send challenge");
     }
   };
 
@@ -67,13 +78,14 @@ export const Dropdown = ({ isOwner = true, isFollowing = false, user_id }) => {
                 <ImUser className="size-5 mr-2" />
                 Friends
               </a>
-              <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+              <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                  href="/inbox">
                 <ImBubble2 className="size-5 mr-2" />
-                Compose Message
+                Message
               </a>
               <button
                 onClick={handleFollow}
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full"
               >
                 {isFollow ? (
                   <>
@@ -87,9 +99,15 @@ export const Dropdown = ({ isOwner = true, isFollowing = false, user_id }) => {
                   </>
                 )}
               </button>
-              <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+              <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full"
+                      onClick={handleChallenge}>
                 <GiBattleAxe className="size-5 mr-2" />
-                Challenge to a game
+                Challenge
+              </button>
+              <a href= {`/report?username=${username}`}
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                <MdReportProblem className="size-5 mr-2"/>
+                Report
               </a>
             </>
           )}
