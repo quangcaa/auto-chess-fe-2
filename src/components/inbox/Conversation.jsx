@@ -21,7 +21,6 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
   const messagesEndRef = useRef(null);
 
   const { socket } = useAuth();
-  const { onlineUsers } = useOnlineUsers();
   const currentUserId = Number(localStorage.getItem("user_id"));
 
   // function update new message to inbox
@@ -80,7 +79,6 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
     e.preventDefault();
 
     if (!newMessage.trim()) return;
-
     // Gửi tin nhắn qua socket
     socket.emit("send_inbox_message", {
       senderId: currentUserId,
@@ -149,10 +147,7 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
       {/* HEADER */}
       <div className="sticky top-0 flex flex-row px-5 justify-between items-center w-full bg-[#EDEBE8] py-[14px] border-b border-gray-300 z-10 rounded-tr-lg">
         <div className="flex flex-row gap-3 items-center">
-          <div className="w-5 h-5 place-self-center">
-            {onlineUsers.has(userId) ? <Online /> : <Offline />}
-          </div>
-          <p className="text-xl">{username}</p>
+          <p className="text-2xl ml-2">{username}</p>
         </div>
         <div className="flex flex-row gap-1">
           <div className="flex justify-center items-center hover:cursor-pointer hover:bg-white hover:rounded-md h-9 w-9 hover:p-2 hover:shadow-md group">

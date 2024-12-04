@@ -16,7 +16,6 @@ export const Inbox = () => {
   const [loading, setLoading] = useState(true);
 
   const { socket } = useAuth();
-  const { onlineUsers } = useOnlineUsers();
   const currentUserId = Number(localStorage.getItem("user_id"));
 
   const [query, setQuery] = useState("");
@@ -179,7 +178,7 @@ export const Inbox = () => {
                 }`}
               >
                 <div className="w-6 h-6 place-self-center">
-                  {onlineUsers.has(item.user_id) ? <Online /> : <Offline />}
+                  {item.online ? <Online /> : <Offline />}
                 </div>
                 <div className="flex flex-col flex-1 overflow-hidden">
                   <div className="flex flex-row items-center justify-between">
@@ -239,7 +238,7 @@ export const Inbox = () => {
                     className={`flex h-[50px] gap-4 flex-row items-center w-full px-4 py-3 rounded-lg transition-transform transform text-gray-800 hover:bg-[#e9f0e0]`}
                   >
                     <div className="w-6 h-6 place-self-center">
-                      {onlineUsers.has(item.user_id) ? <Online /> : <Offline />}
+                      {item.online ? <Online /> : <Offline />}
                     </div>
 
                     <p

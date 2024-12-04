@@ -5,6 +5,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Loading } from "@/components/Loading";
 import { GiRabbit } from "react-icons/gi";
 import { FaRegCircle, FaCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
@@ -17,15 +18,16 @@ export const GameInfo = ({ white, black, type }) => {
 
   useEffect(() => {
     const fetchUserInfo = async () => {
+      if (!white || !black) return;
+
       try {
-        const res1 = await api.get(`/@/${white}/public`);
-        const res2 = await api.get(`/@/${black}/public`);
+        const [whiteResponse, blackResponse] = await Promise.all([
+          api.get(`/@/${white}/public`),
+          api.get(`/@/${black}/public`),
+        ]);
 
-        const whiteData = res1.data;
-        const blackData = res2.data;
-
-        setWhiteMetadata(whiteData.user);
-        setBlackMetadata(blackData.user);
+        setWhiteMetadata(whiteResponse.data.user);
+        setBlackMetadata(blackResponse.data.user);
       } catch (error) {
         toast.error(error.response.data.message || "Something went wrong");
       }
@@ -33,6 +35,10 @@ export const GameInfo = ({ white, black, type }) => {
 
     fetchUserInfo();
   }, [black, white]);
+
+  if (!white || !black) {
+    return <Loading />;
+  }
 
   return (
     <Card className="w-full shadow-lg">

@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Chess } from "chess.js";
 import Engine from "@/stockfish/engine";
 import { Chessboard } from "react-chessboard";
@@ -29,10 +29,6 @@ export const PlayVsComputer = () => {
   const [color, setColor] = useState("white");
   const [moves, setMoves] = useState([]);
 
-  // const [positionEvaluation, setPositionEvaluation] = useState(0);
-  // const [bestLine, setBestline] = useState("");
-  // const [possibleMate, setPossibleMate] = useState("");
-
   function findBestMove() {
     engine.evaluatePosition(game.fen(), stockfishLevel);
 
@@ -40,11 +36,6 @@ export const PlayVsComputer = () => {
       depth && setStockfishLevel(depth);
 
       if (bestMove) {
-        // game.move({
-        //   from: bestMove.substring(0, 2),
-        //   to: bestMove.substring(2, 4),
-        //   promotion: bestMove.substring(4, 5),
-        // });
         const move = game.move(bestMove, { sloppy: true });
         setGamePosition(game.fen());
         setMoves((prevMoves) => [...prevMoves, move.san]);
@@ -58,11 +49,11 @@ export const PlayVsComputer = () => {
       to: targetSquare,
       promotion: piece[1].toLowerCase() ?? "q",
     });
-    setGamePosition(game.fen());
-    setMoves((prevMoves) => [...prevMoves, move.san]);
 
     if (move === null) return false;
-    // engine.stop();
+
+    setGamePosition(game.fen());
+    setMoves((prevMoves) => [...prevMoves, move.san]);
 
     if (game.isGameOver() || game.isDraw()) {
       return false;
@@ -81,7 +72,7 @@ export const PlayVsComputer = () => {
           <div className="flex flex-col mt-7">
             {Object.entries(levels).map(([level, depth]) => (
               <button
-                className={`cursor-pointer px-5 py-2 m-2 mt-0 rounded-md border border-gray-300 hover:bg-[#B58863] shadow-lg ${
+                className={`cursor-pointer px-5 py-2 mb-2 mt-0 rounded-md border border-gray-300 hover:bg-[#B58863] shadow-lg ${
                   stockfishLevel === depth ? "bg-[#B58863]" : "bg-[#f0d9b5]"
                 }`}
                 key={level}
@@ -98,20 +89,13 @@ export const PlayVsComputer = () => {
             <h4 className="mb-1">Depth: {stockfishLevel}</h4>
             <Chessboard
               id="PlayVsStockfish"
-              position={game.fen()}
+              position={gamePosition}
               onPieceDrop={onDrop}
               boardOrientation={color}
-              // customArrows={
-              //   bestMove
-              //     ? [
-              //         [
-              //           bestMove.substring(0, 2),
-              //           bestMove.substring(2, 4),
-              //           "rgb(0, 128, 0)",
-              //         ],
-              //       ]
-              //     : undefined
-              // }
+              customBoardStyle={{
+                borderRadius: "8px",
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.4)",
+              }}
             />
 
             <button
@@ -119,6 +103,7 @@ export const PlayVsComputer = () => {
               onClick={() => {
                 game.reset();
                 setGamePosition(game.fen());
+                setMoves([]);
               }}
             >
               Reset
@@ -128,6 +113,7 @@ export const PlayVsComputer = () => {
               onClick={() => {
                 game.undo();
                 setGamePosition(game.fen());
+                setMoves((prevMoves) => prevMoves.slice(0, -1));
               }}
             >
               Undo
