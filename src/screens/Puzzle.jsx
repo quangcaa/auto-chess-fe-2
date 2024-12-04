@@ -18,34 +18,34 @@ export const Puzzle = () => {
   const [isWatchingHistory, setIsWatchingHistory] = useState(false);
   const [botMove, setBotMove] = useState(0);
   const [selectedMove, setSelectedMove] = useState(0)
+  const [highlightSquares, setHighlightSquares] = useState({ from: null, to: null, king: null });
+  const [isSolution, setIsSolution] = useState(false);
 
   // const initialPosition =
   //   "r1bqkbnr/pppppppp/2n5/8/8/2N5/PPPPPPPP/R1BQKBNR w KQkq - 0 1"; // Example FEN
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('https://lichess.org/api/puzzle/next');
-        if (!res.ok) {
-          throw new Error('Failed to fetch PGN data');
-        }
-        const puzzle = await res.json();
-        console.log(puzzle);
-        setData(puzzle);
-      } catch (error) {
-        console.log(error);
+  const fetchData = async () => {
+    try {
+      const res = await fetch('https://lichess.org/api/puzzle/next');
+      if (!res.ok) {
+        throw new Error('Failed to fetch PGN data');
       }
-    };
+      const puzzle = await res.json();
+      console.log(puzzle);
+      setData(puzzle);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
 
   useEffect(() => {
-    if (!data) return;
     const loadGame = async () => {
       const moveList = data.game.pgn.split(' ');
       resetMoves();
-      setBotMove(0);
       const newGame = new Chess();
       for (let i = 0; i < moveList.length; i++) {
         const moveResult = newGame.move(moveList[i]);
@@ -57,6 +57,33 @@ export const Puzzle = () => {
 
     loadGame();
   }, [data, addMove, resetMoves]);
+
+  useEffect(() => {
+    const board = game.board();
+    let kingPosition = null;
+
+    board.forEach(row => {
+      row.forEach(square => {
+        if (square && square.type === 'k' && square.color === game.turn()) {
+          kingPosition = square.square;
+        }
+      });
+    });
+
+    const kingInCheck = game.inCheck();
+
+    if (kingInCheck && kingPosition) {
+      setHighlightSquares((prev) => ({
+        ...prev,
+        king: kingPosition,
+      }));
+    } else {
+      setHighlightSquares((prev) => ({
+        ...prev,
+        king: null,
+      }));
+    }
+  }, [game]);
 
   const handleViewHistory = (fen, index) => {
     console.log(fen, index)
@@ -85,6 +112,8 @@ export const Puzzle = () => {
       if (moveResult && !isWatchingHistory && data.puzzle.solution[botMove] === `${source}${target}`) {
         addMove(moveResult)
         setSelectedMove(selectedMove + 1)
+        setGame(new Chess(newChess.fen()))
+
         if (data.puzzle.solution[botMove + 1]) {
           const botMoveResult = newChess.move({
             from: data.puzzle.solution[botMove + 1].substring(0, 2), 
@@ -94,6 +123,15 @@ export const Puzzle = () => {
           addMove(botMoveResult)
           setSelectedMove(selectedMove + 2)
           setBotMove(botMove + 2);
+          if (!isSolution) {
+            setHighlightSquares({ from: null, to: null, king: null })
+          } else {
+            setHighlightSquares({ 
+              from: data.puzzle.solution[botMove + 2]?.substring(0, 2) || null, 
+              to: data.puzzle.solution[botMove + 2]?.substring(2, 4) || null,
+              king: null
+            })
+          }
         }
         setGame(new Chess(newChess.fen()));
 
@@ -108,8 +146,29 @@ export const Puzzle = () => {
 
       return !!moveResult;
     },
-    [game, isPuzzleSolved, isWatchingHistory, data, botMove, addMove, selectedMove]
+    [game, isPuzzleSolved, isWatchingHistory, data, botMove, addMove, selectedMove, isSolution]
   );
+
+  const handleGetHint = () => {
+    if (isPuzzleSolved) {
+      toast.error("You have already solved the puzzle!");
+      return;
+    }
+  
+    const currentMove = data?.puzzle.solution[botMove];
+  
+    if (!currentMove) {
+      toast.error("No more hints available.");
+      return;
+    }
+  
+    const from = currentMove.substring(0, 2);
+    const to = currentMove.substring(2, 4);
+  
+    setHighlightSquares({ from, to, king: null });
+
+    toast.success(`Hint: Move from ${from} to ${to}`);
+  };
 
   const chessboardMemo = useMemo(
     () => (
@@ -125,11 +184,20 @@ export const Puzzle = () => {
         customSquareStyles={{
           light: { backgroundColor: "#f0d9b5" },
           dark: { backgroundColor: "#b58863" },
+          [`${highlightSquares.from}`]: {
+            boxShadow: 'inset 0 0 3px 3px yellow',
+          },
+          [`${highlightSquares.to}`]: {
+            boxShadow: 'inset 0 0 3px 3px yellow',
+          },
+          [`${highlightSquares.king}`]: {
+            boxShadow: "inset 0 0 10px 3px red",
+          },
         }}
         arePiecesDraggable={!isPuzzleSolved} // Disable dragging if solved
       />
     ),
-    [game, onDrop, isPuzzleSolved, data]
+    [game, onDrop, isPuzzleSolved, data, highlightSquares]
   );
 
   return (
@@ -169,23 +237,30 @@ export const Puzzle = () => {
                 <div className="flex items-center gap-3">
                   {/* Icon */}
                   <img
-                    src="./whiteking.png"
+                    src={data?.game.pgn.split(' ').length % 2 !== 0 ? "./blackking.png" : "./whiteking.png"}
                     alt="Chess King Icon"
                     className="w-20 h-20 "
                   />
                   {/* Text */}
                   <div>
                     <p className="font-bold text-lg text-[#333]">Your turn</p>
-                    <p className="text-sm text-[#666]">Find the best move for white.</p>
+                    <p className="text-sm text-[#666]">Find the best move for {data?.game.pgn.split(' ').length % 2 !== 0 ? 'black' : 'white'}.</p>
                   </div>
                 </div>
 
                 {/* Buttons */}
                 <div className="flex gap-4">
-                  <button className="text-[#1b78d0] font-medium ">
+                  <button 
+                    onClick={handleGetHint}
+                    className="text-[#1b78d0] font-medium ">
                     Get a hint
                   </button>
-                  <button className="text-[#1b78d0] font-medium  p-2">
+                  <button 
+                    onClick={() => {
+                      setIsSolution(true)
+                      handleGetHint()
+                    }}
+                    className="text-[#1b78d0] font-medium  p-2">
                     View the solution
                   </button>
                 </div>
