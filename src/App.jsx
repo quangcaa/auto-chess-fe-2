@@ -11,6 +11,7 @@ import { Game } from "./screens/Game";
 import { Inbox } from "./screens/Inbox";
 import { Forum } from "./screens/Forum";
 import { Profile } from "./screens/Profile";
+import { Admin } from "./screens/Admin"
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Routes>
           <Route element={<PublicRoute />}>
             <Route path="/*" element={<Auth />} />
+            <Route path="/admin/*" element={<Admin />} />
           </Route>
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Homepage />} />
@@ -30,6 +32,7 @@ function App() {
             <Route path="/inbox" element={<Inbox />} />
             <Route path="/@/:username" element={<Profile />} />
             <Route path="/forum/*" element={<Forum />} />
+            {/* <Route path="/admin/*" element={<Admin />} /> */}
           </Route>
         </Routes>
       </div>
