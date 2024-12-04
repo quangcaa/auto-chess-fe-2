@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../utils/axios";
 import toast from "react-hot-toast";
 import countryList from "react-select-country-list";
@@ -21,13 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-
-const getFlagEmoji = (countryCode) => {
-  if (!countryCode) return "";
-  return countryCode
-    .toUpperCase()
-    .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt()));
-};
+import { Loading } from "../Loading";
 
 export const EditProfile = () => {
   const [profileData, setProfileData] = useState({
@@ -40,6 +35,9 @@ export const EditProfile = () => {
   const [loadingEdit, setLoadingEdit] = useState(false);
 
   const options = useMemo(() => countryList().getData(), []);
+
+  const navigate = useNavigate();
+  const username = localStorage.getItem("username");
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -82,6 +80,8 @@ export const EditProfile = () => {
       const res = await api.put("/account/edit-profile", profileData);
 
       toast.success(res.data.message);
+
+      navigate(`/@/${username}`);
     } catch (error) {
       toast.error(error.response.data.message || "Something went wrong");
     } finally {
@@ -89,11 +89,15 @@ export const EditProfile = () => {
     }
   };
 
+  if (loading) return <Loading />;
+
   return (
     <div className="w-full rounded-md shadow-lg">
       <Card className="p-6 flex flex-col justify-center">
         <CardHeader className="flex flex-row items-center gap-4 my-2">
-          <CardTitle className="text-5xl text-emerald-600">Edit profile</CardTitle>
+          <CardTitle className="text-5xl text-emerald-600">
+            Edit profile
+          </CardTitle>
         </CardHeader>
 
         <CardContent className="flex flex-col">
@@ -133,7 +137,7 @@ export const EditProfile = () => {
                   <input
                     type="text"
                     name="real_name"
-                    className="text-gray-800 border border-2 border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none"
+                    className="text-gray-800 border-2 border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none"
                     value={profileData.real_name || ""}
                     onChange={handleChange}
                   />

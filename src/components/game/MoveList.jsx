@@ -1,22 +1,14 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import movesStore from "@/store/movesStore";
 
-export const MoveList = () => {
+export const MoveList = ({
+  handleViewHistory = (item, index) => {},
+  selected = 0,
+}) => {
   const moves = movesStore((state) => state.moves);
   const listRef = useRef(null);
-
-  const movePairs = [];
-  for (let i = 0; i < moves.length; i += 2) {
-    const whiteMove = moves[i].san;
-    const blackMove = moves[i + 1]?.san || "";
-    movePairs.push({
-      moveNumber: Math.floor(i / 2) + 1,
-      white: whiteMove,
-      black: blackMove,
-    });
-  }
 
   // auto scroll to bottom when new moves added
   useEffect(() => {
@@ -36,7 +28,7 @@ export const MoveList = () => {
         ref={listRef}
       >
         <table className="table-auto w-full">
-          <thead>
+          <thead className="sticky top-0">
             <tr className="bg-gray-100">
               <th className="px-1 py-1 text-left bg-[#F7F6F5] text-[#B3B3B3] border-r-2 flex justify-center">
                 #
@@ -46,20 +38,43 @@ export const MoveList = () => {
             </tr>
           </thead>
           <tbody>
-            {movePairs.map(({ moveNumber, white, black }, index) => (
-              <tr
-                key={moveNumber}
-                className={`${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                }`}
-              >
-                <td className="py-1 bg-[#F7F6F5] font-semibold text-[#B3B3B3] border-r-2 flex justify-center">
-                  {moveNumber}
-                </td>
-                <td className="px-2 py-1">{white}</td>
-                <td className="px-2 py-1">{black}</td>
-              </tr>
-            ))}
+            {moves.map(
+              (item, index) =>
+                index % 2 === 0 && (
+                  <tr
+                    key={index}
+                    className={`${
+                      (index / 2 + 1) % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    }`}
+                  >
+                    <td className="py-1 bg-[#F7F6F5] font-semibold text-[#B3B3B3] border-r-2 flex justify-center">
+                      {index / 2 + 1}
+                    </td>
+                    <td
+                      className={`px-2 py-1 hover:text-white hover:bg-emerald-600 cursor-pointer ${
+                        index === selected &&
+                        "bg-emerald-600 text-white"
+                      }`}
+                      onClick={() => handleViewHistory(item, index)}
+                    >
+                      {item.san}
+                    </td>
+                    {moves[index + 1] && (
+                      <td
+                        className={`px-2 py-1 hover:text-white hover:bg-emerald-600 cursor-pointer ${
+                          index + 1 === selected &&
+                          "bg-emerald-600 text-white"
+                        }`}
+                        onClick={() =>
+                          handleViewHistory(moves[index + 1], index + 1)
+                        }
+                      >
+                        {moves[index + 1].san}
+                      </td>
+                    )}
+                  </tr>
+                )
+            )}
           </tbody>
         </table>
       </CardContent>

@@ -12,15 +12,16 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (token) {
+    const user_id = parseInt(localStorage.getItem("user_id"), 10);
+
+    if (token && user_id) {
       setIsAuthenticated(true);
-      const user_id = parseInt(localStorage.getItem("user_id"), 10);
       if(!socket) {
         connect(user_id);
       }
     }
     setLoading(false);
-  }, [connect]);
+  }, [connect, socket]);
 
   const login = (accessToken, refreshToken, username, user_id) => {
     localStorage.setItem("accessToken", accessToken);
@@ -52,8 +53,6 @@ export function AuthProvider({ children }) {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-
-  console.log(context);
 
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");

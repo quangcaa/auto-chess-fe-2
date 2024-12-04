@@ -12,6 +12,8 @@ import { Inbox } from "./screens/Inbox";
 import { Forum } from "./screens/Forum";
 import { Profile } from "./screens/Profile";
 import { Admin } from "./screens/Admin"
+import { Report } from "./screens/Report";
+import { PlayVsComputer } from "./screens/Computer";
 
 function App() {
   return (
@@ -27,12 +29,14 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Homepage />} />
             <Route path="/setting" element={<Setting />} />
-            <Route path="/game" element={<Game />} />
+            <Route path="/game/:game_id" element={<Game />} />
+            <Route path="/computer" element={<PlayVsComputer />} />
             <Route path="/puzzle" element={<Puzzle />} />
             <Route path="/inbox" element={<Inbox />} />
             <Route path="/@/:username" element={<Profile />} />
             <Route path="/forum/*" element={<Forum />} />
             {/* <Route path="/admin/*" element={<Admin />} /> */}
+            <Route path="/report" element={<Report />} />
           </Route>
         </Routes>
       </div>

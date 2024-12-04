@@ -114,7 +114,7 @@ export const CloseAccount = () => {
               </DialogTrigger>
               <DialogContent className="sm:max-w-[440px]">
                 <DialogHeader>
-                  <DialogTitle className="text-2xl">
+                  <DialogTitle className="text-2xl text-red-500">
                     Confirm Account Closure
                   </DialogTitle>
                   <DialogDescription>

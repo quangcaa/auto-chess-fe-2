@@ -27,6 +27,8 @@ export const ChangePassword = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
+  const username = localStorage.getItem("username");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -41,7 +43,7 @@ export const ChangePassword = () => {
 
       toast.success(data.message);
 
-      navigate("/");
+      navigate(`/@/${username}`);
     } catch (error) {
       toast.error(error.response.data.message || "Something went wrong");
     } finally {
@@ -80,7 +82,7 @@ export const ChangePassword = () => {
               <div className="relative flex items-center">
                 <input
                   type={showCurrentPassword ? "text" : "password"}
-                  className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none"
+                  className="border-2 border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   required
@@ -102,7 +104,7 @@ export const ChangePassword = () => {
               <div className="relative flex items-center">
                 <input
                   type={showNewPassword ? "text" : "password"}
-                  className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none"
+                  className="border-2 border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
@@ -127,7 +129,7 @@ export const ChangePassword = () => {
               <div className="relative flex items-center">
                 <input
                   type={showRetypeNewPassword ? "text" : "password"}
-                  className="border border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none"
+                  className="border-2 border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none"
                   value={retypeNewPassword}
                   onChange={(e) => setRetypeNewPassword(e.target.value)}
                   required
