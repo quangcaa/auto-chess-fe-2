@@ -3,16 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Chess } from "chess.js";
 import toast from "react-hot-toast";
 import api from "@/utils/axios";
-
 import { useAuth } from "../contexts/AuthContext";
 import movesStore from "@/store/movesStore";
-
 import { Board } from "@/components/game/Board";
 import { GameInfo } from "@/components/game/GameInfo";
 import { ChatRoom } from "@/components/game/ChatRoom";
 import { MoveList } from "@/components/game/MoveList";
-import Timer from "@/components/game/Timer";
-
+import { Timer } from "@/components/game/Timer";
 import {
   CREATE_GAME,
   GAME_OVER,
@@ -40,11 +37,8 @@ export const Game = () => {
   const navigate = useNavigate();
   const { socket } = useAuth();
 
-  const initialWhiteTime = 10 * 60 * 1000;
-  const initialBlackTime = 10 * 60 * 1000;
-
-  const [whiteTime, setWhiteTime] = useState(initialWhiteTime);
-  const [blackTime, setBlackTime] = useState(initialBlackTime);
+  const [whiteTime, setWhiteTime] = useState(0);
+  const [blackTime, setBlackTime] = useState(0);
   const [activePlayer, setActivePlayer] = useState("w");
 
   const { game_id } = useParams();
@@ -57,13 +51,15 @@ export const Game = () => {
 
         setGameId(data.game_id);
         setGameData(data);
-        setPlayers({ whitePlayer: data.white_player_id, blackPlayer: data.black_player_id });
+        setPlayers({
+          whitePlayer: data.white_player_id,
+          blackPlayer: data.black_player_id,
+        });
       } catch (error) {
         toast.error(error.response.data.message || "Something went wrong");
       }
     };
 
-    // Call 2 APIs
     fetchGame();
   }, []);
 
@@ -79,8 +75,8 @@ export const Game = () => {
       setGame(new Chess());
 
       resetMoves();
-      setWhiteTime(initialWhiteTime); // Reset to initial time
-      setBlackTime(initialBlackTime);
+      setWhiteTime(data.timeData.whiteTime); // Initialize with time from server
+      setBlackTime(data.timeData.blackTime);
       setActivePlayer("w");
 
       toast.success("Game started!");
@@ -97,22 +93,28 @@ export const Game = () => {
         return gameCopy;
       });
 
-      setActivePlayer((prev) => (prev === "w" ? "b" : "w"));
+      // setActivePlayer((prev) => (prev === "w" ? "b" : "w"));
+    });
+
+    socket.on("time_update", ({ whiteTime: wTime, blackTime: bTime }) => {
+      setWhiteTime(wTime);
+      setBlackTime(bTime);
     });
 
     socket.on(GAME_OVER, (result) => {
       setGameResult(result);
       setIsGameStarted(false);
       setIsGameOver(true);
-      toast.success(`Game Kết Thúc: ${result}`);
+      toast.success(`Game Over: ${result}`);
     });
 
     return () => {
       socket.off(START_GAME);
       socket.off(MOVE);
       socket.off(GAME_OVER);
+      socket.off("time_update");
     };
-  }, [socket, gameId, addMove, resetMoves, initialBlackTime, initialWhiteTime]);
+  }, [socket, game_id, addMove, resetMoves]);
 
   const onTimeUp = (player) => {
     toast.error(`${player} has run out of time!`);
@@ -187,18 +189,16 @@ export const Game = () => {
             {/* RIGHT SIDEBAR */}
             <div className="w-1/4 h-full flex flex-col flex-shrink-0">
               <div className="flex justify-between mb-4">
-                <Timer
-                  initialTime={whiteTime}
-                  isActive={activePlayer === "w" && !isGameOver}
-                  onTimeUp={() => onTimeUp("White")}
+                {/* <Timer
+                  timeLeft={whiteTime}
+                  isActive={activePlayer === "w"}
                   player="White"
                 />
                 <Timer
-                  initialTime={blackTime}
-                  isActive={activePlayer === "b" && !isGameOver}
-                  onTimeUp={() => onTimeUp("Black")}
+                  timeLeft={blackTime}
+                  isActive={activePlayer === "b"}
                   player="Black"
-                />
+                /> */}
               </div>
               <div className="flex-grow">
                 <MoveList />

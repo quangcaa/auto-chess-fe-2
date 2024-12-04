@@ -29,10 +29,6 @@ export const PlayVsComputer = () => {
   const [color, setColor] = useState("white");
   const [moves, setMoves] = useState([]);
 
-  // const [positionEvaluation, setPositionEvaluation] = useState(0);
-  // const [bestLine, setBestline] = useState("");
-  // const [possibleMate, setPossibleMate] = useState("");
-
   function findBestMove() {
     engine.evaluatePosition(game.fen(), stockfishLevel);
 
@@ -40,11 +36,6 @@ export const PlayVsComputer = () => {
       depth && setStockfishLevel(depth);
 
       if (bestMove) {
-        // game.move({
-        //   from: bestMove.substring(0, 2),
-        //   to: bestMove.substring(2, 4),
-        //   promotion: bestMove.substring(4, 5),
-        // });
         const move = game.move(bestMove, { sloppy: true });
         setGamePosition(game.fen());
         setMoves((prevMoves) => [...prevMoves, move.san]);
@@ -58,11 +49,11 @@ export const PlayVsComputer = () => {
       to: targetSquare,
       promotion: piece[1].toLowerCase() ?? "q",
     });
-    setGamePosition(game.fen());
-    setMoves((prevMoves) => [...prevMoves, move.san]);
 
     if (move === null) return false;
-    // engine.stop();
+
+    setGamePosition(game.fen());
+    setMoves((prevMoves) => [...prevMoves, move.san]);
 
     if (game.isGameOver() || game.isDraw()) {
       return false;
@@ -98,7 +89,7 @@ export const PlayVsComputer = () => {
             <h4 className="mb-1">Depth: {stockfishLevel}</h4>
             <Chessboard
               id="PlayVsStockfish"
-              position={game.fen()}
+              position={gamePosition}
               onPieceDrop={onDrop}
               boardOrientation={color}
               customBoardStyle={{
@@ -112,6 +103,7 @@ export const PlayVsComputer = () => {
               onClick={() => {
                 game.reset();
                 setGamePosition(game.fen());
+                setMoves([]);
               }}
             >
               Reset
@@ -121,6 +113,7 @@ export const PlayVsComputer = () => {
               onClick={() => {
                 game.undo();
                 setGamePosition(game.fen());
+                setMoves((prevMoves) => prevMoves.slice(0, -1));
               }}
             >
               Undo

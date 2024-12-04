@@ -26,7 +26,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Homepage />} />
             <Route path="/setting" element={<Setting />} />
-            <Route path="/:game_id" element={<Game />} />
+            <Route path="/game/:game_id" element={<Game />} />
             <Route path="/computer" element={<PlayVsComputer />} />
             <Route path="/puzzle" element={<Puzzle />} />
             <Route path="/inbox" element={<Inbox />} />

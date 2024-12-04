@@ -1,22 +1,11 @@
-// Homepage.jsx
 import { useEffect, useState, useCallback } from "react";
 import PropTypes from "prop-types";
-import { CreateGameModal } from "@/components/homepage/CreateGameModal";
+import { CreateGameCard } from "@/components/homepage/CreateGameCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Loading } from "@/components/Loading";
 
-const debounce = (func, delay) => {
-  let debounceTimer;
-  return function (...args) {
-    const context = this;
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => func.apply(context, args), delay);
-  };
-};
-
 export const Homepage = () => {
-  const [isCreateGameClicked, setIsCreateGameClicked] = useState(false);
   const [isJoinGameClicked, setIsJoinGameClicked] = useState(false);
   const [createdGameId, setCreatedGameId] = useState("");
   const [joinGameId, setJoinGameId] = useState("");
@@ -28,8 +17,6 @@ export const Homepage = () => {
 
   const navigate = useNavigate();
   const { socket } = useAuth();
-
-  const debouncedNavigate = useCallback(debounce(navigate, 300), [navigate]);
 
   const timeControls = [
     { base_time: "1", increment_by_turn: "0", name: "Bullet" },
@@ -43,23 +30,23 @@ export const Homepage = () => {
     { base_time: "15", increment_by_turn: "10", name: "Rapid" },
     { base_time: "30", increment_by_turn: "0", name: "Classical" },
     { base_time: "30", increment_by_turn: "20", name: "Classical" },
-    { base_time: null, increment_by_turn: null, name: "Custom" },
+    // { base_time: null, increment_by_turn: null, name: "Custom" },
   ];
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const openCard = () => setIsModalOpen(true);
+  const closeCard = () => setIsModalOpen(false);
 
   const handleQuickPairing = (index) => {
+    const selectedTimeControl = timeControls[index];
     setIsWaiting(true);
     setLoadingIndex(index);
-    socket.emit("join_quick_pairing");
+    socket.emit("join_quick_pairing", selectedTimeControl);
   };
 
   const handleCreateGame = () => {
     socket.emit("create_game", (response) => {
       if (response.success) {
         setCreatedGameId(response.game_id);
-        setIsCreateGameClicked(true);
       } else {
         console.error(response.message);
       }
@@ -71,7 +58,7 @@ export const Homepage = () => {
     if (joinGameId) {
       socket.emit("join_game", joinGameId, (response) => {
         if (response.success) {
-          debouncedNavigate(`/${joinGameId}`);
+          navigate(`/game/${joinGameId}`);
         } else {
           console.error(response.message);
         }
@@ -83,12 +70,9 @@ export const Homepage = () => {
     if (!socket) return;
 
     socket.on("paired", (game_id) => {
-      console.log(`Paired with game_id: ${game_id}`);
-      // Navigate to the game page with the game_id
-      navigate(`/${game_id}`);
+      navigate(`/game/${game_id}`);
     });
 
-    // Listen for the initial lobby list
     socket.on("update_lobby", (allLobbies) => {
       const gamesArray = Array.from(allLobbies.values());
       setLobby(gamesArray);
@@ -96,7 +80,7 @@ export const Homepage = () => {
 
     return () => {
       socket.off("update_lobby");
-      socket.off("paired"); // Cleanup listener
+      socket.off("paired");
     };
   }, [socket, navigate]);
 
@@ -142,27 +126,11 @@ export const Homepage = () => {
 
       <div className="w-1/4 flex flex-col justify-center items-center space-y-8">
         <button
-          onClick={handleCreateGame}
+          onClick={openCard}
           className="bg-white opacity-80 border border-gray-300 text-gray-600 font-medium text-lg rounded-lg px-6 py-3 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:opacity-100 w-3/4 uppercase"
         >
           Create Game
         </button>
-        {isCreateGameClicked && (
-          <div className="mt-4 text-center">
-            <p
-              className="text-lg cursor-pointer"
-              onClick={() => navigator.clipboard.writeText(createdGameId)}
-            >
-              Game ID: <span className="font-bold">{createdGameId}</span>
-            </p>
-            <button
-              onClick={() => debouncedNavigate(`/game/${createdGameId}`)}
-              className="mt-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
-            >
-              Start Game
-            </button>
-          </div>
-        )}
 
         <button
           onClick={() => setIsJoinGameClicked(!isJoinGameClicked)}
@@ -171,32 +139,32 @@ export const Homepage = () => {
           Join Game
         </button>
         {isJoinGameClicked && (
-          <div className="mt-4 flex flex-col items-center">
+          <div className="flex flex-row items-center gap-2">
             <input
               type="text"
               value={joinGameId}
               onChange={(e) => setJoinGameId(e.target.value)}
               placeholder="Enter Game ID"
-              className="border border-gray-300 p-2 rounded-md text-center"
+              className="border border-gray-300 p-2 rounded-md shadow-lg text-center focus:outline-none focus:ring-1 focus:ring-emerald-600 transition"
             />
             <button
               onClick={handleJoinGame}
-              className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+              className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 shadow-lg transition"
             >
-              Join Game
+              Join
             </button>
           </div>
         )}
 
         <button
-          onClick={() => debouncedNavigate("/computer")}
+          onClick={() => navigate("/computer")}
           className="bg-white opacity-80 border border-gray-300 text-gray-600 font-medium text-lg rounded-lg px-6 py-3 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:opacity-100 w-3/4 uppercase"
         >
           Play with Computer
         </button>
       </div>
 
-      {isModalOpen && <CreateGameModal closeModal={closeModal} />}
+      {isModalOpen && <CreateGameCard closeCard={closeCard} />}
     </div>
   );
 };

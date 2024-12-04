@@ -5,15 +5,11 @@ import { FaSearch } from "react-icons/fa";
 import { Online } from "@/components/Online";
 import { Offline } from "@/components/Offline";
 
-import { useOnlineUsers } from "@/contexts/OnlineUsersContext";
-
 const UserSearch = () => {
   const [query, setQuery] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
   const [userList, setUserList] = useState([]);
   const inputRef = useRef(null);
-
-  const { onlineUsers } = useOnlineUsers();
 
   const handleIconClick = () => {
     setIsExpanded(true);
@@ -37,7 +33,7 @@ const UserSearch = () => {
       const response = await api.get(`search/${query}`);
       setUserList(response.data.users);
     } catch (error) {
-      toast.error(error.response.data.message || "Something went wrong");
+      toast.error(error.response.data.message || "Something went wrong 1");
     }
   };
 
@@ -65,9 +61,9 @@ const UserSearch = () => {
         onChange={HandleChange}
         onBlur={handleBlur}
         placeholder="Search"
-        className={`p-2 pr-0 font-base text-gray-600 placeholder-gray-600 transition-all duration-300 ${
+        className={`p-2 pr-0 font-base text-gray-600 placeholder-gray-600 transition-all duration-300 outline-0 bg-main-color ${
           isExpanded
-            ? "w-48 opacity-100 bg-main-color ml-4 text-lg"
+            ? "w-48 opacity-100 ml-4 text-lg"
             : "w-0 opacity-0"
         }`}
         style={{ width: isExpanded ? "12rem" : "0" }}
@@ -85,7 +81,7 @@ const UserSearch = () => {
                 href={`/@/${user.username}`}
               >
                 <div className="w-4 h-4 place-self-center">
-                  {onlineUsers.has(user.user_id) ? <Online /> : <Offline />}
+                  {user.online ? <Online /> : <Offline />}
                 </div>
                 {user.username}
               </a>
