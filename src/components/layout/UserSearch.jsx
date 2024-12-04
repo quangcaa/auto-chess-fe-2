@@ -11,8 +11,6 @@ const UserSearch = () => {
   const [userList, setUserList] = useState([]);
   const inputRef = useRef(null);
 
-  const { onlineUsers } = useOnlineUsers();
-
   const handleIconClick = () => {
     setIsExpanded(true);
     setTimeout(() => {

@@ -8,8 +8,6 @@ import { GiBurningEmbers } from "react-icons/gi";
 import { GiCrossedSwords } from "react-icons/gi";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FaUserAlt } from "react-icons/fa";
-import { Loading } from "@/components/Loading";
-import toast from "react-hot-toast";
 import { Dropdown } from "@/components/profile/Dropdown";
 import { HistoryGames } from "../components/profile/HistoryGames";
 import { Loading } from "@/components/Loading";
@@ -28,9 +26,6 @@ export function Profile() {
   const currentUser = localStorage.getItem("username");
   const current_id = localStorage.getItem("user_id");
   const [flagUrl, setFlagUrl] = useState("");
-  const { onlineUsers } = useOnlineUsers();
-  const { socket } = useAuth();
-
 
   useEffect(() => {
     setLoading(true);

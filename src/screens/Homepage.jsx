@@ -198,7 +198,7 @@ const QuickPairing = ({ timeControls, handleQuickPairing, loadingIndex }) => (
 QuickPairing.propTypes = {
   timeControls: PropTypes.array.isRequired,
   handleQuickPairing: PropTypes.func.isRequired,
-  loadingIndex: PropTypes.number.isRequired,
+  loadingIndex: PropTypes.number,
 };
 
 const Lobby = ({ games }) => (
