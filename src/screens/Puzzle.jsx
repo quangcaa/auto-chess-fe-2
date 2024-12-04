@@ -19,6 +19,7 @@ export const Puzzle = () => {
   const [botMove, setBotMove] = useState(0);
   const [selectedMove, setSelectedMove] = useState(0)
   const [highlightSquares, setHighlightSquares] = useState({ from: null, to: null, king: null });
+  const [botHightLightSquares, setBotHighLightSquares] = useState({ from: null, to: null })
   const [isSolution, setIsSolution] = useState(false);
 
   // const initialPosition =
@@ -46,10 +47,18 @@ export const Puzzle = () => {
     const loadGame = async () => {
       const moveList = data.game.pgn.split(' ');
       resetMoves();
+      setIsPuzzleSolved(false);
+      setBotMove(0);
+      setHighlightSquares({ from: null, to: null, king: null });
+      setIsSolution(false);
+
       const newGame = new Chess();
       for (let i = 0; i < moveList.length; i++) {
         const moveResult = newGame.move(moveList[i]);
         addMove(moveResult)
+        if (i === moveList.length - 1) {
+          setBotHighLightSquares({ from: moveResult.from, to: moveResult.to })
+        }
       }
       setSelectedMove(moveList.length - 1)
       setGame(newGame);
@@ -85,17 +94,33 @@ export const Puzzle = () => {
     }
   }, [game]);
 
-  const handleViewHistory = (fen, index) => {
-    console.log(fen, index)
-    if (fen === undefined) return;
-    if (fen === moves[moves.length - 1].after) {
+  const handleViewHistory = (item, index) => {
+    if (item === undefined) return;
+    if (item === moves[moves.length - 1]) {
       setIsWatchingHistory(false);
     } else {
       setIsWatchingHistory(true);
     }
-    console.log(fen);
+    console.log(item);
+    if (data?.game.pgn.split(' ').length % 2 !== 0){ 
+      if(item.color === 'w') {
+        setBotHighLightSquares({ from: item.from, to: item.to })
+        setHighlightSquares({ from: null, to: null, king: null })
+      } else {
+        setBotHighLightSquares({ from: null, to: null })
+        setHighlightSquares({ from: item.from, to: item.to, king: null })
+      }
+    } else {
+      if(item.color === 'b') {
+        setBotHighLightSquares({ from: item.from, to: item.to })
+        setHighlightSquares({ from: null, to: null, king: null })
+      } else {
+        setBotHighLightSquares({ from: null, to: null })
+        setHighlightSquares({ from: item.from, to: item.to, king: null })
+      }
+    }
     setSelectedMove(index)
-    setGame(new Chess(fen));
+    setGame(new Chess(item.after));
   }
 
   const onDrop = useCallback(
@@ -113,16 +138,18 @@ export const Puzzle = () => {
         addMove(moveResult)
         setSelectedMove(selectedMove + 1)
         setGame(new Chess(newChess.fen()))
+        setBotHighLightSquares({ from: null, to: null })
 
         if (data.puzzle.solution[botMove + 1]) {
+          const from = data.puzzle.solution[botMove + 1].substring(0, 2)
+          const to = data.puzzle.solution[botMove + 1].substring(2, 4)
           const botMoveResult = newChess.move({
-            from: data.puzzle.solution[botMove + 1].substring(0, 2), 
-            to: data.puzzle.solution[botMove + 1].substring(2, 4), 
-            promotion: "q"
+            from, to, promotion: "q"
           });
           addMove(botMoveResult)
           setSelectedMove(selectedMove + 2)
           setBotMove(botMove + 2);
+          setBotHighLightSquares({ from, to })
           if (!isSolution) {
             setHighlightSquares({ from: null, to: null, king: null })
           } else {
@@ -132,8 +159,8 @@ export const Puzzle = () => {
               king: null
             })
           }
+          setGame(new Chess(newChess.fen()));
         }
-        setGame(new Chess(newChess.fen()));
 
         // Check for puzzle solution (example condition: checkmate)
         if (newChess.isCheckmate() || botMove === data.puzzle.solution.length - 1) {
@@ -184,10 +211,20 @@ export const Puzzle = () => {
         customSquareStyles={{
           light: { backgroundColor: "#f0d9b5" },
           dark: { backgroundColor: "#b58863" },
+          [`${botHightLightSquares.from}`]: {
+            boxShadow: 'inset 0 0 3px 3px blue',
+          },
+          [`${botHightLightSquares.to}`]: {
+            boxShadow: 'inset 0 0 3px 3px blue',
+          },
           [`${highlightSquares.from}`]: {
             boxShadow: 'inset 0 0 3px 3px yellow',
           },
-          [`${highlightSquares.to}`]: {
+          [`${highlightSquares.to}`]: (
+            (game.get(highlightSquares.to) && !isWatchingHistory)
+          ) ? {
+            backgroundColor: '#059669',
+          } : {
             boxShadow: 'inset 0 0 3px 3px yellow',
           },
           [`${highlightSquares.king}`]: {
@@ -197,7 +234,7 @@ export const Puzzle = () => {
         arePiecesDraggable={!isPuzzleSolved} // Disable dragging if solved
       />
     ),
-    [game, onDrop, isPuzzleSolved, data, highlightSquares]
+    [game, onDrop, isPuzzleSolved, data, highlightSquares, botHightLightSquares, isWatchingHistory]
   );
 
   return (
@@ -262,6 +299,14 @@ export const Puzzle = () => {
                     }}
                     className="text-[#1b78d0] font-medium  p-2">
                     View the solution
+                  </button>
+                  <button 
+                    onClick={() => {
+                      fetchData()
+                    }}
+                    disabled={!isPuzzleSolved}
+                    className={(isPuzzleSolved ? `text-[#1b78d0]` : `text-[#8e9193]`) + ` font-medium  p-2`}>
+                    Next
                   </button>
                 </div>
               </div>

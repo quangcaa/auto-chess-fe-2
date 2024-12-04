@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import movesStore from "@/store/movesStore";
 
 export const MoveList = ({
-  handleViewHistory = (fen, index) => {},
+  handleViewHistory = (item, index) => {},
   selected = 0,
 }) => {
   const moves = movesStore((state) => state.moves);
@@ -55,7 +55,7 @@ export const MoveList = ({
                         index === selected &&
                         "bg-emerald-600 text-white"
                       }`}
-                      onClick={() => handleViewHistory(item.after, index)}
+                      onClick={() => handleViewHistory(item, index)}
                     >
                       {item.san}
                     </td>
@@ -66,7 +66,7 @@ export const MoveList = ({
                           "bg-emerald-600 text-white"
                         }`}
                         onClick={() =>
-                          handleViewHistory(moves[index + 1].after, index + 1)
+                          handleViewHistory(moves[index + 1], index + 1)
                         }
                       >
                         {moves[index + 1].san}
