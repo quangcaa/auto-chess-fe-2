@@ -7,11 +7,8 @@ import { RiSendPlane2Fill } from "react-icons/ri";
 import { FaTrash } from "react-icons/fa";
 import { IoIosWarning } from "react-icons/io";
 import { RiSwordFill } from "react-icons/ri";
-import { Online } from "@/components/Online";
-import { Offline } from "@/components/Offline";
 
 import { useAuth } from "@/contexts/AuthContext";
-import { useOnlineUsers } from "@/contexts/OnlineUsersContext";
 
 export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
   const [loadingSend, setLoadingSend] = useState(false);
@@ -20,8 +17,16 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef(null);
 
+  const [currentUserId, setCurrentUserId] = useState(null);
+
   const { socket } = useAuth();
-  const currentUserId = Number(localStorage.getItem("user_id"));
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const userId = Number(localStorage.getItem("user_id"));
+      setCurrentUserId(userId);
+    }
+  }, []);
 
   // function update new message to inbox
   const addNewMessage = useCallback((messageData) => {
@@ -171,39 +176,37 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
           {loadingInbox ? (
             <Loading />
           ) : (
-            inbox.map((item, index) => {
-              return (
+            inbox.map((item, index) => (
+              <div
+                key={item.time}
+                className={`flex flex-col gap-2 mb-1 justify-start ${
+                  item.sender_id === userId ? "items-start" : "items-end"
+                }`}
+              >
+                {(index === 0 ||
+                  item.time.date !== inbox[index - 1].time.date) && (
+                  <p className="self-center text-xs text-gray-700 px-3 py-1.5 rounded-md shadow-md border-b border-gray-300 bg-time-inbox">
+                    {item.time.date}
+                  </p>
+                )}
+
+                {/* MESSAGE */}
                 <div
-                  key={item.time}
-                  className={`flex flex-col gap-2 mb-1 justify-start ${
-                    item.sender_id === userId ? "items-start" : "items-end"
+                  className={`w-fit max-w-[80%] py-[7px] px-[14px] rounded-md shadow-md border-b border-gray-300 text-sm ${
+                    item.sender_id === userId
+                      ? "bg-partner-inbox"
+                      : "bg-my-inbox text-left"
                   }`}
                 >
-                  {(index === 0 ||
-                    item.time.date !== inbox[index - 1].time.date) && (
-                    <p className="self-center text-xs text-gray-700 px-3 py-1.5 rounded-md shadow-md border-b border-gray-300 bg-time-inbox">
-                      {item.time.date}
-                    </p>
-                  )}
-
-                  {/* MESSAGE */}
-                  <div
-                    className={`w-fit max-w-[80%] py-[7px] px-[14px] rounded-md shadow-md border-b border-gray-300 text-sm ${
-                      item.sender_id === userId
-                        ? "bg-partner-inbox"
-                        : "bg-my-inbox text-left"
-                    }`}
-                  >
-                    <p className="break-words">
-                      {item.message}
-                      <span className="text-gray-600 ml-5 text-xs">
-                        {item.time.time}
-                      </span>
-                    </p>
-                  </div>
+                  <p className="break-words">
+                    {item.message}
+                    <span className="text-gray-600 ml-5 text-xs">
+                      {item.time.time}
+                    </span>
+                  </p>
                 </div>
-              );
-            })
+              </div>
+            ))
           )}
           <div ref={messagesEndRef} />
         </div>

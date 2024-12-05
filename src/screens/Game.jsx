@@ -68,14 +68,13 @@ export const Game = () => {
 
     socket.on(START_GAME, (data) => {
       setGameId(game_id);
-      // setPlayers({ whitePlayer: data.white, blackPlayer: data.black });
 
       setIsGameStarted(true);
       setIsGameOver(false);
       setGame(new Chess());
 
       resetMoves();
-      setWhiteTime(data.timeData.whiteTime); // Initialize with time from server
+      setWhiteTime(data.timeData.whiteTime);
       setBlackTime(data.timeData.blackTime);
       setActivePlayer("w");
 

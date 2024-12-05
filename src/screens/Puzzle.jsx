@@ -4,7 +4,7 @@ import { Chessboard } from "react-chessboard";
 import toast from "react-hot-toast";
 
 import movesStore from "@/store/movesStore";
-import { MoveList } from "@/components/game/MoveList";
+import { MoveList } from "@/components/puzzle/MoveList";
 import { set } from "react-hook-form";
 import { Separator } from "@/components/ui/separator";
 
@@ -281,7 +281,7 @@ export const Puzzle = () => {
   return (
     <div className="flex-grow flex flex-col">
       <div className="flex-grow flex items-center justify-center">
-        <div className="w-full max-w-screen-xl w-[80%] h-full">
+        <div className="w-full max-w-screen-xl w-[80%] h-full mt-2">
           <div className="flex-grow flex flex-row justify-center h-full gap-4">
             <div className="w-1/4 flex flex-col flex-shrink-0">
               {/* INFO */}
@@ -297,8 +297,9 @@ export const Puzzle = () => {
                     <a
                       className="text-emerald-600 hover:text-emerald-800"
                       href={`https://lichess.org/training/${data?.puzzle.id}`}
+                      target="_blank"
                     >
-                      {data?.puzzle.id}
+                      #{data?.puzzle.id}
                     </a>
                   </span>
                   <span className="text-base flex gap-1">
