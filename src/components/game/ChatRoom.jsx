@@ -63,14 +63,22 @@ export const ChatRoom = ({ game_id }) => {
       </CardHeader>
       <Separator />
       <CardContent className="flex-grow overflow-y-auto h-full no-scrollbar text-sm">
-        <div className="flex flex-col space-y-2 p-2">
+        <div className="flex flex-col pt-2 gap-1">
           {messages.map((message, index) => (
-            <div key={index} className="mb-2">
-              <span>
-                {message.sender}: {message.content}
-              </span>
+            <div
+              key={index}
+              className={`mb-2 flex items-start ${message.sender === sender ? "border-l-4 border-blue-500 pl-2" : "pl-3"
+                }`}
+            >
+              <div className="bg-gray-100 text-gray-700 p-2 rounded-lg w-fit">
+                <span className="font-medium">
+                  {message.sender === sender ? "You" : message.sender}
+                </span>
+                <span>: {message.content}</span>
+              </div>
             </div>
           ))}
+
           <div ref={messagesEndRef} />
         </div>
       </CardContent>

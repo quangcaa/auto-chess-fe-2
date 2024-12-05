@@ -21,6 +21,9 @@ export function Profile() {
   const [followerList, setFollowerList] = useState([]);
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [followType, setFollowType] = useState("follower")
+
+  console.log(followType)
 
   const { username } = useParams();
   const currentUser = localStorage.getItem("username");
@@ -58,7 +61,6 @@ export function Profile() {
     const fetchFollowerList = async () => {
       try {
         const response = await api.get(`@/${username}/follower`);
-        console.log(response.data.length);
         if (isMounted) {
           setFollowerList(response.data);
           if (response.data.length > 0) {
@@ -109,7 +111,6 @@ export function Profile() {
   };
 
   const checkFollow = () => {
-    console.log("check " + isFollowing);
     return isFollowing;
   }
 
@@ -146,6 +147,7 @@ export function Profile() {
             isOwner={username === currentUser}
             isFollowing={checkFollow}
             user_id={profile?.user_id}
+            setFollowType = {setFollowType}
           />
         </div>
       </div>
@@ -177,9 +179,11 @@ export function Profile() {
         </ScrollArea>
       </div>
       <div className="w-[30%] pl-6 border-l border-gray-300 overflow-y-auto">
-        <h3 className="text-lg font-semibold mb-4">Followers</h3>
+        <h3 className="text-lg font-semibold mb-4">
+          {followType === "follower" ? "Follower" : "Following"}
+        </h3>
         <ScrollArea>
-        {followerList.map((follow, index) => (
+        {(followType === "follower" ? followerList : followingList).map((follow, index) => (
           <a
             key={index}
             href={`/@/${follow.username}`}
@@ -193,61 +197,7 @@ export function Profile() {
       </div>
     </div>
     {/* Footer */}
-    <div className="bg-gray-100">
-      <div className="text-lg font-semibold text-gray-800 text-center py-3">
-        History Games
-      </div>
-      <div className="flex justify-center gap-2">
-        {["All", "Win", "Lose"].map((label, index) => (
-          <button
-            key={index}
-            className="w-1/4 h-10 text-gray-700 bg-gray-50 border border-gray-300 rounded-lg hover:bg-blue-100 transition-all duration-300"
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      <ul className="space-y-4 p-4">
-        {games.map((game, index) => (
-          <li
-            key={index}
-            className={`flex gap-4 p-4 rounded-lg ${
-              index % 2 === 0 ? "bg-gray-50" : "bg-gray-200"
-            } hover:bg-blue-200`}
-          >
-            <div className="w-[220px]">
-              <Chessboard position={game.fen || "start"} boardWidth={200} />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-x-3">
-                <GiBurningEmbers className="size-12" />
-                <div>
-                  <strong className="text-lg font-semibold text-gray-800 flex gap-2">
-                    <p>{game.time_control_id}</p>
-                    <p>•</p>
-                    <p>{game.variant_id}</p>
-                  </strong>
-                  <time
-                    className="text-sm text-gray-600"
-                    dateTime={game.start_time}
-                  >
-                    {formatDate(game.start_time)}
-                  </time>
-                </div>
-              </div>
-              <div className="flex justify-center mt-3 text-gray-700">
-                <p>{game.white_player_id}</p>
-                <GiCrossedSwords className="mx-2 text-gray-500" />
-                <p>{game.black_player_id}</p>
-              </div>
-              <div className="text-center text-sm text-gray-600 mt-2">
-                {game.status} • {game.result}
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <HistoryGames games={games} formatDate={formatDate}/>
   </div>
 </div>
 

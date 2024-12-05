@@ -8,11 +8,12 @@ import { MdReportProblem } from "react-icons/md";
 import api from "@/utils/axios";
 import toast from "react-hot-toast";
 import { useParams, Link } from "react-router-dom";
+import { FaUserFriends } from "react-icons/fa";
+import { SlUserFollowing } from "react-icons/sl";
 
-export const Dropdown = ({ isOwner = true, isFollowing = false, user_id }) => {
+export const Dropdown = ({ isOwner = true, isFollowing = false, user_id, setFollowType }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFollow, setIsFollow] = useState(isFollowing);
-  // console.log("dropdown" + isFollow);
 
   const { username } = useParams();
 
@@ -65,10 +66,16 @@ export const Dropdown = ({ isOwner = true, isFollowing = false, user_id }) => {
                 <IoMdSettings className="size-5 mr-2" />
                 Edit Profile
               </a>
-              <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                <ImUser className="size-5 mr-2" />
-                Friends
-              </a>
+              <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full"
+                  onClick={() => setFollowType("follower")}>
+                <FaUserFriends className="size-5 mr-2" />
+                Follower
+              </button>
+              <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full"
+                  onClick={() => setFollowType("following")}>
+                <SlUserFollowing className="size-5 mr-2" />
+                Following
+              </button>
             </>
           )}
 
