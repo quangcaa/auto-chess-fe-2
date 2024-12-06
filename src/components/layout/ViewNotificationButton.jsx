@@ -22,9 +22,6 @@ export const ViewNotificationButton = () => {
       try {
         const response = await api.get("/notification");
         const data = response.data.data;
-
-        console.log(data);
-
         setNotificationList(data);
       } catch (error) {
         toast.error(error.response.data.message || "Something went wrong");
