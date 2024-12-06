@@ -1,5 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import PropTypes from "prop-types";
+import toast from "react-hot-toast";
+
 import { CreateGameCard } from "@/components/homepage/CreateGameCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -7,7 +9,6 @@ import { Loading } from "@/components/Loading";
 
 export const Homepage = () => {
   const [isJoinGameClicked, setIsJoinGameClicked] = useState(false);
-  const [createdGameId, setCreatedGameId] = useState("");
   const [joinGameId, setJoinGameId] = useState("");
   const [activeTab, setActiveTab] = useState("quick-pairing");
   const [lobby, setLobby] = useState([]);
@@ -38,19 +39,18 @@ export const Homepage = () => {
 
   const handleQuickPairing = (index) => {
     const selectedTimeControl = timeControls[index];
-    setIsWaiting(true);
-    setLoadingIndex(index);
-    socket.emit("join_quick_pairing", selectedTimeControl);
-  };
 
-  const handleCreateGame = () => {
-    socket.emit("create_game", (response) => {
-      if (response.success) {
-        setCreatedGameId(response.game_id);
-      } else {
-        console.error(response.message);
-      }
-    });
+    if (isWaiting) {
+      // Nếu đang chờ ghép cặp, hủy yêu cầu
+      socket.emit("cancel_quick_pairing", selectedTimeControl);
+      setIsWaiting(false);
+      setLoadingIndex(null);
+    } else {
+      // Nếu không trong trạng thái chờ, gửi yêu cầu ghép cặp
+      setIsWaiting(true);
+      setLoadingIndex(index);
+      socket.emit("join_quick_pairing", selectedTimeControl);
+    }
   };
 
   // testing
@@ -61,6 +61,7 @@ export const Homepage = () => {
           navigate(`/game/${joinGameId}`);
         } else {
           console.error(response.message);
+          toast.error(response.message);
         }
       });
     }
@@ -70,6 +71,18 @@ export const Homepage = () => {
     if (!socket) return;
 
     socket.on("paired", (game_id) => {
+      navigate(`/game/${game_id}`);
+      setIsWaiting(false);
+      setLoadingIndex(null);
+    });
+
+    socket.on("cancel_paired", () => {
+      setIsWaiting(false);
+      setLoadingIndex(null);
+    });
+
+    socket.on("start_now", (game_id) => {
+      console.log(`Received 'start_now' event for game ${game_id}`);
       navigate(`/game/${game_id}`);
     });
 
@@ -81,6 +94,8 @@ export const Homepage = () => {
     return () => {
       socket.off("update_lobby");
       socket.off("paired");
+      socket.off("cancel_paired");
+      socket.off("start_now");
     };
   }, [socket, navigate]);
 
@@ -118,6 +133,8 @@ export const Homepage = () => {
               timeControls={timeControls}
               handleQuickPairing={handleQuickPairing}
               loadingIndex={loadingIndex}
+              openCard={openCard}
+              isWaiting={isWaiting}
             />
           )}
           {activeTab === "lobby" && <Lobby games={lobby} />}
@@ -169,29 +186,52 @@ export const Homepage = () => {
   );
 };
 
-const QuickPairing = ({ timeControls, handleQuickPairing, loadingIndex }) => (
+const QuickPairing = ({
+  timeControls,
+  handleQuickPairing,
+  loadingIndex,
+  openCard,
+  isWaiting,
+}) => (
   <div className="flex h-full w-full">
     <div className="grid grid-cols-3 gap-2 w-full h-full">
       {timeControls.map((time, index) => (
         <div
           key={index}
-          className="bg-white shadow-md text-gray-700 rounded-lg transition hover:bg-emerald-400"
+          className={`bg-white shadow-md text-gray-700 rounded-lg transition ${
+            loadingIndex === index && isWaiting
+              ? "bg-yellow-400"
+              : "hover:bg-emerald-400"
+          }`}
         >
-          {loadingIndex === index ? (
-            <Loading />
-          ) : (
-            <button
-              className="flex flex-col justify-center items-center w-full h-full p-4 opacity-80"
-              onClick={() => handleQuickPairing(index)}
-            >
-              <span className="text-4xl p-2">
-                {time.base_time}+{time.increment_by_turn}
-              </span>
-              <div className="text-2xl text-gray-500">{time.name}</div>
-            </button>
-          )}
+          <button
+            className="flex flex-col justify-center items-center w-full h-full p-4 opacity-80"
+            onClick={() => handleQuickPairing(index)}
+          >
+            {loadingIndex === index && isWaiting ? (
+              <div className="flex flex-col gap-2">
+                <Loading />
+                <span className="text-xl">Cancel</span>
+              </div>
+            ) : (
+              <>
+                <span className="text-4xl p-2">
+                  {time.base_time}+{time.increment_by_turn}
+                </span>
+                <div className="text-2xl text-gray-500">{time.name}</div>
+              </>
+            )}
+          </button>
         </div>
       ))}
+      <div className="bg-white shadow-md text-gray-700 rounded-lg transition hover:bg-emerald-400">
+        <button
+          className="flex flex-col justify-center items-center w-full h-full p-4 opacity-80"
+          onClick={openCard}
+        >
+          <div className="text-4xl">Custom</div>
+        </button>
+      </div>
     </div>
   </div>
 );
@@ -199,6 +239,7 @@ QuickPairing.propTypes = {
   timeControls: PropTypes.array.isRequired,
   handleQuickPairing: PropTypes.func.isRequired,
   loadingIndex: PropTypes.number,
+  openCard: PropTypes.func.isRequired,
 };
 
 const Lobby = ({ games }) => (

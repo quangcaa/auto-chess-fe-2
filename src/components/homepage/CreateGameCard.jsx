@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 import PropTypes from "prop-types";
 import bK from "/assets/piece/bK.svg";
@@ -15,6 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { IoClose } from "react-icons/io5";
 import { useAuth } from "@/contexts/AuthContext";
+import { CREATE_GAME } from "@/constants/game";
 
 export const CreateGameCard = ({ closeCard }) => {
   const [minutes, setMinutes] = useState(1);
@@ -22,35 +24,26 @@ export const CreateGameCard = ({ closeCard }) => {
   const [selectedSide, setSelectedSide] = useState("random");
 
   const { socket } = useAuth();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleCreateGame = () => {
     const timeControl = {
       base_time: minutes, // minutes
       increment: increment, // seconds
       time_control_name: determineTimeControlName(minutes),
-      side: selectedSide
+      side: selectedSide,
     };
-    
-    // socket.emit("create_game_with_time_control", timeControl, (response) => {
-    //   if (response.success) {
-    //     // Navigate to the game or display game ID
-    //   } else {
-    //     console.error(response.message);
-    //   }
-    // });
 
-    socket.emit('create_game_with_time_control', timeControl, (response) => {
+    socket.emit(CREATE_GAME, timeControl, (response) => {
       if (response.success) {
-        closeCard(); // Close the modal or card
-        navigate(`/game/${response.game_id}`); // Navigate to the game screen
+        console.log(response);
+        closeCard();
       } else {
-        console.error(response.message);
-        // Optionally, display an error message to the user
+        toast.error(response.message);
       }
     });
 
-    console.log(timeControl)
+    console.log(timeControl);
   };
 
   const determineTimeControlName = (minutes) => {

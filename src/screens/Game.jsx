@@ -55,6 +55,7 @@ export const Game = () => {
           whitePlayer: data.white_player_id,
           blackPlayer: data.black_player_id,
         });
+        resetMoves();
       } catch (error) {
         toast.error(error.response.data.message || "Something went wrong");
       }
@@ -87,6 +88,7 @@ export const Game = () => {
         gameCopy.move(moveData);
 
         const lastMove = gameCopy.history({ verbose: true }).slice(-1)[0];
+        console.log(lastMove)
         addMove(lastMove);
 
         return gameCopy;
@@ -133,18 +135,6 @@ export const Game = () => {
 
     return () => clearInterval(timer);
   }, [isGameStarted, isGameOver, activePlayer]);
-
-  const createGame = () => {
-    socket.emit(CREATE_GAME, (game_id) => {
-      setGameId(game_id);
-    });
-  };
-
-  const joinGame = () => {
-    if (gameId) {
-      socket.emit(JOIN_GAME, gameId);
-    }
-  };
 
   const leaveGame = () => {
     if (gameId) {
