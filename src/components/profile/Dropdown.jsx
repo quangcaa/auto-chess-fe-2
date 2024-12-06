@@ -86,7 +86,7 @@ export const Dropdown = ({ isOwner = true, isFollowing = false, user_id, setFoll
                 Friends
               </a>
               <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                  href="/inbox">
+                  href={`/inbox/${username}`}>
                 <ImBubble2 className="size-5 mr-2" />
                 Message
               </a>

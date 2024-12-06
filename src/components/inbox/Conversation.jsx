@@ -9,8 +9,10 @@ import { IoIosWarning } from "react-icons/io";
 import { RiSwordFill } from "react-icons/ri";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
+  const navigate = useNavigate();
   const [loadingSend, setLoadingSend] = useState(false);
   const [loadingInbox, setLoadingInbox] = useState(true);
   const [inbox, setInbox] = useState([]);
@@ -139,6 +141,7 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
       const res = await api.delete(`/inbox/delete-inbox/${userId}`);
 
       if (res.status === 200) {
+        navigate('/inbox', { replace: true })
         window.location.reload();
         toast.success("Deleted inbox successfully ;(");
       }
@@ -165,7 +168,10 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
             />
           </div>
           <div className="flex justify-center items-center hover:cursor-pointer hover:bg-white hover:rounded-md h-9 w-9 hover:p-2 hover:shadow-md group">
-            <IoIosWarning className="h-5 w-5 text-gray-600 group-hover:text-red-600" />
+            <IoIosWarning 
+              className="h-5 w-5 text-gray-600 group-hover:text-red-600"
+              onClick={() => navigate('/report?username=' + `${username}`)} 
+            />
           </div>
         </div>
       </div>
