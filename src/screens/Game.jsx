@@ -16,7 +16,6 @@ import {
   JOIN_GAME,
   LEAVE_GAME,
   MOVE,
-  START_GAME,
 } from "@/constants/game";
 
 export const Game = () => {
@@ -52,11 +51,15 @@ export const Game = () => {
         const game = response.data.game;
         const time = response.data.clock;
 
-        console.log(response);
-
         setGameId(game.game_id);
         setGameData(game);
         setTimeData(time);
+
+        setIsGameStarted(true);
+        setIsGameOver(false);
+        setGame(new Chess());
+
+        setActivePlayer("w");
 
         resetMoves();
       } catch (error) {
@@ -69,21 +72,6 @@ export const Game = () => {
 
   useEffect(() => {
     if (!socket) return;
-
-    socket.on(START_GAME, (data) => {
-      setGameId(game_id);
-
-      setIsGameStarted(true);
-      setIsGameOver(false);
-      setGame(new Chess());
-
-      resetMoves();
-      setWhiteTime(data.timeData.whiteTime);
-      setBlackTime(data.timeData.blackTime);
-      setActivePlayer("w");
-
-      toast.success("Game started!");
-    });
 
     socket.on(MOVE, (moveData) => {
       setGame((prevGame) => {
@@ -113,7 +101,6 @@ export const Game = () => {
     });
 
     return () => {
-      socket.off(START_GAME);
       socket.off(MOVE);
       socket.off(GAME_OVER);
       socket.off("time_update");

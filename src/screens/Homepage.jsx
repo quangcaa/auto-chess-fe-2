@@ -41,7 +41,7 @@ export const Homepage = () => {
 
     if (isWaiting) {
       // Nếu đang chờ ghép cặp, hủy yêu cầu
-      socket.emit("cancel_quick_pairing", selectedTimeControl);
+      socket.emit("cancel_quick_pairing");
       setIsWaiting(false);
       setLoadingIndex(null);
     } else {
