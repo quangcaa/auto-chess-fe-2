@@ -66,7 +66,7 @@ export const Report = () => {
         </div>
         <hr className="border-t border-gray-300 my-6" />
         <div className="flex items-center">
-          <a href="" className="text-lg text-emerald-600 hover:text-emerald-800">
+          <a onClick={() => navigate(-1)} className="text-lg text-emerald-600 hover:text-emerald-800">
             Cancel
           </a>
           <button

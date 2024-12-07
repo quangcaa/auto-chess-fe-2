@@ -31,7 +31,7 @@ function App() {
             <Route path="/game/:game_id" element={<Game />} />
             <Route path="/computer" element={<PlayVsComputer />} />
             <Route path="/puzzle" element={<Puzzle />} />
-            <Route path="/inbox" element={<Inbox />} />
+            <Route path="/inbox/:username?" element={<Inbox />} />
             <Route path="/@/:username" element={<Profile />} />
             <Route path="/forum/*" element={<Forum />} />
             <Route path="/admin/*" element={<Admin />} />
