@@ -18,23 +18,23 @@ export const MoveList = ({
   }, [moves]);
 
   return (
-    <Card className="w-full h-full shadow-lg flex flex-col">
+    <Card className="w-full h-full shadow-lg flex flex-col rounded-lg">
       {/* <CardHeader>
         <CardTitle>Move List</CardTitle>
       </CardHeader> */}
-      <Separator />
+      {/* <Separator /> */}
       <CardContent
         className="flex-grow overflow-y-auto no-scrollbar h-64 p-0 text-sm rounded-lg"
         ref={listRef}
       >
         <table className="table-auto w-full rounded-xl">
           <thead className="sticky top-0">
-            <tr className="bg-gray-200">
-              <th className="px-1 py-1 text-left text-[#B3B3B3] flex justify-center">
+            <tr className="bg-[#779952]">
+              <th className="px-1 py-1 text-left text-white flex justify-center">
                 #
               </th>
-              <th className="px-2 py-1 text-left">White</th>
-              <th className="px-2 py-1 text-left ">Black</th>
+              <th className="px-2 py-1 text-left text-white">White</th>
+              <th className="px-2 py-1 text-left text-white ">Black</th>
             </tr>
           </thead>
           <tbody>
@@ -51,9 +51,9 @@ export const MoveList = ({
                       {index / 2 + 1}
                     </td>
                     <td
-                      className={`px-2 py-1 hover:text-white hover:bg-emerald-600 cursor-pointer ${
+                      className={`px-2 py-1 hover:text-white hover:bg-[#779952] cursor-pointer ${
                         index === selected &&
-                        "bg-emerald-300 font-bold"
+                        "bg-[#c0dba3] font-bold"
                       }`}
                       onClick={() => handleViewHistory(item, index)}
                     >
@@ -61,9 +61,9 @@ export const MoveList = ({
                     </td>
                     {moves[index + 1] && (
                       <td
-                        className={`px-2 py-1 hover:text-white hover:bg-emerald-600 cursor-pointer ${
+                        className={`px-2 py-1 hover:text-white hover:bg-[#779952] cursor-pointer ${
                           index + 1 === selected &&
-                          "bg-emerald-300 font-bold"
+                          "bg-[#c0dba3] font-bold"
                         }`}
                         onClick={() =>
                           handleViewHistory(moves[index + 1], index + 1)

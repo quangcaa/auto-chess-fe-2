@@ -295,7 +295,7 @@ export const Puzzle = () => {
                   <span className="text-base flex gap-1">
                     Puzzle{" "}
                     <a
-                      className="text-emerald-600 hover:text-emerald-800"
+                      className="text-emerald-600 font-bold hover:text-emerald-800"
                       href={`https://lichess.org/training/${data?.puzzle.id}`}
                       target="_blank"
                     >
@@ -358,7 +358,7 @@ export const Puzzle = () => {
                 <div className="flex gap-4">
                   <button
                     onClick={handleGetHint}
-                    className="text-emerald-600 hover:text-emerald-800 font-medium"
+                    className="text-[#779952] hover:text-emerald-800 font-medium"
                   >
                     Get a hint
                   </button>
@@ -367,7 +367,7 @@ export const Puzzle = () => {
                       setIsSolution(true);
                       handleGetHint();
                     }}
-                    className="text-emerald-600 hover:text-emerald-800 font-medium p-2"
+                    className="text-[#779952] hover:text-emerald-800 font-medium p-2"
                   >
                     View the solution
                   </button>
@@ -377,7 +377,7 @@ export const Puzzle = () => {
                     }}
                     disabled={!isPuzzleSolved}
                     className={
-                      (isPuzzleSolved ? `text-emerald-600 hover:text-emerald-800` : `text-[#8e9193]`) +
+                      (isPuzzleSolved ? `text-[#779952] hover:text-emerald-800` : `text-[#8e9193]`) +
                       ` font-medium  p-2`
                     }
                   >
