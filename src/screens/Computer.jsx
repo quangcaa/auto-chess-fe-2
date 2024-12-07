@@ -3,11 +3,11 @@ import { Chess } from "chess.js";
 import Engine from "@/stockfish/engine";
 import { Chessboard } from "react-chessboard";
 import { MoveList } from "@/components/computer/MoveList";
+import toast from "react-hot-toast";
 
 const boardWrapper = {
   width: `70vw`,
   maxWidth: "70vh",
-  // margin: "3rem auto",
 };
 
 export const PlayVsComputer = () => {
@@ -28,6 +28,22 @@ export const PlayVsComputer = () => {
   const [stockfishLevel, setStockfishLevel] = useState(2);
   const [color, setColor] = useState("white");
   const [moves, setMoves] = useState([]);
+  const [selectedMove, setSelectedMove] = useState(null);
+
+  const handleViewHistory = (move, index) => {
+    const gameCopy = new Chess();
+    const movesToApply = moves.slice(0, index + 1);
+    movesToApply.forEach((m) => gameCopy.move(m));
+    setGamePosition(gameCopy.fen());
+    setSelectedMove(index);
+  };
+
+  const handleReturnToCurrent = () => {
+    const gameCopy = new Chess();
+    moves.forEach((m) => gameCopy.move(m));
+    setGamePosition(gameCopy.fen());
+    setSelectedMove(null);
+  };
 
   function findBestMove() {
     engine.evaluatePosition(game.fen(), stockfishLevel);
@@ -44,6 +60,13 @@ export const PlayVsComputer = () => {
   }
 
   function onDrop(sourceSquare, targetSquare, piece) {
+    if (selectedMove !== null) {
+      toast.error(
+        "You must return to the current move to make a new move."
+      );
+      return false;
+    }
+
     const move = game.move({
       from: sourceSquare,
       to: targetSquare,
@@ -69,11 +92,13 @@ export const PlayVsComputer = () => {
       <div className="flex flex-row w-[85%] h-full gap-2">
         {/* LEFT */}
         <div className="w-1/4 flex flex-col items-end gap-2 flex-shrink h-full">
-          <div className="flex flex-col mt-7">
+          <div className="flex flex-col">
             {Object.entries(levels).map(([level, depth]) => (
               <button
-                className={`cursor-pointer px-5 py-2 mb-2 mt-0 rounded-md border border-gray-300 hover:bg-[#B58863] shadow-lg ${
-                  stockfishLevel === depth ? "bg-[#B58863]" : "bg-[#f0d9b5]"
+                className={`cursor-pointer px-5 py-2 mb-2 mt-0 rounded-md border border-gray-300 hover:bg-[#779952] hover:text-white shadow-lg ${
+                  stockfishLevel === depth
+                    ? "bg-[#779952] text-white"
+                    : "bg-white"
                 }`}
                 key={level}
                 onClick={() => setStockfishLevel(depth)}
@@ -86,7 +111,6 @@ export const PlayVsComputer = () => {
         {/* MID */}
         <div className="w-2/4 h-full flex justify-center flex-shrink-0 w-auto max-w-fit">
           <div style={boardWrapper}>
-            <h4 className="mb-1">Depth: {stockfishLevel}</h4>
             <Chessboard
               position={gamePosition}
               onPieceDrop={onDrop}
@@ -108,7 +132,7 @@ export const PlayVsComputer = () => {
             />
 
             <button
-              className="cursor-pointer px-4 py-2 my-2 mr-2 rounded-md shadow-lg bg-[#f0d9b5] border border-gray-300 hover:bg-[#B58863]"
+              className="cursor-pointer px-4 py-2 my-2 mr-2 rounded-md shadow-lg bg-white border border-gray-300 hover:bg-[#779952] hover:text-white"
               onClick={() => {
                 game.reset();
                 setGamePosition(game.fen());
@@ -118,7 +142,7 @@ export const PlayVsComputer = () => {
               Reset
             </button>
             <button
-              className="cursor-pointer px-4 py-2 my-2 mr-2 rounded-md shadow-lg bg-[#f0d9b5] border border-gray-300 hover:bg-[#B58863]"
+              className="cursor-pointer px-4 py-2 my-2 mr-2 rounded-md shadow-lg bg-white border border-gray-300 hover:bg-[#779952] hover:text-white"
               onClick={() => {
                 game.undo();
                 setGamePosition(game.fen());
@@ -128,15 +152,15 @@ export const PlayVsComputer = () => {
               Undo
             </button>
             <button
-              className="cursor-pointer px-4 py-2 my-2 mr-2 rounded-md shadow-lg bg-[#f0d9b5] border border-gray-300 hover:bg-[#B58863]"
+              className="cursor-pointer px-4 py-2 my-2 mr-2 rounded-md shadow-lg bg-white border border-gray-300 hover:bg-[#779952] hover:text-white"
               onClick={() => {
                 findBestMove();
               }}
             >
-              Computer
+              Computer Move
             </button>
             <button
-              className="cursor-pointer px-4 py-2 my-2 mr-2 rounded-md shadow-lg bg-[#f0d9b5] border border-gray-300 hover:bg-[#B58863]"
+              className="cursor-pointer px-4 py-2 my-2 mr-2 rounded-md shadow-lg bg-white border border-gray-300 hover:bg-[#779952] hover:text-white"
               onClick={() => setColor(color === "white" ? "black" : "white")}
             >
               Flip board
@@ -144,11 +168,24 @@ export const PlayVsComputer = () => {
           </div>
         </div>
         {/* RIGHT SIDEBAR */}
-        <div className="w-1/4 h-48 flex flex-col flex-shrink-0">
-          <div className="flex-grow mt-7">
-            <MoveList moves={moves} />
+        <div className="w-1/4 h-80 flex flex-col flex-shrink-0">
+          <div className="flex-grow">
+            <MoveList
+              moves={moves}
+              handleViewHistory={handleViewHistory}
+              selected={selectedMove}
+            />
           </div>
-          {/* <div className="flex-grow"></div> */}
+          <div className="flex-grow">
+            {selectedMove !== null && (
+              <button
+                className="cursor-pointer px-4 py-2 my-2 mr-2 rounded-md shadow-lg bg-white border border-gray-300 hover:bg-[#779952] hover:text-white"
+                onClick={handleReturnToCurrent}
+              >
+                Return to Current Move
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
