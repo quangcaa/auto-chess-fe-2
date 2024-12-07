@@ -58,23 +58,26 @@ export const ChatRoom = ({ game_id }) => {
 
   return (
     <Card className="w-full h-full shadow-lg flex flex-col">
-      <CardHeader className="flex flex-col p-4 text-gray-700">
+      <CardHeader className="flex flex-col ml-2 p-2 text-gray-700">
         <CardTitle>Chat room</CardTitle>
       </CardHeader>
       <Separator />
       <CardContent className="flex-grow overflow-y-auto h-full no-scrollbar text-sm">
-        <div className="flex flex-col pt-2 gap-1">
+        <div className="flex flex-col">
           {messages.map((message, index) => (
             <div
               key={index}
-              className={`mb-2 flex items-start ${message.sender === sender ? "border-l-4 border-blue-500 pl-2" : "pl-3"
-                }`}
+              className={`flex items-start ${
+                message.sender === sender
+                  ? "border-l-4 border-green-600 pl-2"
+                  : "pl-3"
+              }`}
             >
-              <div className="bg-gray-100 text-gray-700 p-2 rounded-lg w-fit">
-                <span className="font-medium">
-                  {message.sender === sender ? "You" : message.sender}
+              <div className="p-1 rounded-lg w-full break-words">
+                <span className="font-bold text-gray-500 text-sm tracking-tight">
+                  {message.sender}{" "}
                 </span>
-                <span>: {message.content}</span>
+                <span className="text-gray-800 break-words">{message.content}</span>
               </div>
             </div>
           ))}
@@ -83,7 +86,7 @@ export const ChatRoom = ({ game_id }) => {
         </div>
       </CardContent>
       <Separator />
-      <CardFooter className="shadow-lg">
+      <CardFooter className="shadow-lg rounded-b-lg">
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}

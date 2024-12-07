@@ -29,8 +29,8 @@ export const CreateGameCard = ({ closeCard }) => {
   const handleCreateGame = () => {
     const timeControl = {
       base_time: minutes, // minutes
-      increment: increment, // seconds
-      time_control_name: determineTimeControlName(minutes),
+      increment_by_turn: increment, // seconds
+      name: determineTimeControlName(minutes),
       side: selectedSide,
     };
 
@@ -50,7 +50,7 @@ export const CreateGameCard = ({ closeCard }) => {
     if (minutes <= 3) return "Bullet";
     if (minutes <= 10) return "Blitz";
     if (minutes <= 30) return "Rapid";
-    return "Classical";
+    if (minutes <= 60) return "Classical";
   };
 
   return (

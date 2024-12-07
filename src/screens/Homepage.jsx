@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import toast from "react-hot-toast";
 
@@ -31,7 +31,6 @@ export const Homepage = () => {
     { base_time: "15", increment_by_turn: "10", name: "Rapid" },
     { base_time: "30", increment_by_turn: "0", name: "Classical" },
     { base_time: "30", increment_by_turn: "20", name: "Classical" },
-    // { base_time: null, increment_by_turn: null, name: "Custom" },
   ];
 
   const openCard = () => setIsModalOpen(true);

@@ -32,7 +32,7 @@ const UserDropdown = () => {
   }, [isOpen]);
 
   return (
-    <div className="relative inline-block text-center" ref={dropdownRef}>
+    <div className="relative inline-block text-center z-50" ref={dropdownRef}>
       <span
         onClick={toggleDropdown}
         className={`cursor-pointer h-[60px] text-lg transition duration-300 pl-3 pr-3 py-5 flex items-center font-medium ${

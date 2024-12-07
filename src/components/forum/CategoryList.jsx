@@ -53,17 +53,17 @@ export const CategoryList = () => {
                   "hover:bg-gray-200 transition-colors h-16 border-y border-gray-300"
                 }
               >
-                <Link
-                  to={`/forum/${category.category_id}`}
-                  state={category.category_name}
-                >
-                  <td className="flex flex-col items-start gap-1 justify-center mx-10 my-5">
+                <td className="flex flex-col items-start gap-1 justify-center mx-10 my-5">
+                  <Link
+                    to={`/forum/${category.category_id}`}
+                    state={category.category_name}
+                  >
                     <p className="text-3xl text-emerald-600">
                       {category.category_name}
                     </p>
                     <p>{category.category_description}</p>
-                  </td>
-                </Link>
+                  </Link>
+                </td>
                 <td className="text-right">
                   <p className="mr-4">{category.topic_count}</p>
                 </td>

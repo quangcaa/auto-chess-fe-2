@@ -23,6 +23,7 @@ export const Game = () => {
   const [game, setGame] = useState(new Chess());
   const [gameId, setGameId] = useState("");
   const [gameData, setGameData] = useState("");
+  const [timeData, setTimeData] = useState("");
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   const [players, setPlayers] = useState({
@@ -47,14 +48,16 @@ export const Game = () => {
     const fetchGame = async () => {
       try {
         const response = await api.get(`/game/${game_id}`);
-        const data = response.data.game;
 
-        setGameId(data.game_id);
-        setGameData(data);
-        setPlayers({
-          whitePlayer: data.white_player_id,
-          blackPlayer: data.black_player_id,
-        });
+        const game = response.data.game;
+        const time = response.data.clock;
+
+        console.log(response);
+
+        setGameId(game.game_id);
+        setGameData(game);
+        setTimeData(time);
+
         resetMoves();
       } catch (error) {
         toast.error(error.response.data.message || "Something went wrong");
@@ -88,7 +91,7 @@ export const Game = () => {
         gameCopy.move(moveData);
 
         const lastMove = gameCopy.history({ verbose: true }).slice(-1)[0];
-        console.log(lastMove)
+        console.log(lastMove);
         addMove(lastMove);
 
         return gameCopy;
@@ -151,9 +154,10 @@ export const Game = () => {
             <div className="w-1/4 flex flex-col gap-4 flex-shrink-0">
               <div>
                 <GameInfo
-                  white={players.whitePlayer}
-                  black={players.blackPlayer}
-                  gameType="Standard Rated"
+                  white={gameData.whitePlayer}
+                  black={gameData.blackPlayer}
+                  clock={timeData}
+                  startTime={gameData.start_time}
                 />
               </div>
               <div className="flex-grow h-64">

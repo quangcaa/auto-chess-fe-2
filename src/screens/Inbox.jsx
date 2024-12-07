@@ -278,7 +278,7 @@ export const Inbox = () => {
               onFocus={() => setIsFocus(true)}
               onBlur={() => isSearching && setIsFocus(false)}
               placeholder="Search"
-              className="w-[90%] h-12 px-4 py-2 my-1 text-gray-700 placeholder-gray-500 bg-white rounded-3xl shadow-md transition-all duration-300 ease-in-out"
+              className="w-[90%] h-12 px-4 py-2 my-1 border border-gray-300 text-gray-700 placeholder-gray-500 bg-white rounded-3xl shadow-md transition-all duration-300 ease-in-out outline-0 focus:border-emerald-600 focus:border-2"
             />
           </div>
           {/* Conservation List */}

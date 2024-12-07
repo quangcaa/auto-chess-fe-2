@@ -88,13 +88,22 @@ export const PlayVsComputer = () => {
           <div style={boardWrapper}>
             <h4 className="mb-1">Depth: {stockfishLevel}</h4>
             <Chessboard
-              id="PlayVsStockfish"
               position={gamePosition}
               onPieceDrop={onDrop}
               boardOrientation={color}
               customBoardStyle={{
                 borderRadius: "8px",
                 boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.4)",
+              }}
+              customNotationStyle={{
+                fontSize: "11px",
+                fontWeight: "bold",
+                fontFamily: "'Roboto', sans-serif",
+              }}
+              customDarkSquareStyle={{ backgroundColor: "#779952" }}
+              customLightSquareStyle={{ backgroundColor: "#edeed1" }}
+              customDropSquareStyle={{
+                boxShadow: "inset 0 0 1px 6px rgba(132,23,255,0.75)",
               }}
             />
 

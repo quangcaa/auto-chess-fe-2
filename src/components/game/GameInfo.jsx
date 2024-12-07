@@ -1,75 +1,125 @@
+// export const GameInfo = ({ white, black, type }) => {
+//   const [whiteMetadata, setWhiteMetadata] = useState(false);
+//   const [blackMetadata, setBlackMetadata] = useState(false);
+
+//   return (
+//     <Card className="w-full shadow-lg">
+//       <CardHeader className="flex flex-row gap-4 p-[21px] pb-2">
+//         <div>
+//           <GiRabbit className="size-12 text-gray-800" />
+//         </div>
+//         <div>
+//           <CardDescription className="text-base text-gray-800">
+//             10+0 • Rated • Rapid
+//           </CardDescription>
+//           <CardDescription className="text-gray-800">
+//             4 hours ago
+//           </CardDescription>
+//         </div>
+//       </CardHeader>
+//       <CardContent className="px-6 pb-5">
+//         <div className="flex flex-row items-center gap-2">
+//           <FaRegCircle className="text-gray-700" />
+//           <p className="text-gray-700">
+//             <span className="font-medium">{whiteMetadata.username}</span>
+//           </p>
+//         </div>
+//         <div className="flex flex-row items-center gap-2">
+//           <FaCircle className="text-gray-700" />
+//           <p className="text-gray-700">
+//             <span className="font-medium">{blackMetadata.username}</span>
+//           </p>
+//         </div>
+//       </CardContent>
+//       <Separator />
+//     </Card>
+//   );
+// };
+
 import {
   Card,
   CardHeader,
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { formatDistanceToNow } from "date-fns";
+
 import { Separator } from "@/components/ui/separator";
 import { Loading } from "@/components/Loading";
-import { GiRabbit } from "react-icons/gi";
 import { FaRegCircle, FaCircle } from "react-icons/fa";
-import { useEffect, useState } from "react";
-import api from "@/utils/axios";
-import toast from "react-hot-toast";
+import PropTypes from "prop-types";
+import {
+  GiBulletBill,
+  GiTurtle,
+  GiFireBowl,
+  GiRabbit,
+  GiCrossedSwords,
+} from "react-icons/gi";
 
-export const GameInfo = ({ white, black, type }) => {
-  const [whiteMetadata, setWhiteMetadata] = useState(false);
-  const [blackMetadata, setBlackMetadata] = useState(false);
-
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      if (!white || !black) return;
-
-      try {
-        const [whiteResponse, blackResponse] = await Promise.all([
-          api.get(`/@/${white}/public`),
-          api.get(`/@/${black}/public`),
-        ]);
-
-        setWhiteMetadata(whiteResponse.data.user);
-        setBlackMetadata(blackResponse.data.user);
-      } catch (error) {
-        toast.error(error.response.data.message || "Something went wrong");
-      }
-    };
-
-    fetchUserInfo();
-  }, [black, white]);
-
-  if (!white || !black) {
+export const GameInfo = ({ white, black, clock, startTime }) => {
+  if (!white || !black || !clock) {
     return <Loading />;
   }
 
   return (
     <Card className="w-full shadow-lg">
       <CardHeader className="flex flex-row gap-4 p-[21px] pb-2">
-        <div>
-          <GiRabbit className="size-12 text-gray-800" />
+        <div className="text-gray-600">
+          {clock.time_control_name === "Bullet" ? (
+            <GiBulletBill className="size-12" />
+          ) : clock.time_control_name === "Classical" ? (
+            <GiTurtle className="size-12" />
+          ) : clock.time_control_name === "Blitz" ? (
+            <GiFireBowl className="size-12" />
+          ) : (
+            <GiRabbit className="size-12" />
+          )}
         </div>
+
         <div>
-          <CardDescription className="text-base text-gray-800">
-            10+0 • Rated • Rapid
+          <CardDescription className="text-lg text-gray-700 font-semibold">
+            {clock.base_time / 60000}+{clock.increment_by_turn / 1000} •{" "}
+            {clock.time_control_name}
           </CardDescription>
-          <CardDescription className="text-gray-800">
-            4 hours ago
+          <CardDescription className="text-gray-600 text-sm">
+            {formatDistanceToNow(new Date(startTime), {
+              addSuffix: true,
+            })}
           </CardDescription>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-5 pb-5 ml-1">
         <div className="flex flex-row items-center gap-2">
-          <FaRegCircle className="text-gray-700" />
-          <p className="text-gray-700">
-            <span className="font-medium">{whiteMetadata.username}</span>
+          <FaRegCircle className="text-gray-600" />
+          <p className="text-gray-600">
+            <span className="font-medium">{white.username}</span>
           </p>
         </div>
         <div className="flex flex-row items-center gap-2">
-          <FaCircle className="text-gray-700" />
-          <p className="text-gray-700">
-            <span className="font-medium">{blackMetadata.username}</span>
+          <FaCircle className="text-gray-600" />
+          <p className="text-gray-600">
+            <span className="font-medium">{black.username}</span>
           </p>
         </div>
       </CardContent>
-      <Separator />
     </Card>
   );
+};
+
+GameInfo.propTypes = {
+  white: PropTypes.shape({
+    user_id: PropTypes.number.isRequired,
+    username: PropTypes.string.isRequired,
+    online: PropTypes.bool.isRequired,
+  }).isRequired,
+  black: PropTypes.shape({
+    user_id: PropTypes.number.isRequired,
+    username: PropTypes.string.isRequired,
+    online: PropTypes.bool.isRequired,
+  }).isRequired,
+  clock: PropTypes.shape({
+    base_time: PropTypes.number.isRequired,
+    increment_by_turn: PropTypes.number.isRequired,
+    time_control_name: PropTypes.string.isRequired,
+  }).isRequired,
 };
