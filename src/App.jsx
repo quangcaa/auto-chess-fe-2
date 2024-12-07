@@ -14,6 +14,7 @@ import { Profile } from "./screens/Profile";
 import { Admin } from "./screens/Admin"
 import { Report } from "./screens/Report";
 import { PlayVsComputer } from "./screens/Computer";
+import { SpectateGame } from "./screens/SpectateGame";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="/forum/*" element={<Forum />} />
             <Route path="/admin/*" element={<Admin />} />
             <Route path="/report" element={<Report />} />
+            <Route path="/spectate/:game_id" element={<SpectateGame />} />
           </Route>
         </Routes>
       </div>

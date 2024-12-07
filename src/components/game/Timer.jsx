@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 export const Timer = ({ timeLeft, isActive, player }) => {
@@ -10,21 +9,19 @@ export const Timer = ({ timeLeft, isActive, player }) => {
   };
 
   return (
-    <div className="timer">
+    <div
+      className={`timer ${
+        isActive ? "text-green-500 font-bold" : "text-gray-500"
+      }`}
+    >
       <h3 className="text-xl font-semibold">{player} Time</h3>
-      <p
-        className="text-2xl"
-      >
-        {formatTime(timeLeft)}
-      </p>
+      <p className="text-2xl">{formatTime(timeLeft)}</p>
     </div>
   );
 };
 
 Timer.propTypes = {
-  socket: PropTypes.shape({
-    on: PropTypes.func.isRequired,
-    off: PropTypes.func.isRequired,
-  }).isRequired,
+  timeLeft: PropTypes.number.isRequired,
+  isActive: PropTypes.bool.isRequired,
   player: PropTypes.string.isRequired,
 };

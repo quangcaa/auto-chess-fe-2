@@ -5,7 +5,7 @@ import movesStore from "@/store/movesStore";
 
 export const MoveList = ({
   handleViewHistory = (item, index) => {},
-  selected = 0,
+  selected,
 }) => {
   const moves = movesStore((state) => state.moves);
   const listRef = useRef(null);
@@ -53,7 +53,7 @@ export const MoveList = ({
                     <td
                       className={`px-2 py-1 hover:text-white hover:bg-emerald-600 cursor-pointer ${
                         index === selected &&
-                        "bg-emerald-600 text-white"
+                        "bg-emerald-300 font-bold"
                       }`}
                       onClick={() => handleViewHistory(item, index)}
                     >
@@ -63,7 +63,7 @@ export const MoveList = ({
                       <td
                         className={`px-2 py-1 hover:text-white hover:bg-emerald-600 cursor-pointer ${
                           index + 1 === selected &&
-                          "bg-emerald-600 text-white"
+                          "bg-emerald-300 font-bold"
                         }`}
                         onClick={() =>
                           handleViewHistory(moves[index + 1], index + 1)

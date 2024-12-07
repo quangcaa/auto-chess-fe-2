@@ -12,6 +12,7 @@ export const Board = ({
   isGameOver,
   addMove,
   setActivePlayer,
+  isViewingHistory,
 }) => {
   const onDrop = useCallback(
     (sourceSquare, targetSquare, piece) => {
@@ -56,7 +57,7 @@ export const Board = ({
       onPieceDrop={onDrop}
       animationDuration={500}
       areArrowsAllowed={true}
-      arePiecesDraggable={!isGameOver}
+      arePiecesDraggable={!isGameOver && !isViewingHistory}
       // arePremovesAllowed={true}
       // boardOrientation={'black'}
       boardWidth={550}
@@ -95,4 +96,5 @@ Board.propTypes = {
   isGameOver: PropTypes.bool.isRequired,
   addMove: PropTypes.func.isRequired,
   setActivePlayer: PropTypes.func.isRequired,
+  isViewingHistory: PropTypes.bool.isRequired
 };

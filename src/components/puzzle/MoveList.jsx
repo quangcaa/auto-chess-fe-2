@@ -53,7 +53,7 @@ export const MoveList = ({
                     <td
                       className={`px-2 py-1 hover:text-white hover:bg-emerald-600 cursor-pointer ${
                         index === selected &&
-                        "border border-emerald-600"
+                        "bg-emerald-300 font-bold"
                       }`}
                       onClick={() => handleViewHistory(item, index)}
                     >
@@ -63,7 +63,7 @@ export const MoveList = ({
                       <td
                         className={`px-2 py-1 hover:text-white hover:bg-emerald-600 cursor-pointer ${
                           index + 1 === selected &&
-                          "border border-emerald-600"
+                          "bg-emerald-300 font-bold"
                         }`}
                         onClick={() =>
                           handleViewHistory(moves[index + 1], index + 1)

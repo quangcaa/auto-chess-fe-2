@@ -10,13 +10,8 @@ import { GameInfo } from "@/components/game/GameInfo";
 import { ChatRoom } from "@/components/game/ChatRoom";
 import { MoveList } from "@/components/game/MoveList";
 import { Timer } from "@/components/game/Timer";
-import {
-  CREATE_GAME,
-  GAME_OVER,
-  JOIN_GAME,
-  LEAVE_GAME,
-  MOVE,
-} from "@/constants/game";
+import { GAME_OVER, LEAVE_GAME, MOVE } from "@/constants/game";
+import Countdown from "react-countdown";
 
 export const Game = () => {
   const [game, setGame] = useState(new Chess());
@@ -25,10 +20,6 @@ export const Game = () => {
   const [timeData, setTimeData] = useState("");
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
-  const [players, setPlayers] = useState({
-    whitePlayer: "",
-    blackPlayer: "",
-  });
   const [gameResult, setGameResult] = useState(null);
   const setMoves = movesStore((state) => state.setMoves);
   const addMove = movesStore((state) => state.addMove);
@@ -40,6 +31,9 @@ export const Game = () => {
   const [whiteTime, setWhiteTime] = useState(0);
   const [blackTime, setBlackTime] = useState(0);
   const [activePlayer, setActivePlayer] = useState("w");
+
+  const [selectedMove, setSelectedMove] = useState(0);
+  const [isViewingHistory, setIsViewingHistory] = useState(false);
 
   const { game_id } = useParams();
 
@@ -54,6 +48,9 @@ export const Game = () => {
         setGameId(game.game_id);
         setGameData(game);
         setTimeData(time);
+
+        // setWhiteTime(time.base_time); // Initialize timers once
+        // setBlackTime(time.base_time);
 
         setIsGameStarted(true);
         setIsGameOver(false);
@@ -85,13 +82,14 @@ export const Game = () => {
         return gameCopy;
       });
 
-      // setActivePlayer((prev) => (prev === "w" ? "b" : "w"));
+      setActivePlayer((prev) => (prev === "w" ? "b" : "w"));
     });
 
-    socket.on("time_update", ({ whiteTime: wTime, blackTime: bTime }) => {
-      setWhiteTime(wTime);
-      setBlackTime(bTime);
-    });
+    // socket.on("time_update", ({ whiteTime: wTime, blackTime: bTime }) => {
+    //   console.log('hello')
+    //   setWhiteTime(wTime);
+    //   setBlackTime(bTime);
+    // });
 
     socket.on(GAME_OVER, (result) => {
       setGameResult(result);
@@ -103,9 +101,9 @@ export const Game = () => {
     return () => {
       socket.off(MOVE);
       socket.off(GAME_OVER);
-      socket.off("time_update");
+      // socket.off("time_update");
     };
-  }, [socket, game_id, addMove, resetMoves]);
+  }, [socket, addMove]);
 
   const onTimeUp = (player) => {
     toast.error(`${player} has run out of time!`);
@@ -114,23 +112,56 @@ export const Game = () => {
     socket.emit(GAME_OVER, { result: `${player} lost on time.` });
   };
 
-  useEffect(() => {
-    let timer;
-    if (isGameStarted && !isGameOver) {
-      timer = setInterval(() => {
-        setWhiteTime((prev) => (activePlayer === "w" ? prev - 1000 : prev));
-        setBlackTime((prev) => (activePlayer === "b" ? prev - 1000 : prev));
-      }, 1000);
-    }
+  // useEffect(() => {
+  //   if (!isGameStarted || isGameOver) return;
 
-    return () => clearInterval(timer);
-  }, [isGameStarted, isGameOver, activePlayer]);
+  //   const updateTime = () => {
+  //     // setWhiteTime((prev) => (activePlayer === "w" ? Math.max(0, prev - 1000) : prev));
+  //     // setBlackTime((prev) => (activePlayer === "b" ? Math.max(0, prev - 1000) : prev));
+  //   };
+
+  //   const timer = setInterval(updateTime, 1000);
+
+  //   return () => clearInterval(timer);
+  // }, [isGameStarted, isGameOver, activePlayer]);
 
   const leaveGame = () => {
     if (gameId) {
       socket.emit(LEAVE_GAME, gameId);
     }
   };
+
+  // func to handle viewing a specific move
+  const handleViewHistory = (move, index) => {
+    const gameCopy = new Chess();
+    const moves = movesStore.getState().moves.slice(0, index + 1);
+    moves.forEach((m) => gameCopy.move(m.san));
+    setGame(gameCopy);
+    setSelectedMove(index);
+
+    // check
+    const movesCheck = movesStore.getState().moves;
+    movesCheck.length - 1 === index
+      ? setIsViewingHistory(false)
+      : setIsViewingHistory(true);
+  };
+
+  // update selectedMove when moves change
+  useEffect(() => {
+    const moves = movesStore.getState().moves;
+    if (moves.length > 0) {
+      setSelectedMove(moves.length - 1);
+      setIsViewingHistory(false);
+    }
+  }, [movesStore.getState().moves]);
+
+  // const renderer = ({ minutes, seconds }) => {
+  //   return (
+  //     <span>
+  //       {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+  //     </span>
+  //   );
+  // };
 
   return (
     <div className="flex-grow flex flex-col m-2">
@@ -162,6 +193,7 @@ export const Game = () => {
                   isGameOver={isGameOver}
                   addMove={addMove}
                   setActivePlayer={setActivePlayer}
+                  isViewingHistory={isViewingHistory}
                 />
               </div>
             </div>
@@ -178,9 +210,41 @@ export const Game = () => {
                   isActive={activePlayer === "b"}
                   player="Black"
                 /> */}
+
+                {/* <div>
+                  <h2>White Player</h2>
+                  {activePlayer === "w" && isGameStarted ? (
+                    <Countdown
+                      date={Date.now() + whiteTime}
+                      onTick={({ total }) => setWhiteTime(total)}
+                      renderer={renderer}
+                      // onComplete={switchPlayer} // Chuyển đổi người chơi khi hết thời gian
+                    />
+                  ) : (
+                    <span>{(whiteTime / 1000).toFixed(0)}s</span>
+                  )}
+                </div> */}
+
+                {/* Đồng hồ đen */}
+                {/* <div>
+                  <h2>Black Player</h2>
+                  {activePlayer === "b" && isGameStarted ? (
+                    <Countdown
+                      date={Date.now() + blackTime}
+                      onTick={({ total }) => setBlackTime(total)}
+                      renderer={renderer}
+                      // onComplete={switchPlayer}
+                    />
+                  ) : (
+                    <span>{(blackTime / 1000).toFixed(0)}s</span>
+                  )}
+                </div> */}
               </div>
               <div className="flex-grow">
-                <MoveList />
+                <MoveList
+                  handleViewHistory={handleViewHistory}
+                  selected={selectedMove}
+                />
               </div>
               {gameResult && (
                 <div className="mt-4 text-xl">
