@@ -76,11 +76,11 @@ export const HistoryGames = ({ games }) => {
               <div className="flex gap-x-2">
                 <div className="flex items-center text-gray-700">
                   {game.time_control_name === "Bullet" ? (
-                    <GiBulletBill className="size-10" />
+                    <GiBulletBill className="size-10 text-yellow-500" />
                   ) : game.time_control_name === "Classical" ? (
-                    <GiTurtle className="size-10" />
+                    <GiTurtle className="size-10 text-green-600" />
                   ) : game.time_control_name === "Blitz" ? (
-                    <GiFireBowl className="size-10" />
+                    <GiFireBowl className="size-10 text-red-500" />
                   ) : (
                     <GiRabbit className="size-10" />
                   )}
@@ -115,11 +115,11 @@ export const HistoryGames = ({ games }) => {
                 (game.result === "Black is victorious" &&
                   game.black_player_id === user_id) ? (
                   <div className="text-green-600">
-                    {game.status} • {game.result}
+                    {game.reason} • {game.result}
                   </div>
                 ) : (
                   <div className="text-red-600">
-                    {game.status} • {game.result}
+                    {game.reason} • {game.result}
                   </div>
                 )}
               </div>

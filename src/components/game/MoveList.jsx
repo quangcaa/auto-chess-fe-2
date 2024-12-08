@@ -1,14 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import movesStore from "@/store/movesStore";
 
-export const MoveList = ({
-  handleViewHistory = (item, index) => {},
-  selected,
-}) => {
-  const moves = movesStore((state) => state.moves);
+export const MoveList = ({ moves, handleViewHistory, selected }) => {
   const listRef = useRef(null);
+
+  console.log(moves);
 
   // auto scroll to bottom when new moves added
   useEffect(() => {
@@ -39,7 +37,7 @@ export const MoveList = ({
           </thead>
           <tbody>
             {moves.map(
-              (item, index) =>
+              (move, index) =>
                 index % 2 === 0 && (
                   <tr
                     key={index}
@@ -54,9 +52,9 @@ export const MoveList = ({
                       className={`px-2 py-1 hover:text-white hover:bg-[#779952] cursor-pointer ${
                         index === selected && "bg-[#c0dba3] font-bold"
                       }`}
-                      onClick={() => handleViewHistory(item, index)}
+                      onClick={() => handleViewHistory(move, index)}
                     >
-                      {item.san}
+                      {move}
                     </td>
                     {moves[index + 1] && (
                       <td
@@ -67,7 +65,7 @@ export const MoveList = ({
                           handleViewHistory(moves[index + 1], index + 1)
                         }
                       >
-                        {moves[index + 1].san}
+                        {moves[index + 1]}
                       </td>
                     )}
                   </tr>
@@ -78,4 +76,10 @@ export const MoveList = ({
       </CardContent>
     </Card>
   );
+};
+
+MoveList.propTypes = {
+  moves: PropTypes.array.isRequired,
+  handleViewHistory: PropTypes.func,
+  selected: PropTypes.number,
 };

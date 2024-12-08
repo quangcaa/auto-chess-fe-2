@@ -9,9 +9,11 @@ export const Board = ({
   setGame,
   gameId,
   socket,
-  addMove,
   setActivePlayer,
   playerColor,
+  setMoves,
+  isViewingHistory,
+  isGameOver
 }) => {
   const [moveFrom, setMoveFrom] = useState("");
   const [moveTo, setMoveTo] = useState(null);
@@ -47,6 +49,14 @@ export const Board = ({
   }
 
   function onSquareClick(square) {
+    if (isViewingHistory) {
+      return;
+    }
+
+    if (isGameOver) {
+      return;
+    }
+
     // from square
     if (!moveFrom) {
       // check if square is their piece
@@ -115,16 +125,15 @@ export const Board = ({
       setMoveTo(null);
       setOptionSquares({});
 
-      const lastMove = gameCopy.history({ verbose: true }).slice(-1)[0];
-      addMove(lastMove);
-
-      setActivePlayer((prev) => (prev === "w" ? "b" : "w"));
+      setMoves((prevMoves) => [...prevMoves, move.san]);
 
       socket.emit("move", { game_id: gameId, move }, (response) => {
         if (!response.success) {
           toast.error(response.message || "Invalid move");
           return false;
         }
+
+        setActivePlayer((prev) => (prev === "w" ? "b" : "w"));
       });
 
       return;
@@ -143,16 +152,15 @@ export const Board = ({
       });
       setGame(gameCopy);
 
-      const lastMove = gameCopy.history({ verbose: true }).slice(-1)[0];
-      addMove(lastMove);
-
-      setActivePlayer((prev) => (prev === "w" ? "b" : "w"));
+      setMoves((prevMoves) => [...prevMoves, move.san]);
 
       socket.emit("move", { game_id: gameId, move }, (response) => {
         if (!response.success) {
           toast.error(response.message || "Invalid move");
           return false;
         }
+
+        setActivePlayer((prev) => (prev === "w" ? "b" : "w"));
       });
     }
     setMoveFrom("");
@@ -199,7 +207,8 @@ Board.propTypes = {
   setGame: PropTypes.func.isRequired,
   gameId: PropTypes.string.isRequired,
   socket: PropTypes.object.isRequired,
-  addMove: PropTypes.func.isRequired,
   setActivePlayer: PropTypes.func.isRequired,
   playerColor: PropTypes.string.isRequired,
+  isViewingHistory: PropTypes.bool.isRequired,
+  isGameOver: PropTypes.bool.isRequired,
 };

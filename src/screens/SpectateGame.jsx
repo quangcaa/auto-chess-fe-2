@@ -21,10 +21,12 @@ export const SpectateGame = () => {
     });
 
     socket.on("game_state", (state) => {
+      console.log(state)
       setGameState(state);
     });
 
     socket.on("game_state_update", (state) => {
+      console.log(state)
       setGameState(state);
     });
 
