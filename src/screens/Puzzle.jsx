@@ -131,20 +131,22 @@ export const Puzzle = () => {
   };
 
   const onDrop = useCallback(
-    (source, target) => {
+    (source, target, piece) => {
       if (isPuzzleSolved) {
         toast.error("You have already solved the puzzle!");
         return false;
       }
       const newChess = new Chess(game.fen());
-      const move = { from: source, to: target, promotion: "q" };
+      const move = { from: source, to: target, promotion: piece[1].toLowerCase() };
       const moveResult = newChess.move(move);
 
       console.log(data.puzzle.solution[botMove], `${source}${target}`);
       if (
         moveResult &&
-        !isWatchingHistory &&
-        data.puzzle.solution[botMove] === `${source}${target}`
+        !isWatchingHistory && (moveResult.piece === piece[1].toLowerCase() ?
+        data.puzzle.solution[botMove].substring(0, 4) === `${source}${target}`:
+        data.puzzle.solution[botMove] === `${source}${target}${piece[1].toLowerCase()}`
+      )
       ) {
         addMove(moveResult);
         setSelectedMove(selectedMove + 1);
@@ -157,7 +159,7 @@ export const Puzzle = () => {
           const botMoveResult = newChess.move({
             from,
             to,
-            promotion: "q",
+            promotion: data.puzzle.solution[botMove + 1][4],
           });
           addMove(botMoveResult);
           setSelectedMove(selectedMove + 2);
