@@ -13,6 +13,7 @@ export const Board = ({
   addMove,
   setActivePlayer,
   isViewingHistory,
+  playerColor,
 }) => {
   const onDrop = useCallback(
     (sourceSquare, targetSquare, piece) => {
@@ -51,10 +52,49 @@ export const Board = ({
     [socket, gameId, isGameOver, setGame, addMove, setActivePlayer]
   );
 
+  // const isDraggablePiece = useCallback(
+  //   (piece, sourceSquare) => {
+  //     // const pieceColor = piece[0]; // "w" for white, "b" for black
+  //     console.log(piece)
+
+  //     // console.log(pieceColor);
+  //     // console.log(activePlayer);
+
+  //     // if (pieceColor !== activePlayer) {
+  //     //   return false; // Prevent dragging if it's not the player's turn
+  //     // }
+
+  //     return true; // Allow dragging otherwise
+  //   },
+  //   [activePlayer]
+  // );
+
+  // const isDraggablePiece = useCallback(({piece, sourceSquare}) => {\
+  //   const pieceColor = piece[0]; // "w" for white, "b" for black"
+
+  //   // Replace "w" with the player's color if necessary
+  //   const playerColor = "w"; // Set to "w" for white player, "b" for black player
+
+  //   if (pieceColor !== playerColor) {
+  //     return false; // Prevent dragging opponent's pieces
+  //   }
+
+  //   return true; // Allow dragging own pieces
+  // }, []);
+
+  const isDraggablePiece = useCallback(
+    ({ piece, sourceSquare }) => {
+      const pieceColor = piece[0];
+      return pieceColor === playerColor;
+    },
+    [playerColor]
+  );
+
   return (
     <Chessboard
       position={game.fen()}
       onPieceDrop={onDrop}
+      isDraggablePiece={isDraggablePiece}
       animationDuration={500}
       areArrowsAllowed={true}
       arePiecesDraggable={!isGameOver && !isViewingHistory}
@@ -96,5 +136,6 @@ Board.propTypes = {
   isGameOver: PropTypes.bool.isRequired,
   addMove: PropTypes.func.isRequired,
   setActivePlayer: PropTypes.func.isRequired,
-  isViewingHistory: PropTypes.bool.isRequired
+  isViewingHistory: PropTypes.bool.isRequired,
+  playerColor: PropTypes.string.isRequired,
 };

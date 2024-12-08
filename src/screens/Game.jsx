@@ -31,16 +31,20 @@ export const Game = () => {
   const [whiteTime, setWhiteTime] = useState(0);
   const [blackTime, setBlackTime] = useState(0);
   const [activePlayer, setActivePlayer] = useState("w");
+  const [playerColor, setPlayerColor] = useState("w");
 
   const [selectedMove, setSelectedMove] = useState(0);
   const [isViewingHistory, setIsViewingHistory] = useState(false);
 
   const { game_id } = useParams();
+  const user_id = Number(localStorage.getItem("user_id"));
 
   useEffect(() => {
     const fetchGame = async () => {
       try {
         const response = await api.get(`/game/${game_id}`);
+
+        console.log(response)
 
         const game = response.data.game;
         const time = response.data.clock;
@@ -57,6 +61,11 @@ export const Game = () => {
         setGame(new Chess());
 
         setActivePlayer("w");
+
+        const playerRole = game.whitePlayer.user_id === user_id;
+        console.log(playerRole)
+        setPlayerColor(playerRole === true ? "w" : "b");
+        console.log(playerColor)
 
         resetMoves();
       } catch (error) {
@@ -194,6 +203,8 @@ export const Game = () => {
                   addMove={addMove}
                   setActivePlayer={setActivePlayer}
                   isViewingHistory={isViewingHistory}
+                  activePlayer={activePlayer}
+                  playerColor={playerColor}
                 />
               </div>
             </div>
