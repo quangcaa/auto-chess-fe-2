@@ -1,20 +1,20 @@
 import { Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import ProtectedRoute from "./guards/ProtectedRoute";
-import PublicRoute from "./guards/PublicRoute";
-import { Navbar } from "./components/layout/Navbar";
-import { Auth } from "./screens/Auth";
-import { Setting } from "./screens/Setting";
-import { Homepage } from "./screens/Homepage";
-import { Puzzle } from "./screens/Puzzle";
-import { Game } from "./screens/Game";
-import { Inbox } from "./screens/Inbox";
-import { Forum } from "./screens/Forum";
-import { Profile } from "./screens/Profile";
-import { Admin } from "./screens/Admin"
-import { Report } from "./screens/Report";
-import { PlayVsComputer } from "./screens/Computer";
-import { SpectateGame } from "./screens/SpectateGame";
+import ProtectedRoute from "@/guards/ProtectedRoute";
+import PublicRoute from "@/guards/PublicRoute";
+import { Navbar } from "@/components/layout/Navbar";
+import { Auth } from "@/screens/Auth";
+import { Setting } from "@/screens/Setting";
+import { Homepage } from "@/screens/Homepage";
+import { Puzzle } from "@/screens/Puzzle";
+import { Game } from "@/screens/Game";
+import { Inbox } from "@/screens/Inbox";
+import { Forum } from "@/screens/Forum";
+import { Profile } from "@/screens/Profile";
+import { Admin } from "@/screens/Admin"
+import { Report } from "@/screens/Report";
+import { PlayVsComputer } from "@/screens/Computer";
+import { SpectateGame } from "@/screens/SpectateGame";
 
 function App() {
   return (

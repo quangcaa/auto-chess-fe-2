@@ -1,9 +1,9 @@
 import { useState, useMemo } from "react";
 import { Chess } from "chess.js";
-import Engine from "@/stockfish/engine";
 import { Chessboard } from "react-chessboard";
-import { MoveList } from "@/components/computer/MoveList";
 import toast from "react-hot-toast";
+import Engine from "@/stockfish/engine";
+import { MoveList } from "@/components/computer/MoveList";
 
 const boardWrapper = {
   width: `70vw`,
@@ -61,9 +61,7 @@ export const PlayVsComputer = () => {
 
   function onDrop(sourceSquare, targetSquare, piece) {
     if (selectedMove !== null) {
-      toast.error(
-        "You must return to the current move to make a new move."
-      );
+      toast.error("You must return to the current move to make a new move.");
       return false;
     }
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Chess } from "chess.js";
 import toast from "react-hot-toast";
@@ -15,12 +15,16 @@ import Countdown from "react-countdown";
 
 export const Game = () => {
   const [game, setGame] = useState(new Chess());
+
   const [gameId, setGameId] = useState("");
+
   const [gameData, setGameData] = useState("");
   const [timeData, setTimeData] = useState("");
+
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   const [gameResult, setGameResult] = useState(null);
+
   const setMoves = movesStore((state) => state.setMoves);
   const addMove = movesStore((state) => state.addMove);
   const resetMoves = movesStore((state) => state.resetMoves);
@@ -30,6 +34,7 @@ export const Game = () => {
 
   const [whiteTime, setWhiteTime] = useState(0);
   const [blackTime, setBlackTime] = useState(0);
+
   const [activePlayer, setActivePlayer] = useState("w");
   const [playerColor, setPlayerColor] = useState("w");
 
@@ -63,9 +68,7 @@ export const Game = () => {
         setActivePlayer("w");
 
         const playerRole = game.whitePlayer.user_id === user_id;
-        console.log(playerRole)
         setPlayerColor(playerRole === true ? "w" : "b");
-        console.log(playerColor)
 
         resetMoves();
       } catch (error) {
@@ -197,13 +200,10 @@ export const Game = () => {
                 <Board
                   game={game}
                   setGame={setGame}
-                  socket={socket}
                   gameId={gameId}
-                  isGameOver={isGameOver}
+                  socket={socket}
                   addMove={addMove}
                   setActivePlayer={setActivePlayer}
-                  isViewingHistory={isViewingHistory}
-                  activePlayer={activePlayer}
                   playerColor={playerColor}
                 />
               </div>

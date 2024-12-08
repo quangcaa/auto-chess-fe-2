@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import "tailwindcss/tailwind.css";
+import PropTypes from "prop-types";
 import {
   Card,
   CardContent,
@@ -59,7 +59,7 @@ export const ChatRoom = ({ game_id }) => {
   return (
     <Card className="w-full h-full shadow-lg flex flex-col">
       <CardHeader className="flex flex-col ml-2 p-2 text-gray-700">
-        <CardTitle>Chat room</CardTitle>
+        <CardTitle className="font-semibold text-gray-600">Chat room</CardTitle>
       </CardHeader>
       <Separator />
       <CardContent className="flex-grow overflow-y-auto h-full no-scrollbar text-sm">
@@ -69,7 +69,7 @@ export const ChatRoom = ({ game_id }) => {
               key={index}
               className={`flex items-start ${
                 message.sender === sender
-                  ? "border-l-4 border-green-600 pl-2"
+                  ? "border-l-4 border-[#779952] pl-2"
                   : "pl-3"
               }`}
             >
@@ -77,7 +77,9 @@ export const ChatRoom = ({ game_id }) => {
                 <span className="font-bold text-gray-500 text-sm tracking-tight">
                   {message.sender}{" "}
                 </span>
-                <span className="text-gray-800 break-words">{message.content}</span>
+                <span className="text-gray-800 break-words">
+                  {message.content}
+                </span>
               </div>
             </div>
           ))}
@@ -96,4 +98,8 @@ export const ChatRoom = ({ game_id }) => {
       </CardFooter>
     </Card>
   );
+};
+
+ChatRoom.propTypes = {
+  game_id: PropTypes.string.isRequired,
 };

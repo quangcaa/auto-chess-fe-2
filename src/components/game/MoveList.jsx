@@ -22,7 +22,7 @@ export const MoveList = ({
       {/* <CardHeader>
         <CardTitle>Move List</CardTitle>
       </CardHeader> */}
-      <Separator />
+      {/* <Separator /> */}
       <CardContent
         className="flex-grow overflow-y-auto no-scrollbar h-64 p-0 text-sm rounded-lg"
         ref={listRef}

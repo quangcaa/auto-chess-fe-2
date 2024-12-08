@@ -1,41 +1,3 @@
-// export const GameInfo = ({ white, black, type }) => {
-//   const [whiteMetadata, setWhiteMetadata] = useState(false);
-//   const [blackMetadata, setBlackMetadata] = useState(false);
-
-//   return (
-//     <Card className="w-full shadow-lg">
-//       <CardHeader className="flex flex-row gap-4 p-[21px] pb-2">
-//         <div>
-//           <GiRabbit className="size-12 text-gray-800" />
-//         </div>
-//         <div>
-//           <CardDescription className="text-base text-gray-800">
-//             10+0 • Rated • Rapid
-//           </CardDescription>
-//           <CardDescription className="text-gray-800">
-//             4 hours ago
-//           </CardDescription>
-//         </div>
-//       </CardHeader>
-//       <CardContent className="px-6 pb-5">
-//         <div className="flex flex-row items-center gap-2">
-//           <FaRegCircle className="text-gray-700" />
-//           <p className="text-gray-700">
-//             <span className="font-medium">{whiteMetadata.username}</span>
-//           </p>
-//         </div>
-//         <div className="flex flex-row items-center gap-2">
-//           <FaCircle className="text-gray-700" />
-//           <p className="text-gray-700">
-//             <span className="font-medium">{blackMetadata.username}</span>
-//           </p>
-//         </div>
-//       </CardContent>
-//       <Separator />
-//     </Card>
-//   );
-// };
-
 import {
   Card,
   CardHeader,
@@ -43,18 +5,10 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
-
-import { Separator } from "@/components/ui/separator";
 import { Loading } from "@/components/Loading";
 import { FaRegCircle, FaCircle } from "react-icons/fa";
 import PropTypes from "prop-types";
-import {
-  GiBulletBill,
-  GiTurtle,
-  GiFireBowl,
-  GiRabbit,
-  GiCrossedSwords,
-} from "react-icons/gi";
+import { GiBulletBill, GiTurtle, GiFireBowl, GiRabbit } from "react-icons/gi";
 
 export const GameInfo = ({ white, black, clock, startTime }) => {
   if (!white || !black || !clock) {
@@ -66,11 +20,11 @@ export const GameInfo = ({ white, black, clock, startTime }) => {
       <CardHeader className="flex flex-row gap-4 p-[21px] pb-2">
         <div className="text-gray-600">
           {clock.time_control_name === "Bullet" ? (
-            <GiBulletBill className="size-12" />
+            <GiBulletBill className="size-12 text-yellow-500" />
           ) : clock.time_control_name === "Classical" ? (
-            <GiTurtle className="size-12" />
+            <GiTurtle className="size-12 text-green-600" />
           ) : clock.time_control_name === "Blitz" ? (
-            <GiFireBowl className="size-12" />
+            <GiFireBowl className="size-12 text-red-500" />
           ) : (
             <GiRabbit className="size-12" />
           )}
