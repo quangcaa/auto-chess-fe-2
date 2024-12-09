@@ -1,8 +1,7 @@
-import { AxiosError } from "axios";
-import api from "../../utils/axios";
 import toast from "react-hot-toast";
-import { useAuth } from "../../contexts/AuthContext";
 import { IoLogOutSharp } from "react-icons/io5";
+import { useAuth } from "@/contexts/AuthContext";
+import api from "@/utils/axios";
 
 export const LogoutButton = () => {
   const { logout } = useAuth();
@@ -15,11 +14,7 @@ export const LogoutButton = () => {
         logout();
       }
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("Something went wrong");
-      }
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
 

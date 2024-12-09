@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import api from "../../utils/axios";
+import api from "@/utils/axios";
 import { IoInformationCircleOutline } from "react-icons/io5";
-
 import {
   Card,
   CardHeader,

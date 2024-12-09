@@ -48,6 +48,8 @@ export const Game = () => {
       try {
         const response = await api.get(`/game/${game_id}`);
 
+        console.log(response);
+
         const gameD = response.data.game;
         const time = response.data.clock;
 
@@ -59,7 +61,13 @@ export const Game = () => {
         setBlackTime(time.base_time);
 
         setIsGameStarted(gameD.status === "PENDING");
-        gameD.result !== null ? setIsGameOver(true) : setIsGameOver(false);
+        if (gameD.result !== null) {
+          setIsGameOver(true);
+          setGameResult(`${gameD.reason} • ${gameD.result}`);
+          setSelectedMove(0)
+        } else {
+          setIsGameOver(false);
+        }
 
         const pgn = gameD.pgn;
         if (pgn) {
@@ -136,7 +144,7 @@ export const Game = () => {
       setGameResult(result);
       setIsGameStarted(false);
       setIsGameOver(true);
-      toast(`Game Over: ${result}`);
+      toast(`${result}`);
     });
 
     return () => {
@@ -171,7 +179,8 @@ export const Game = () => {
 
   const onTimeOut = (player) => {
     setIsGameOver(true);
-    setGameResult(`${player === "White" ? "Black" : "White"} is victorious`);
+    const resultD = `${player} time out • ${player === "White" ? "Black" : "White"} is victorious`
+    setGameResult(resultD);
     socket.emit(GAME_OVER, {
       game_id: gameId,
       reason: `${player} time out`,
@@ -204,6 +213,13 @@ export const Game = () => {
     }
   }, [moves]);
 
+  useEffect(() => {
+    if (gameResult !== null) {
+      setSelectedMove(moves.length);
+      setIsViewingHistory(false);
+    }
+  }, [gameResult, moves]);
+
   return (
     <div className="flex-grow flex flex-col m-2">
       <div className="flex-grow flex items-center justify-center">
@@ -217,11 +233,14 @@ export const Game = () => {
                   black={gameData.blackPlayer}
                   clock={timeData}
                   startTime={gameData.start_time}
+                  gameResult={gameResult}
                 />
               </div>
-              <div className="flex-grow h-64">
-                <ChatRoom game_id={gameId} />
-              </div>
+              {!isGameOver && (
+                <div className="flex-grow h-64">
+                  <ChatRoom game_id={gameId} />
+                </div>
+              )}
             </div>
             {/* MID */}
             <div className="w-2/4 h-full flex items-center justify-center flex-shrink-0 w-auto max-w-fit">
@@ -241,30 +260,30 @@ export const Game = () => {
             </div>
             {/* RIGHT */}
             <div className="w-1/4 h-full flex flex-col flex-shrink-0">
-              <div className="flex justify-between mb-4">
-                <Timer
-                  timeLeft={whiteTime}
-                  isActive={activePlayer === "w"}
-                  player="White"
-                />
-                <Timer
-                  timeLeft={blackTime}
-                  isActive={activePlayer === "b"}
-                  player="Black"
-                />
+              <div className="flex justify-between">
+                {!isGameOver && (
+                  <div className="flex justify-between mb-4">
+                    <Timer
+                      timeLeft={whiteTime}
+                      isActive={activePlayer === "w"}
+                      player="White"
+                    />
+                    <Timer
+                      timeLeft={blackTime}
+                      isActive={activePlayer === "b"}
+                      player="Black"
+                    />
+                  </div>
+                )}
               </div>
               <div className="flex-grow">
                 <MoveList
                   moves={moves}
                   handleViewHistory={handleViewHistory}
                   selected={selectedMove}
+                  isGameOver={isGameOver}
                 />
               </div>
-              {gameResult && (
-                <div className="mt-4 text-xl">
-                  {isGameOver ? `Kết thúc: ${gameResult}` : ""}
-                </div>
-              )}
               {!isGameOver && (
                 <div>
                   <button

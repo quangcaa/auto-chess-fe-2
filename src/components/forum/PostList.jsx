@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import api from "../../utils/axios";
-
+import api from "@/utils/axios";
+import { calculateTimeDifferences } from "@/utils/timeUtils";
 import { Post } from "./Post";
-
 import { IoArrowBackOutline } from "react-icons/io5";
-
-import { calculateTimeDifferences } from "../../utils/timeUtils";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,

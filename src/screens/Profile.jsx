@@ -2,12 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import api from "@/utils/axios";
 import toast from "react-hot-toast";
-import { Chessboard } from "react-chessboard";
-
-import { GiBurningEmbers } from "react-icons/gi";
-import { GiCrossedSwords } from "react-icons/gi";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FaUserAlt } from "react-icons/fa";
 import { Dropdown } from "@/components/profile/Dropdown";
 import { HistoryGames } from "../components/profile/HistoryGames";
 import { Loading } from "@/components/Loading";

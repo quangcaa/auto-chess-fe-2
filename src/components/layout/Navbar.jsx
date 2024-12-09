@@ -1,7 +1,7 @@
 import { Outlet, Link } from "react-router-dom";
 import UserDropdown from "./UserDropdown";
 import UserSearch from "./UserSearch";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { ViewChallengeButton } from "./ViewChallengeButton";
 import { ViewNotificationButton } from "./ViewNotificationButton";
 

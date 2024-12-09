@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Chessboard } from "react-chessboard";
 import { useAuth } from "@/contexts/AuthContext";
-import api from "@/utils/axios";
 
 export const SpectateGame = () => {
   const { game_id } = useParams();
@@ -21,12 +20,12 @@ export const SpectateGame = () => {
     });
 
     socket.on("game_state", (state) => {
-      console.log(state)
+      console.log(state);
       setGameState(state);
     });
 
     socket.on("game_state_update", (state) => {
-      console.log(state)
+      console.log(state);
       setGameState(state);
     });
 
@@ -42,15 +41,45 @@ export const SpectateGame = () => {
   }
 
   return (
-    <div>
-      <h2>Watching Game {game_id}</h2>
-      <Chessboard
-      boardWidth={550}
-        position={gameState.fen}
-        boardOrientation="white"
-        arePiecesDraggable={false}
-      />
-      {/* Add more game details if needed */}
+    <div className="flex-grow flex flex-col m-2">
+      <div className="flex-grow flex items-center justify-center">
+        <div className="w-full max-w-screen-xl w-[80%] h-full">
+          <div className="flex-grow flex flex-row justify-center h-full gap-4">
+            {/* LEFT */}
+            <div className="w-1/4 flex flex-col gap-4 flex-shrink-0">
+              <div></div>
+            </div>
+            {/* MID */}
+            <div className="w-2/4 h-full flex items-center justify-center flex-shrink-0 w-auto max-w-fit">
+              <div>
+                <Chessboard
+                  animationDuration={500}
+                  boardWidth={550}
+                  position={gameState.fen}
+                  boardOrientation="white"
+                  arePiecesDraggable={false}
+                  customNotationStyle={{
+                    fontSize: "11px",
+                    fontWeight: "bold",
+                    fontFamily: "'Roboto', sans-serif",
+                  }}
+                  customBoardStyle={{
+                    borderRadius: "8px",
+                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.4)",
+                  }}
+                  customDarkSquareStyle={{ backgroundColor: "#779952" }}
+                  customLightSquareStyle={{ backgroundColor: "#edeed1" }}
+                />
+              </div>
+            </div>
+            {/* RIGHT */}
+            <div className="w-1/4 h-full flex flex-col flex-shrink-0">
+              <div className="flex justify-between mb-4"></div>
+              <div className="flex-grow"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

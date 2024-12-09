@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import api from "../../utils/axios";
 import toast from "react-hot-toast";
+import api from "@/utils/axios";
 import { formatMessageTime } from "@/utils/timeUtils";
+import { useAuth } from "@/contexts/AuthContext";
 import { Loading } from "@/components/Loading";
 import { RiSendPlane2Fill } from "react-icons/ri";
 import { FaTrash } from "react-icons/fa";
 import { IoIosWarning } from "react-icons/io";
 import { RiSwordFill } from "react-icons/ri";
-
-import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export const Conversation = ({ userId, username, onUpdateLastMessage }) => {

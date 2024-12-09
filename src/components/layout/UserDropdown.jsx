@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { LogoutButton } from "./LogoutButton";
 import { IoMdSettings } from "react-icons/io";
-import { FaUserCircle } from "react-icons/fa";
-import { FaCircle } from "react-icons/fa";
+import { FaCircle, FaUserCircle } from "react-icons/fa";
 
 const UserDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);

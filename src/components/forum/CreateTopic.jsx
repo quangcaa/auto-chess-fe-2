@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import api from "../../utils/axios";
 import toast from "react-hot-toast";
-
+import api from "@/utils/axios";
 import { IoArrowBackOutline } from "react-icons/io5";
-
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export const CreateTopic = () => {
   const navigate = useNavigate();

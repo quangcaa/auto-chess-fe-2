@@ -1,5 +1,6 @@
 import { Chessboard } from "react-chessboard";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import {
   GiBulletBill,
@@ -12,6 +13,7 @@ import {
 export const HistoryGames = ({ games }) => {
   const [filter, setFilter] = useState("All");
   const user_id = Number(localStorage.getItem("user_id"));
+  const navigate = useNavigate();
 
   const checkGameWins = (game) => {
     if (game.result === "Black is victorious") {
@@ -55,6 +57,7 @@ export const HistoryGames = ({ games }) => {
             className={`cursor-pointer flex gap-4 p-4 border-y border-gray-300 ${
               index % 2 === 0 ? "bg-white" : "bg-gray-200"
             } hover:bg-blue-200`}
+            onClick={() => navigate(`/game/${game.game_id}`)}
           >
             <div className="w-[200px]">
               <Chessboard

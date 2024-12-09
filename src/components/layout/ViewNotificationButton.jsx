@@ -1,15 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import api from "@/utils/axios";
+import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { formatDistanceToNow } from "date-fns";
-
+import api from "@/utils/axios";
 import { FaRegTrashAlt, FaCaretUp } from "react-icons/fa";
 import { IoMdCheckmark } from "react-icons/io";
 import { GoBellFill } from "react-icons/go";
 import { MdPostAdd } from "react-icons/md";
 import { SlUserFollowing } from "react-icons/sl";
-
-import { useLocation } from "react-router-dom";
 
 export const ViewNotificationButton = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +22,7 @@ export const ViewNotificationButton = () => {
         const data = response.data.data;
         setNotificationList(data);
       } catch (error) {
-        toast.error(error.response.data.message || "Something went wrong");
+        toast.error(error.response?.data?.message || "Something went wrong");
       }
     };
 
@@ -60,7 +58,7 @@ export const ViewNotificationButton = () => {
         prev.map((noti) => ({ ...noti, is_read: true }))
       );
     } catch (error) {
-      toast.error(error.response.data.message || "Something went wrong");
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
 
@@ -75,7 +73,7 @@ export const ViewNotificationButton = () => {
         )
       );
     } catch (error) {
-      toast.error(error.response.data.message || "Something went wrong");
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
 
@@ -84,7 +82,7 @@ export const ViewNotificationButton = () => {
       await api.delete("/notification");
       setNotificationList([]);
     } catch (error) {
-      toast.error(error.response.data.message || "Something went wrong");
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
 

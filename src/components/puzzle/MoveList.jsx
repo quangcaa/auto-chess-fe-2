@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { useEffect, useRef } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import movesStore from "@/store/movesStore";
 
 export const MoveList = ({
@@ -19,10 +18,6 @@ export const MoveList = ({
 
   return (
     <Card className="w-full h-full shadow-lg flex flex-col rounded-lg">
-      {/* <CardHeader>
-        <CardTitle>Move List</CardTitle>
-      </CardHeader> */}
-      {/* <Separator /> */}
       <CardContent
         className="flex-grow overflow-y-auto no-scrollbar h-64 p-0 text-sm rounded-lg"
         ref={listRef}
@@ -52,8 +47,7 @@ export const MoveList = ({
                     </td>
                     <td
                       className={`px-2 py-1 hover:text-white hover:bg-[#779952] cursor-pointer ${
-                        index === selected &&
-                        "bg-[#c0dba3] font-bold"
+                        index === selected && "bg-[#c0dba3] font-bold"
                       }`}
                       onClick={() => handleViewHistory(item, index)}
                     >
@@ -62,8 +56,7 @@ export const MoveList = ({
                     {moves[index + 1] && (
                       <td
                         className={`px-2 py-1 hover:text-white hover:bg-[#779952] cursor-pointer ${
-                          index + 1 === selected &&
-                          "bg-[#c0dba3] font-bold"
+                          index + 1 === selected && "bg-[#c0dba3] font-bold"
                         }`}
                         onClick={() =>
                           handleViewHistory(moves[index + 1], index + 1)

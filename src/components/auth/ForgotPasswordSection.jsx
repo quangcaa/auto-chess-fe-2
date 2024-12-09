@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import api from "../../utils/axios";
 import toast from "react-hot-toast";
-
+import api from "@/utils/axios";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {

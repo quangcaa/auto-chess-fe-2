@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-
 import PropTypes from "prop-types";
 import bK from "/assets/piece/bK.svg";
 import wK from "/assets/piece/wK.svg";
@@ -24,7 +22,6 @@ export const CreateGameCard = ({ closeCard }) => {
   const [selectedSide, setSelectedSide] = useState("random");
 
   const { socket } = useAuth();
-  const navigate = useNavigate();
 
   const handleCreateGame = () => {
     const timeControl = {
@@ -36,14 +33,11 @@ export const CreateGameCard = ({ closeCard }) => {
 
     socket.emit(CREATE_GAME, timeControl, (response) => {
       if (response.success) {
-        console.log(response);
         closeCard();
       } else {
         toast.error(response.message);
       }
     });
-
-    console.log(timeControl);
   };
 
   const determineTimeControlName = (minutes) => {

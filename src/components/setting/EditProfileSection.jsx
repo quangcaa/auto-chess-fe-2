@@ -1,9 +1,9 @@
-import { useEffect, useState, useMemo } from "react";
+import PropTypes from "prop-types";
+import { useEffect, useState, useMemo, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../utils/axios";
+import api from "@/utils/axios";
 import toast from "react-hot-toast";
 import countryList from "react-select-country-list";
-
 import {
   Select,
   SelectContent,
@@ -18,11 +18,42 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Loading } from "../Loading";
+import { Loading } from "@/components/Loading";
+
+// memo hóa component CountrySelect
+const CountrySelect = memo(({ value, onChange, options }) => (
+  <Select onValueChange={onChange} value={value}>
+    <SelectTrigger className="border border-2 border-gray-300 focus:border-emerald-600 h-[52px] p-3 flex flex-row items-center">
+      <SelectValue placeholder={value || "Select your country"} />
+    </SelectTrigger>
+    <SelectContent className="shadow-lg mt-1 max-h-60 overflow-auto">
+      {options.map((option) => (
+        <SelectItem
+          key={option.value}
+          value={option.label}
+          className="font-base text-gray-800 cursor-pointer transition-colors duration-200"
+        >
+          {option.label}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+));
+CountrySelect.displayName = "CountrySelect";
+CountrySelect.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+};
 
 export const EditProfile = () => {
   const [profileData, setProfileData] = useState({
@@ -51,43 +82,40 @@ export const EditProfile = () => {
           flag: profile.flag || "",
         });
       } catch (error) {
-        toast.error(error.response.data.message || "Something went wrong");
+        toast.error(error.response?.data?.message || "Something went wrong");
       } finally {
         setLoading(false);
       }
     };
-
     fetchProfile();
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setProfileData((prevData) => ({ ...prevData, [name]: value }));
-  };
+  }, []);
 
-  const handleFlagChange = (value) => {
-    setProfileData((prevData) => ({
-      ...prevData,
-      flag: value,
-    }));
-  };
+  const handleFlagChange = useCallback((value) => {
+    setProfileData((prevData) => ({ ...prevData, flag: value }));
+  }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoadingEdit(true);
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      setLoadingEdit(true);
 
-    try {
-      const res = await api.put("/account/edit-profile", profileData);
-
-      toast.success(res.data.message);
-
-      navigate(`/@/${username}`);
-    } catch (error) {
-      toast.error(error.response.data.message || "Something went wrong");
-    } finally {
-      setLoadingEdit(false);
-    }
-  };
+      try {
+        const res = await api.put("/account/edit-profile", profileData);
+        toast.success(res.data.message);
+        navigate(`/@/${username}`);
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Something went wrong");
+      } finally {
+        setLoadingEdit(false);
+      }
+    },
+    [profileData, navigate, username]
+  );
 
   if (loading) return <Loading />;
 
@@ -118,7 +146,7 @@ export const EditProfile = () => {
                 <div className="relative flex items-center">
                   <Textarea
                     name="bio"
-                    value={profileData.bio || ""}
+                    value={profileData.bio}
                     onChange={handleChange}
                     className="h-[120px] border-2 border-gray-300 text-gray-800"
                   />
@@ -138,7 +166,7 @@ export const EditProfile = () => {
                     type="text"
                     name="real_name"
                     className="text-gray-800 border-2 border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none"
-                    value={profileData.real_name || ""}
+                    value={profileData.real_name}
                     onChange={handleChange}
                   />
                 </div>
@@ -151,27 +179,11 @@ export const EditProfile = () => {
                   Country
                 </Label>
                 <div className="relative flex items-center">
-                  <Select
-                    onValueChange={handleFlagChange}
+                  <CountrySelect
                     value={profileData.flag}
-                  >
-                    <SelectTrigger className="border border-2 border-gray-300 focus:border-emerald-600 h-[52px] p-3 flex flex-row items-center">
-                      <SelectValue
-                        placeholder={profileData.flag || "Select your country"}
-                      />
-                    </SelectTrigger>
-                    <SelectContent className="shadow-lg mt-1 max-h-60 overflow-auto">
-                      {options.map((option) => (
-                        <SelectItem
-                          key={option.value}
-                          value={option.label}
-                          className="font-base text-gray-800 cursor-pointer transition-colors duration-200"
-                        >
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    onChange={handleFlagChange}
+                    options={options}
+                  />
                 </div>
               </div>
 
@@ -185,7 +197,7 @@ export const EditProfile = () => {
                     name="location"
                     className="border border-2 border-gray-300 rounded-lg w-full p-3 transition duration-300 focus:border-emerald-600 focus:outline-none"
                     onChange={handleChange}
-                    value={profileData.location || ""}
+                    value={profileData.location}
                   />
                 </div>
               </div>

@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import api from "../../utils/axios";
 import toast from "react-hot-toast";
-
+import api from "@/utils/axios";
+import { calculateTimeDifferences } from "@/utils/timeUtils";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { FaPen } from "react-icons/fa";
-
-import { calculateTimeDifferences } from "../../utils/timeUtils";
 
 export const TopicList = () => {
   const location = useLocation();

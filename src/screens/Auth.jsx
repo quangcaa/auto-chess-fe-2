@@ -1,9 +1,8 @@
 import { Routes, Route } from "react-router-dom";
-import { Login } from "../components/auth/LoginSection";
-import { Register } from "../components/auth/RegisterSection";
-import { ForgotPassword } from "../components/auth/ForgotPasswordSection";
-import { ResetPassword } from "../components/auth/ResetPasswordSection";
-
+import { Login } from "@/components/auth/LoginSection";
+import { Register } from "@/components/auth/RegisterSection";
+import { ForgotPassword } from "@/components/auth/ForgotPasswordSection";
+import { ResetPassword } from "@/components/auth/ResetPasswordSection";
 
 export const Auth = () => {
   return (

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import api from "../../utils/axios";
-import { useAuth } from "../../contexts/AuthContext";
+import api from "@/utils/axios";
+import { useAuth } from "@/contexts/AuthContext";
 import { PiWarningCircleFill } from "react-icons/pi";
 import {
   Card,

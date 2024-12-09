@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { useEffect, useRef } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 
 export const MoveList = ({ moves, handleViewHistory, selected }) => {
   const listRef = useRef(null);
@@ -26,7 +25,6 @@ export const MoveList = ({ moves, handleViewHistory, selected }) => {
 
   return (
     <Card className="w-full h-full shadow-lg flex flex-col">
-      <Separator />
       <CardContent
         className="flex-grow overflow-y-auto no-scrollbar h-80 p-0 text-sm rounded-lg"
         ref={listRef}
@@ -74,7 +72,6 @@ export const MoveList = ({ moves, handleViewHistory, selected }) => {
     </Card>
   );
 };
-
 MoveList.propTypes = {
   moves: PropTypes.arrayOf(PropTypes.string).isRequired,
   handleViewHistory: PropTypes.func.isRequired,

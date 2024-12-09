@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import toast from "react-hot-toast";
-
 import { CreateGameCard } from "@/components/homepage/CreateGameCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -40,19 +39,18 @@ export const Homepage = () => {
     const selectedTimeControl = timeControls[index];
 
     if (isWaiting) {
-      // Nếu đang chờ ghép cặp, hủy yêu cầu
+      // if is pairing, cancel
       socket.emit("cancel_quick_pairing");
       setIsWaiting(false);
       setLoadingIndex(null);
     } else {
-      // Nếu không trong trạng thái chờ, gửi yêu cầu ghép cặp
+      // if not, send quick pairing
       setIsWaiting(true);
       setLoadingIndex(index);
       socket.emit("join_quick_pairing", selectedTimeControl);
     }
   };
 
-  // testing
   const handleJoinGame = () => {
     if (joinGameId) {
       socket.emit("join_game", joinGameId, (response) => {
@@ -81,9 +79,10 @@ export const Homepage = () => {
     });
 
     socket.on("start_now", (game_id) => {
-      console.log(`Received 'start_now' event for game ${game_id}`);
       navigate(`/game/${game_id}`);
     });
+
+    socket.emit("request_lobby");
 
     socket.on("update_lobby", (allLobbies) => {
       const gamesArray = Array.from(allLobbies.values());
@@ -106,7 +105,7 @@ export const Homepage = () => {
         <div className="flex w-full justify-center">
           <button
             onClick={() => setActiveTab("quick-pairing")}
-            className={`text-lg font-medium w-1/2 py-2 hover:border-b-2 hover:border-emerald-600 ${
+            className={`text-lg font-medium w-1/3 py-2 hover:border-b-2 hover:border-emerald-600 ${
               activeTab === "quick-pairing"
                 ? "border-b-2 border-emerald-600 text-emerald-700"
                 : "text-gray-700"
@@ -116,13 +115,23 @@ export const Homepage = () => {
           </button>
           <button
             onClick={() => setActiveTab("lobby")}
-            className={`text-lg font-medium w-1/2 py-2 hover:border-b-2 hover:border-emerald-600 ${
+            className={`text-lg font-medium w-1/3 py-2 hover:border-b-2 hover:border-emerald-600 ${
               activeTab === "lobby"
                 ? "border-b-2 border-emerald-600 text-emerald-700"
                 : "text-gray-700"
             }`}
           >
             Lobby
+          </button>
+          <button
+            onClick={() => setActiveTab("livestream")}
+            className={`text-lg font-medium w-1/3 py-2 hover:border-b-2 hover:border-emerald-600 ${
+              activeTab === "livestream"
+                ? "border-b-2 border-emerald-600 text-emerald-700"
+                : "text-gray-700"
+            }`}
+          >
+            Livestream
           </button>
         </div>
 
@@ -136,7 +145,10 @@ export const Homepage = () => {
               isWaiting={isWaiting}
             />
           )}
-          {activeTab === "lobby" && <Lobby games={lobby} />}
+          {activeTab === "lobby" && <Lobby games={lobby} socket={socket} />}
+          {activeTab === "livestream" && (
+            <Livestream games={lobby} socket={socket} />
+          )}
         </div>
       </div>
 
@@ -239,57 +251,155 @@ QuickPairing.propTypes = {
   handleQuickPairing: PropTypes.func.isRequired,
   loadingIndex: PropTypes.number,
   openCard: PropTypes.func.isRequired,
+  isWaiting: PropTypes.bool.isRequired,
 };
 
-const Lobby = ({ games }) => (
-  <div className="flex h-full w-full flex-col bg-white shadow-md rounded-lg overflow-auto py-2">
-    {games.length > 0 ? (
-      <table className="w-full table-fixed">
-        <thead className="sticky top-0 text-gray-700 py-5 border-b border-gray-300">
-          <tr className=" text-2xl">
-            <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider w-1/2">
-              Player
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider w-1/6">
-              Rating
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider w-1/6">
-              Time
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider w-1/6">
-              Mode
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {games.map((lobby) => (
-            <tr
-              key={lobby.id}
-              className="border-b  border-[#D9D9D9] bg-[#ffffff80] hover:bg-[#D64F0033] hover:text-[#FFFFFF]"
-            >
-              <td className="px-4 py-2 text-[#4D4D4D] font-semibold">
-                {lobby.game_id}
-              </td>
-              {/* <td className="px-4 py-2 text-[#4D4D4D] font-semibold ">
-              {lobby.rating}
-            </td>
-            <td className="px-4 py-2 text-[#4D4D4D] font-semibold">
-              {lobby.time}
-            </td>
-            <td className="px-4 py-2 text-[#4D4D4D] font-semibold">
-              {lobby.mode}
-            </td> */}
+const Lobby = ({ games, socket }) => {
+  const availableGames = games.filter((game) => !game.player1 || !game.player2);
+  const navigate = useNavigate();
+
+  const handleJoinGame = (gameId) => {
+    socket.emit("join_game", gameId, (response) => {
+      if (response.success) {
+        navigate(`/game/${gameId}`);
+      } else {
+        console.error(response.message);
+        toast.error(response.message);
+      }
+    });
+  };
+
+  return (
+    <div className="flex h-full w-full flex-col bg-white shadow-md rounded-lg overflow-auto py-2">
+      {availableGames.length > 0 ? (
+        <table className="w-full table-fixed">
+          <thead className="sticky top-0 text-gray-700 py-5 border-b border-gray-300">
+            <tr className=" text-2xl">
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider w-1/2">
+                Game ID
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider w-1/6">
+                <div className="flex justify-center">Side</div>
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider w-1/6">
+                <div className="flex justify-center">Time</div>
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider w-1/6">
+                <div className="flex justify-center">Type</div>
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    ) : (
-      <div className="w-full h-full flex justify-center items-center text-xl text-gray-700">
-        No games available. Create one now!
-      </div>
-    )}
-  </div>
-);
+          </thead>
+          <tbody>
+            {availableGames.map((lobby) => (
+              <tr
+                key={lobby.id}
+                className="cursor-pointer border-b border-gray-300 bg-[#ffffff80] hover:bg-[#D64F0033]"
+                onDoubleClick={() => handleJoinGame(lobby.game_id)}
+              >
+                <td className="px-4 py-2 text-[#4D4D4D] font-semibold">
+                  {lobby.game_id}
+                </td>
+                <td className="px-4 py-2 text-[#4D4D4D] font-semibold flex justify-center">
+                  {lobby.player1 === null ? "♘" : "♞"}
+                </td>
+                <td className="px-4 py-2 text-[#4D4D4D] font-semibold">
+                  <div className="flex justify-center">
+                    {lobby.baseTime / 60000} + {lobby.increment / 1000}
+                  </div>
+                </td>
+                <td className="px-4 py-2 text-[#4D4D4D] font-semibold">
+                  <div className="flex justify-center">
+                    {lobby.timeControlName}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div className="w-full h-full flex justify-center items-center text-xl text-gray-700">
+          No games available. Create one now!
+        </div>
+      )}
+    </div>
+  );
+};
 Lobby.propTypes = {
   games: PropTypes.array.isRequired,
+  socket: PropTypes.object.isRequired,
+};
+
+const Livestream = ({ games, socket }) => {
+  const playingGames = games.filter((game) => game.player1 && game.player2);
+  const navigate = useNavigate();
+
+  const handleSpectateGame = (gameId) => {
+    navigate(`/spectate/${gameId}`);
+  };
+
+  return (
+    <div className="flex h-full w-full flex-col bg-white shadow-md rounded-lg overflow-auto py-2">
+      {playingGames.length > 0 ? (
+        <table className="w-full table-fixed">
+          <thead className="sticky top-0 text-gray-700 py-5 border-b border-gray-300">
+            <tr className="text-2xl">
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider w-1/2">
+                Game ID
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider w-1/6">
+                <div className="flex justify-center">Time</div>
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider w-1/6">
+                <div className="flex justify-center">Type</div>
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider w-1/6">
+                <div className="flex justify-center">Action</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {playingGames.map((game) => (
+              <tr
+                key={game.id}
+                className="cursor-pointer border-b border-gray-300 bg-[#ffffff80] hover:bg-[#D64F0033]"
+              >
+                <td className="px-4 py-2 text-[#4D4D4D] font-semibold">
+                  {game.game_id}
+                </td>
+                <td className="px-4 py-2 text-[#4D4D4D] font-semibold">
+                  <div className="flex justify-center">
+                    {game.baseTime / 60000} + {game.increment / 1000}
+                  </div>
+                </td>
+                <td className="px-4 py-2 text-[#4D4D4D] font-semibold">
+                  <div className="flex justify-center">
+                    {game.timeControlName}
+                  </div>
+                </td>
+                <td className="px-4 py-2 text-[#4D4D4D] font-semibold">
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => handleSpectateGame(game.game_id)}
+                      className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 shadow-lg transition"
+                    >
+                      Spectate
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div className="w-full h-full flex justify-center items-center text-xl text-gray-700">
+          No current games. Join or create one now!
+        </div>
+      )}
+    </div>
+  );
+};
+
+Livestream.propTypes = {
+  games: PropTypes.array.isRequired,
+  socket: PropTypes.object.isRequired,
 };

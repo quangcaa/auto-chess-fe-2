@@ -9,8 +9,14 @@ import { Loading } from "@/components/Loading";
 import { FaRegCircle, FaCircle } from "react-icons/fa";
 import PropTypes from "prop-types";
 import { GiBulletBill, GiTurtle, GiFireBowl, GiRabbit } from "react-icons/gi";
+import { Separator } from "@/components/ui/separator";
 
-export const GameInfo = ({ white, black, clock, startTime }) => {
+export const GameInfo = ({ white, black, clock, startTime, gameResult }) => {
+  let winner;
+  if (gameResult) {
+    winner = gameResult.includes("White is") ? "white" : "black";
+  }
+
   if (!white || !black || !clock) {
     return <Loading />;
   }
@@ -47,14 +53,28 @@ export const GameInfo = ({ white, black, clock, startTime }) => {
           <FaRegCircle className="text-gray-600" />
           <p className="text-gray-600">
             <span className="font-medium">{white.username}</span>
+            {winner === "white" && (
+              <span className="ml-2 text-green-600 font-bold text-[12px]">WIN</span>
+            )}
           </p>
         </div>
         <div className="flex flex-row items-center gap-2">
           <FaCircle className="text-gray-600" />
           <p className="text-gray-600">
             <span className="font-medium">{black.username}</span>
+             {winner === "black" && (
+              <span className="ml-2 text-green-600 font-bold text-[12px]">WIN</span>
+            )}
           </p>
         </div>
+        {gameResult && (
+          <div className="mt-3">
+            <Separator />
+            <div className="pt-4 flex justify-center items-center font-medium text-gray-700 italic">
+              {gameResult}
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -76,4 +96,5 @@ GameInfo.propTypes = {
     increment_by_turn: PropTypes.number.isRequired,
     time_control_name: PropTypes.string.isRequired,
   }).isRequired,
+  gameResult: PropTypes.string.isRequired,
 };

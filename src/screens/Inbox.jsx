@@ -1,18 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
-import api from "../utils/axios";
+import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import api from "@/utils/axios";
+import { calculateTimeDifferences } from "@/utils/timeUtils";
 import { Conversation } from "@/components/inbox/Conversation";
 import { Online } from "@/components/Online";
 import { Offline } from "@/components/Offline";
-import { calculateTimeDifferences } from "../utils/timeUtils";
-import { Loading } from "../components/Loading";
-
+import { Loading } from "@/components/Loading";
 import { useAuth } from "@/contexts/AuthContext";
-import { useOnlineUsers } from "@/contexts/OnlineUsersContext";
-import { useNavigate, useParams } from "react-router-dom";
 
 export const Inbox = () => {
-  const { username } = useParams()
+  const { username } = useParams();
   const navigate = useNavigate();
   const [inboxList, setInboxList] = useState([]);
   const [selectedInbox, setSelectedInbox] = useState(null);
@@ -109,36 +107,36 @@ export const Inbox = () => {
 
     fetchInboxList();
   }, []);
-  
+
   useEffect(() => {
     const findUser = async () => {
-      const findInbox = inboxList.find((item) => item.user_name === username)
+      const findInbox = inboxList.find((item) => item.user_name === username);
       if (findInbox) {
-        setSelectedInbox(findInbox)
+        setSelectedInbox(findInbox);
       } else {
         try {
           const res = await api.get(`/@/${username}`);
           const data = await res.data;
-          console.log(data)
+          console.log(data);
           setSelectedInbox({
             user_id: data.profile.user_id,
             user_name: username,
-          })
+          });
         } catch (error) {
-          console.error(error)
-          navigate('/inbox')
+          console.error(error);
+          navigate("/inbox");
         }
       }
-    }
-    
+    };
+
     if (username) {
-      if (username !== localStorage.getItem('username')) {
-        findUser()
+      if (username !== localStorage.getItem("username")) {
+        findUser();
       } else {
-        navigate('/inbox')
+        navigate("/inbox");
       }
     }
-  }, [username, navigate, inboxList])
+  }, [username, navigate, inboxList]);
 
   const [timeStrings, setTimeStrings] = useState([]);
 
@@ -167,7 +165,7 @@ export const Inbox = () => {
           setSearchResults(
             data.users.filter(
               (item) =>
-                item.username !== localStorage.getItem('username') &&
+                item.username !== localStorage.getItem("username") &&
                 !searchConversation
                   .map((inbox) => inbox.user_name)
                   .includes(item.username)
@@ -296,7 +294,7 @@ export const Inbox = () => {
   const handleInboxSelect = (item) => {
     setSelectedInbox(item);
     setIsSearching(false);
-    navigate(`/inbox/${item.user_name}`, { replace: true })
+    navigate(`/inbox/${item.user_name}`, { replace: true });
   };
 
   return (

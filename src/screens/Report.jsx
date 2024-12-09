@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { SelectReport } from "@/components/report/SelectReport";
-import api from "@/utils/axios";
 import toast from "react-hot-toast";
-
+import api from "@/utils/axios";
+import { SelectReport } from "@/components/report/SelectReport";
 import { Textarea } from "@/components/ui/textarea";
 
 export const Report = () => {
@@ -42,7 +41,9 @@ export const Report = () => {
         <div className="flex items-center space-x-1">
           <p className="font-bold text-lg text-gray-700">User: </p>
           <a href={`/@/${username}`} className="flex items-center">
-            <p className="font-medium text-lg text-emerald-600 hover:text-emerald-800">{username}</p>
+            <p className="font-medium text-lg text-emerald-600 hover:text-emerald-800">
+              {username}
+            </p>
           </a>
         </div>
         <div>
@@ -59,14 +60,17 @@ export const Report = () => {
           />
           <p className="text-slate-700 text-xs">
             Paste a link to the game(s) and explain what is wrong with this
-            user&apos;s behavior. Don&apos;t just say &quot;they cheat&quot;, but tell us how you
-            came to this conclusion. Your report will be processed faster if
-            written in English. Maximum 3000 characters.
+            user&apos;s behavior. Don&apos;t just say &quot;they cheat&quot;,
+            but tell us how you came to this conclusion. Your report will be
+            processed faster if written in English. Maximum 3000 characters.
           </p>
         </div>
         <hr className="border-t border-gray-300 my-6" />
         <div className="flex items-center">
-          <a onClick={() => navigate(-1)} className="text-lg text-emerald-600 hover:text-emerald-800">
+          <a
+            onClick={() => navigate(-1)}
+            className="text-lg text-emerald-600 hover:text-emerald-800"
+          >
             Cancel
           </a>
           <button

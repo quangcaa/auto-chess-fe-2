@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import api from "@/utils/axios";
 import toast from "react-hot-toast";
 import { FaSearch } from "react-icons/fa";
 import { Online } from "@/components/Online";
 import { Offline } from "@/components/Offline";
+import api from "@/utils/axios";
 
 const UserSearch = () => {
   const [query, setQuery] = useState("");
@@ -33,7 +33,7 @@ const UserSearch = () => {
       const response = await api.get(`search/${query}`);
       setUserList(response.data.users);
     } catch (error) {
-      toast.error(error.response.data.message || "Something went wrong 1");
+      toast.error(error.response?.data?.message || "Wrong format");
     }
   };
 
@@ -62,15 +62,13 @@ const UserSearch = () => {
         onBlur={handleBlur}
         placeholder="Search"
         className={`p-2 pr-0 font-base text-gray-600 placeholder-gray-600 transition-all duration-300 outline-0 bg-main-color ${
-          isExpanded
-            ? "w-48 opacity-100 ml-4 text-lg"
-            : "w-0 opacity-0"
+          isExpanded ? "w-48 opacity-100 ml-4 text-lg" : "w-0 opacity-0"
         }`}
         style={{ width: isExpanded ? "12rem" : "0" }}
         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
       />
       {query && userList.length > 0 && (
-        <div className="absolute top-full mt-2 w-full bg-white shadow-lg border border-gray-300 rounded-lg z-10 ">
+        <div className="absolute top-full mt-2 w-full bg-white shadow-lg border border-gray-300 rounded-lg z-50">
           <ul className="flex flex-col max-h-60 overflow-auto">
             {userList.map((user, index) => (
               <a

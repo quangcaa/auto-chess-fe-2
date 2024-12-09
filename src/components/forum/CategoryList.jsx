@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import api from "../../utils/axios";
-
+import api from "@/utils/axios";
 import { MdOutlineForum } from "react-icons/md";
 
 export const CategoryList = () => {

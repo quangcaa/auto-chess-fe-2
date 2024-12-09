@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { EditProfile } from "../components/setting/EditProfileSection";
-import { ChangePassword } from "../components/setting/ChangePasswordSection";
-import { CloseAccount } from "../components/setting/CloseAccountSection";
+import { EditProfile } from "@/components/setting/EditProfileSection";
+import { ChangePassword } from "@/components/setting/ChangePasswordSection";
+import { CloseAccount } from "@/components/setting/CloseAccountSection";
 
 export const Setting = () => {
   const [activePage, setActivePage] = useState("EditProfile");

@@ -2,11 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import toast from "react-hot-toast";
-
 import movesStore from "@/store/movesStore";
 import { MoveList } from "@/components/puzzle/MoveList";
-import { set } from "react-hook-form";
-import { Separator } from "@/components/ui/separator";
 
 export const Puzzle = () => {
   const [data, setData] = useState(null);
@@ -28,9 +25,6 @@ export const Puzzle = () => {
     to: null,
   });
   const [isSolution, setIsSolution] = useState(false);
-
-  // const initialPosition =
-  //   "r1bqkbnr/pppppppp/2n5/8/8/2N5/PPPPPPPP/R1BQKBNR w KQkq - 0 1"; // Example FEN
 
   const fetchData = async () => {
     try {

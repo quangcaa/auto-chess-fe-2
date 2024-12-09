@@ -1,16 +1,13 @@
 import { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent } from "@/components/ui/card";
 
-export const MoveList = ({ moves, handleViewHistory, selected }) => {
+export const MoveList = ({ moves, handleViewHistory, selected, isGameOver }) => {
   const listRef = useRef(null);
-
-  console.log(moves);
 
   // auto scroll to bottom when new moves added
   useEffect(() => {
-    if (listRef.current) {
+    if (listRef.current && !isGameOver) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
   }, [moves]);
@@ -82,4 +79,5 @@ MoveList.propTypes = {
   moves: PropTypes.array.isRequired,
   handleViewHistory: PropTypes.func,
   selected: PropTypes.number,
+  isGameOver: PropTypes.bool.isRequired,
 };
