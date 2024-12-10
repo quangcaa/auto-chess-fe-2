@@ -10,12 +10,15 @@ import toast from "react-hot-toast";
 import { useParams, Link } from "react-router-dom";
 import { FaUserFriends } from "react-icons/fa";
 import { SlUserFollowing } from "react-icons/sl";
+import { TiDelete } from "react-icons/ti";
 
 export const Dropdown = ({ isOwner = true, isFollowing = false, user_id, setFollowType }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFollow, setIsFollow] = useState(isFollowing);
-
+  const checkRole = localStorage.getItem("role");
   const { username } = useParams();
+
+  const isAdmin = checkRole === "admin"; 
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -43,6 +46,15 @@ export const Dropdown = ({ isOwner = true, isFollowing = false, user_id, setFoll
       toast.error(error.response?.data?.message || "Failed to send challenge");
     }
   };
+
+  const handleDeleteAccount = async () => {
+    try {
+      const response = await api.delete(`/account/delete-account/${user_id}`)
+      toast.success(response.data.message || "Challenge sent successfully!");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Can't delete. Please try again or check your internet!");
+    }
+  }
 
   return (
     <div className="relative inline-block text-left">
@@ -116,6 +128,13 @@ export const Dropdown = ({ isOwner = true, isFollowing = false, user_id, setFoll
                 <MdReportProblem className="size-5 mr-2"/>
                 Report
               </a>
+              {isAdmin && (
+                <button onClick={handleDeleteAccount}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full">
+                  <TiDelete className="size-5 mr-2"/>
+                  Delete account
+                </button>
+              )}
             </>
           )}
         </div>

@@ -50,7 +50,8 @@ export const Register = () => {
         data.accessToken,
         data.refreshToken,
         data.user.username,
-        data.user.user_id
+        data.user.user_id,
+        data.user.role
       );
     } catch (error) {
       toast.error(error.response.data.message || "Something went wrong");

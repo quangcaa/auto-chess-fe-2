@@ -6,13 +6,13 @@ import { ViewChallengeButton } from "./ViewChallengeButton";
 import { ViewNotificationButton } from "./ViewNotificationButton";
 
 export const Navbar = () => {
-  const { isAuthenticated, user } = useAuth(); // Lấy user để kiểm tra role
+  const { isAuthenticated, user } = useAuth();
 
   const checkRole = localStorage.getItem("role");
 
   if (!isAuthenticated) return null;
 
-  const isAdmin = checkRole === "admin"; // Kiểm tra nếu user có role admin
+  const isAdmin = checkRole === "admin"; 
 
   return (
     <>
@@ -74,7 +74,7 @@ export const Navbar = () => {
             </Link>
           </li>
 
-          {/* ADMIN - Chỉ hiện khi user có role là admin */}
+          {/* ADMIN */}
           {isAdmin && (
             <li className="flex items-center h-full max-h-[60px]">
               <Link
