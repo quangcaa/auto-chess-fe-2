@@ -157,9 +157,9 @@ export const Conversation = ({ userId, username, onUpdateLastMessage }) => {
           <p className="text-2xl ml-2">{username}</p>
         </div>
         <div className="flex flex-row gap-1">
-          <div className="flex justify-center items-center hover:cursor-pointer hover:bg-white hover:rounded-md h-9 w-9 hover:p-2 hover:shadow-md group">
+          {/* <div className="flex justify-center items-center hover:cursor-pointer hover:bg-white hover:rounded-md h-9 w-9 hover:p-2 hover:shadow-md group">
             <RiSwordFill className="h-5 w-5 text-gray-600 group-hover:text-blue-600" />
-          </div>
+          </div> */}
           <div className="flex justify-center items-center hover:cursor-pointer hover:bg-white hover:rounded-md h-9 w-9 hover:p-2 hover:shadow-md group">
             <FaTrash
               className="h-4 w-4 text-gray-600 group-hover:text-red-600"

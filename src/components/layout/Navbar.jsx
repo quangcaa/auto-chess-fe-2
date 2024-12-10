@@ -74,7 +74,7 @@ export const Navbar = () => {
         <div className="flex items-center h-full">
           <div className="flex flex-row items-center justify-center h-full">
             <UserSearch />
-            <ViewChallengeButton />
+            {/* <ViewChallengeButton /> */}
             <ViewNotificationButton />
             <UserDropdown />
           </div>

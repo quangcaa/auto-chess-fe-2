@@ -14,7 +14,6 @@ export const Timer = ({ timeLeft, isActive, player }) => {
         isActive ? "text-green-500 font-bold" : "text-gray-500"
       }`}
     >
-      <h3 className="text-xl font-semibold">{player} Time</h3>
       <p className="text-2xl">{formatTime(timeLeft)}</p>
     </div>
   );

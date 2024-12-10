@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { Card, CardContent } from "@/components/ui/card";
 
-export const MoveList = ({ moves, handleViewHistory, selected, isGameOver }) => {
+export const MoveList = ({ moves, handleViewHistory, selected, isGameOver, end }) => {
   const listRef = useRef(null);
 
   // auto scroll to bottom when new moves added
@@ -13,17 +13,17 @@ export const MoveList = ({ moves, handleViewHistory, selected, isGameOver }) => 
   }, [moves]);
 
   return (
-    <Card className="w-full h-full shadow-lg flex flex-col">
+    <Card className={`w-full h-full flex flex-col ${end ? "" : "!border-0 !rounded-none"}`}>
       {/* <CardHeader>
         <CardTitle>Move List</CardTitle>
       </CardHeader> */}
       {/* <Separator /> */}
       <CardContent
-        className="flex-grow overflow-y-auto no-scrollbar h-64 p-0 text-sm rounded-lg"
+        className={`flex-grow overflow-y-auto no-scrollbar h-64 p-0 text-sm ${end ? "rounded-lg" : ""}`}
         ref={listRef}
       >
-        <table className="table-auto w-full rounded-xl">
-          <thead className="sticky top-0 rounded-xl">
+        <table className={`table-auto w-full ${end ? "rounded-xl" : ""}`}>
+          <thead className={`sticky top-0 ${end ? "rounded-xl" : ""}`}>
             <tr className="bg-[#779952]">
               <th className="px-1 py-1 text-left text-white flex justify-center">
                 #

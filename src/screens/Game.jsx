@@ -10,6 +10,7 @@ import { ChatRoom } from "@/components/game/ChatRoom";
 import { MoveList } from "@/components/game/MoveList";
 import { Timer } from "@/components/game/Timer";
 import { GAME_OVER, LEAVE_GAME, MOVE } from "@/constants/game";
+import { FaRegFlag } from "react-icons/fa";
 
 export const Game = () => {
   const [game, setGame] = useState(new Chess());
@@ -64,7 +65,7 @@ export const Game = () => {
         if (gameD.result !== null) {
           setIsGameOver(true);
           setGameResult(`${gameD.reason} • ${gameD.result}`);
-          setSelectedMove(0)
+          setSelectedMove(0);
         } else {
           setIsGameOver(false);
         }
@@ -179,7 +180,9 @@ export const Game = () => {
 
   const onTimeOut = (player) => {
     setIsGameOver(true);
-    const resultD = `${player} time out • ${player === "White" ? "Black" : "White"} is victorious`
+    const resultD = `${player} time out • ${
+      player === "White" ? "Black" : "White"
+    } is victorious`;
     setGameResult(resultD);
     socket.emit(GAME_OVER, {
       game_id: gameId,
@@ -191,7 +194,7 @@ export const Game = () => {
   const leaveGame = () => {
     if (gameId) {
       socket.emit(LEAVE_GAME, gameId);
-      navigate("/");
+      // navigate("/");
     }
   };
 
@@ -260,37 +263,92 @@ export const Game = () => {
             </div>
             {/* RIGHT */}
             <div className="w-1/4 h-full flex flex-col flex-shrink-0">
-              <div className="flex justify-between">
-                {!isGameOver && (
-                  <div className="flex justify-between mb-4">
-                    <Timer
-                      timeLeft={whiteTime}
-                      isActive={activePlayer === "w"}
-                      player="White"
-                    />
-                    <Timer
-                      timeLeft={blackTime}
-                      isActive={activePlayer === "b"}
-                      player="Black"
-                    />
+              <div className="flex flex-col justify-between">
+                {!isGameOver ? (
+                  <div className="flex flex-col justify-between mb-4">
+                    {playerColor === "w" ? (
+                      <div className="border border-gray-300 rounded-lg">
+                        <div className="flex justify-between items-center w-full font-semibold text-gray-700 bg-white py-1 px-4 text-lg rounded-t-lg border-b border-gray-300">
+                          {gameData && (
+                            <div>{gameData.blackPlayer.username}</div>
+                          )}
+                          <Timer
+                            timeLeft={blackTime}
+                            isActive={activePlayer === "b"}
+                            player="Black"
+                          />
+                        </div>
+
+                        <MoveList
+                          moves={moves}
+                          handleViewHistory={handleViewHistory}
+                          selected={selectedMove}
+                          isGameOver={isGameOver}
+                          end={false}
+                        />
+
+                        <div className="flex justify-between items-center w-full font-semibold text-gray-700 bg-white py-1 px-4 text-lg rounded-b-lg border-t border-gray-300">
+                          {gameData && (
+                            <div>{gameData.whitePlayer.username}</div>
+                          )}
+                          <Timer
+                            timeLeft={whiteTime}
+                            isActive={activePlayer === "w"}
+                            player="White"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="border border-gray-300 rounded-lg">
+                        <div className="flex justify-between items-center w-full font-semibold text-gray-700 bg-white py-1 px-4 text-lg rounded-t-lg border-b border-gray-300">
+                          {gameData && (
+                            <div>{gameData.whitePlayer.username}</div>
+                          )}
+                          <Timer
+                            timeLeft={whiteTime}
+                            isActive={activePlayer === "w"}
+                            player="White"
+                          />
+                        </div>
+
+                        <MoveList
+                          moves={moves}
+                          handleViewHistory={handleViewHistory}
+                          selected={selectedMove}
+                          isGameOver={isGameOver}
+                          end={false}
+                        />
+
+                        <div className="flex justify-between items-center w-full font-semibold text-gray-700 bg-white py-1 px-4 text-lg rounded-b-lg border-t border-gray-300">
+                          {gameData && (
+                            <div>{gameData.blackPlayer.username}</div>
+                          )}
+                          <Timer
+                            timeLeft={blackTime}
+                            isActive={activePlayer === "b"}
+                            player="Black"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
+                ) : (
+                  <MoveList
+                    moves={moves}
+                    handleViewHistory={handleViewHistory}
+                    selected={selectedMove}
+                    isGameOver={isGameOver}
+                    end={true}
+                  />
                 )}
-              </div>
-              <div className="flex-grow">
-                <MoveList
-                  moves={moves}
-                  handleViewHistory={handleViewHistory}
-                  selected={selectedMove}
-                  isGameOver={isGameOver}
-                />
               </div>
               {!isGameOver && (
                 <div>
                   <button
                     onClick={leaveGame}
-                    className="bg-red-500 text-white px-4 py-2 rounded mt-4"
+                    className="bg-red-500 hover:bg-red-600 shadow-lg text-white px-4 py-2 rounded"
                   >
-                    LEAVE GAME
+                    <FaRegFlag title="Resign" />
                   </button>
                 </div>
               )}

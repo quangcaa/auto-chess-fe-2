@@ -106,11 +106,11 @@ export const Dropdown = ({ isOwner = true, isFollowing = false, user_id, setFoll
                   </>
                 )}
               </button>
-              <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full"
+              {/* <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full"
                       onClick={handleChallenge}>
                 <GiBattleAxe className="size-5 mr-2" />
                 Challenge
-              </button>
+              </button> */}
               <a href= {`/report?username=${username}`}
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                 <MdReportProblem className="size-5 mr-2"/>

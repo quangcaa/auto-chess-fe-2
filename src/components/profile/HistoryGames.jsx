@@ -1,6 +1,6 @@
 import { Chessboard } from "react-chessboard";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import {
   GiBulletBill,
@@ -14,22 +14,25 @@ export const HistoryGames = ({ games }) => {
   const [filter, setFilter] = useState("All");
   const user_id = Number(localStorage.getItem("user_id"));
   const navigate = useNavigate();
+  const { username } = useParams();
 
   const checkGameWins = (game) => {
     if (game.result === "Black is victorious") {
-      return user_id === game.black_player_id;
+      return username === game.black_player_username;
     } else if (game.result === "White is victorious") {
-      return user_id === game.white_player_id;
+      return username === game.white_player_username;
     }
     return false;
   };
 
-  // Hàm lọc các trận đấu theo loại
+  const totalGames = games.length;
+  const gamesWon = games.filter(checkGameWins).length;
+  const gamesLost = totalGames - gamesWon;
+
   const filteredGames = games.filter((game) => {
     if (filter === "All") return true;
     if (filter === "Win") return checkGameWins(game);
     if (filter === "Lose") return !checkGameWins(game);
-    //return false;
   });
 
   return (
@@ -42,11 +45,22 @@ export const HistoryGames = ({ games }) => {
           <button
             key={label}
             onClick={() => setFilter(label)}
-            className={`w-1/4 h-10 text-gray-700 border border-gray-300 rounded-lg hover:bg-[#779952] hover:text-white transition-all duration-300 ${
-              filter === label ? "bg-[#779952] font-bold text-white" : "bg-gray-50"
+            className={`w-1/4 text-gray-700 border border-gray-300 rounded-lg hover:bg-[#779952] hover:text-white transition-all duration-300 ${
+              filter === label
+                ? "bg-[#779952] font-bold text-white"
+                : "bg-gray-50"
             }`}
           >
-            {label}
+            <div className="flex flex-col">
+              <div>
+                {label === "All"
+                  ? totalGames
+                  : label === "Win"
+                  ? gamesWon
+                  : gamesLost}
+              </div>
+              <div>{label}</div>
+            </div>
           </button>
         ))}
       </div>
@@ -114,9 +128,9 @@ export const HistoryGames = ({ games }) => {
               </div>
               <div className="text-center text-gray-600">
                 {(game.result === "White is victorious" &&
-                  game.white_player_id === user_id) ||
+                  game.white_player_username === username) ||
                 (game.result === "Black is victorious" &&
-                  game.black_player_id === user_id) ? (
+                  game.black_player_username === username) ? (
                   <div className="text-green-600">
                     {game.reason} • {game.result}
                   </div>
