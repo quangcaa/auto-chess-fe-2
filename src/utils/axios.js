@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '/api/',
+    baseURL: 'http://localhost:3333/api',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -9,10 +9,12 @@ const api = axios.create({
 
 // interceptor tự động thêm accessToken vào header
 api.interceptors.request.use(
-    async (config) => {
+    (config) => {
         const token = localStorage.getItem('accessToken')
+        console.log(token)
+        console.log(api)
         if (token) {
-            config.headers['x_authorization'] = token
+            config.headers.x_authorization = token
         }
         return config
     },
@@ -32,14 +34,7 @@ api.interceptors.response.use(
                 const accessToken = localStorage.getItem('accessToken')
                 const refreshToken = localStorage.getItem('refreshToken')
 
-                const response = await axios.post(`/auth/refresh`,
-                    { refreshToken },
-                    {
-                        headers: {
-                            x_authorization: accessToken
-                        }
-                    }
-                )
+                const response = await api.post('/auth/refresh', { refreshToken })
 
                 const newAccessToken = response.data.accessToken
                 localStorage.setItem('accessToken', newAccessToken)
