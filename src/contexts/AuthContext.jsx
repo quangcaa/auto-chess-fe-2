@@ -6,6 +6,7 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [role, setRole] = useState(null); 
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { connect, disconnect, socket } = useSocketStore();
@@ -13,22 +14,26 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     const user_id = parseInt(localStorage.getItem("user_id"), 10);
+    const savedRole = localStorage.getItem("role");
 
-    if (token && user_id) {
+    if (token && user_id && savedRole) {
       setIsAuthenticated(true);
-      if(!socket) {
+      setRole(savedRole);
+      if (!socket) {
         connect(user_id);
       }
     }
     setLoading(false);
   }, [connect, socket]);
 
-  const login = (accessToken, refreshToken, username, user_id) => {
+  const login = (accessToken, refreshToken, username, user_id, userRole) => {
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
     localStorage.setItem("username", username);
     localStorage.setItem("user_id", user_id);
+    localStorage.setItem("role", userRole); 
     setIsAuthenticated(true);
+    setRole(userRole); 
     connect(user_id);
   };
 
@@ -37,14 +42,16 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("username");
     localStorage.removeItem("user_id");
+    localStorage.removeItem("role"); 
     setIsAuthenticated(false);
+    setRole(null); 
     disconnect();
     navigate("/login");
   };
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, loading, login, logout, socket }}
+      value={{ isAuthenticated, role, loading, login, logout, socket }}
     >
       {!loading && children}
     </AuthContext.Provider>
