@@ -11,8 +11,6 @@ const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('accessToken')
-        console.log(token)
-        console.log(api)
         if (token) {
             config.headers.x_authorization = token
         }
@@ -34,7 +32,14 @@ api.interceptors.response.use(
                 const accessToken = localStorage.getItem('accessToken')
                 const refreshToken = localStorage.getItem('refreshToken')
 
-                const response = await api.post('/auth/refresh', { refreshToken })
+                const response = await  axios.post(`http://localhost:3333/api/auth/refresh`,
+                    { refreshToken },
+                    {
+                        headers: {
+                            x_authorization: accessToken
+                        }
+                    }
+                )
 
                 const newAccessToken = response.data.accessToken
                 localStorage.setItem('accessToken', newAccessToken)
