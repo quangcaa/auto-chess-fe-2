@@ -12,7 +12,7 @@ api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('accessToken')
         if (token) {
-            config.headers.x_authorization = token
+            config.headers['Authorization'] = `Bearer ${token}`
         }
         return config
     },
@@ -36,16 +36,16 @@ api.interceptors.response.use(
                     { refreshToken },
                     {
                         headers: {
-                            x_authorization: accessToken
-                        }
+                            Authorization: `Bearer ${accessToken}`,
+                        },
                     }
                 )
 
                 const newAccessToken = response.data.accessToken
                 localStorage.setItem('accessToken', newAccessToken)
 
-                api.defaults.headers.common['x_authorization'] = newAccessToken
-                originalRequest.headers['x_authorization'] = newAccessToken
+                api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`
+                originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`
 
                 console.log('new access token')
 
