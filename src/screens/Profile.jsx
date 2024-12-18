@@ -141,7 +141,7 @@ export function Profile() {
               <p>Followers</p>
             </div>
             <div className="flex flex-col items-center w-30 text-sm text-gray-700">
-              <p className="text-lg font-semibold">{profile.post_count}</p>
+              <p className="text-lg font-semibold">{profile.post_count || 0}</p>
               <p>Forum Posts</p>
             </div>
             <div className="ml-auto">

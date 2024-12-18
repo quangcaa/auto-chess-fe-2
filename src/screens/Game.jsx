@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Chess } from "chess.js";
 import toast from "react-hot-toast";
 import api from "@/utils/axios";
@@ -25,6 +25,8 @@ export const Game = () => {
   const [gameResult, setGameResult] = useState(null);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const previousPathRef = useRef(location.pathname);
   const { socket } = useAuth();
 
   const { game_id } = useParams();
@@ -191,6 +193,14 @@ export const Game = () => {
     });
   };
 
+  useEffect(() => {
+    return () => {
+      if (socket && gameId && !isGameOver) {
+        socket.emit(LEAVE_GAME, gameId);
+      }
+    };
+  }, [socket, gameId, isGameOver]);
+  
   const leaveGame = () => {
     if (gameId) {
       socket.emit(LEAVE_GAME, gameId);
