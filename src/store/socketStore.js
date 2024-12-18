@@ -6,7 +6,7 @@ import { io } from 'socket.io-client'
 const useSocketStore = create((set) => ({
     socket: null,
     connect: (user_id) => {
-        const socket = io('http://localhost:3333', {
+        const socket = io('/', {
             auth: {
                 user_id
             }
