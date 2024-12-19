@@ -18,8 +18,6 @@ export function Profile() {
   const [loading, setLoading] = useState(true);
   const [followType, setFollowType] = useState("follower");
 
-  console.log(followType);
-
   const { username } = useParams();
   const currentUser = localStorage.getItem("username");
   const current_id = localStorage.getItem("user_id");
@@ -32,7 +30,6 @@ export function Profile() {
     const fetchUserProfile = async () => {
       try {
         const response = await api.get(`@/${username}`);
-        console.log(response.data);
         if (isMounted) {
           setProfile(response.data.profile);
           setGames(response.data.games);

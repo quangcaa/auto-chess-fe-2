@@ -117,7 +117,6 @@ export const Inbox = () => {
         try {
           const res = await api.get(`/@/${username}`);
           const data = await res.data;
-          console.log(data);
           setSelectedInbox({
             user_id: data.profile.user_id,
             user_name: username,

@@ -12,13 +12,18 @@ import { FaUserFriends } from "react-icons/fa";
 import { SlUserFollowing } from "react-icons/sl";
 import { TiDelete } from "react-icons/ti";
 
-export const Dropdown = ({ isOwner = true, isFollowing = false, user_id, setFollowType }) => {
+export const Dropdown = ({
+  isOwner = true,
+  isFollowing = false,
+  user_id,
+  setFollowType,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFollow, setIsFollow] = useState(isFollowing);
   const checkRole = localStorage.getItem("role");
   const { username } = useParams();
 
-  const isAdmin = checkRole === "admin"; 
+  const isAdmin = checkRole === "admin";
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -49,12 +54,15 @@ export const Dropdown = ({ isOwner = true, isFollowing = false, user_id, setFoll
 
   const handleDeleteAccount = async () => {
     try {
-      const response = await api.delete(`/account/delete-account/${user_id}`)
+      const response = await api.delete(`/account/delete-account/${user_id}`);
       toast.success(response.data.message || "Challenge sent successfully!");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Can't delete. Please try again or check your internet!");
+      toast.error(
+        error.response?.data?.message ||
+          "Can't delete. Please try again or check your internet!"
+      );
     }
-  }
+  };
 
   return (
     <div className="relative inline-block text-left">
@@ -78,13 +86,17 @@ export const Dropdown = ({ isOwner = true, isFollowing = false, user_id, setFoll
                 <IoMdSettings className="size-5 mr-2" />
                 Edit Profile
               </a>
-              <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full"
-                  onClick={() => setFollowType("follower")}>
+              <button
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full"
+                onClick={() => setFollowType("follower")}
+              >
                 <FaUserFriends className="size-5 mr-2" />
                 Follower
               </button>
-              <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full"
-                  onClick={() => setFollowType("following")}>
+              <button
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full"
+                onClick={() => setFollowType("following")}
+              >
                 <SlUserFollowing className="size-5 mr-2" />
                 Following
               </button>
@@ -93,12 +105,24 @@ export const Dropdown = ({ isOwner = true, isFollowing = false, user_id, setFoll
 
           {!isOwner && (
             <>
-              <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                <ImUser className="size-5 mr-2" />
-                Friends
-              </a>
-              <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                  href={`/inbox/${username}`}>
+              <button
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full"
+                onClick={() => setFollowType("follower")}
+              >
+                <FaUserFriends className="size-5 mr-2" />
+                Follower
+              </button>
+              <button
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full"
+                onClick={() => setFollowType("following")}
+              >
+                <SlUserFollowing className="size-5 mr-2" />
+                Following
+              </button>
+              <a
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                href={`/inbox/${username}`}
+              >
                 <ImBubble2 className="size-5 mr-2" />
                 Message
               </a>
@@ -123,15 +147,19 @@ export const Dropdown = ({ isOwner = true, isFollowing = false, user_id, setFoll
                 <GiBattleAxe className="size-5 mr-2" />
                 Challenge
               </button> */}
-              <a href= {`/report?username=${username}`}
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                <MdReportProblem className="size-5 mr-2"/>
+              <a
+                href={`/report?username=${username}`}
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+              >
+                <MdReportProblem className="size-5 mr-2" />
                 Report
               </a>
               {isAdmin && (
-                <button onClick={handleDeleteAccount}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full">
-                  <TiDelete className="size-5 mr-2"/>
+                <button
+                  onClick={handleDeleteAccount}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center w-full"
+                >
+                  <TiDelete className="size-5 mr-2" />
                   Delete account
                 </button>
               )}
