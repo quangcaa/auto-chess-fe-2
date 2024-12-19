@@ -19,7 +19,6 @@ export const ViewChallengeButton = () => {
         const response = await api.get("/challenge");
         const data = await response.data;
         setChallengeList(data.data);
-        console.log(data);
       } catch (error) {
         toast.error(error.response.data.message || "Something went wrong");
       }

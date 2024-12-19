@@ -51,8 +51,6 @@ export const Game = () => {
       try {
         const response = await api.get(`/game/${game_id}`);
 
-        console.log(response);
-
         const gameD = response.data.game;
         const time = response.data.clock;
 
@@ -112,7 +110,6 @@ export const Game = () => {
       if (isViewingHistoryRef.current) {
         // reset to the latest game state
         const newGame = new Chess();
-        console.log(moves);
         moves.forEach((move) => newGame.move(move));
         newGame.move(moveData.san);
 

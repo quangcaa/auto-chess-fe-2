@@ -33,7 +33,6 @@ export const Puzzle = () => {
         throw new Error("Failed to fetch PGN data");
       }
       const puzzle = await res.json();
-      console.log(puzzle);
       setData(puzzle);
     } catch (error) {
       console.log(error);
